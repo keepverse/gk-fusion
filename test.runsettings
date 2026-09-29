@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Repo-wide test hang guard.
+
+  Why this exists: a local `dotnet test` has NO per-test timeout by default
+  (TestSessionTimeout defaults to 0 = infinite), and this repo had no .runsettings at
+  all. Only CI passed the blame-hang flags, so a deadlocked test locally produced no
+  output, no exit code and no report — an agent's tool call simply blocked until its own
+  timeout (observed: 1h30). The sequential `Process.StandardOutput.ReadToEnd()` then
+  `StandardError.ReadToEnd()` deadlock in several tests is the underlying cause; see
+  tests/FusionRpg.Core.Tests/TestSupport/ExternalProcess.cs for the concurrent-drain fix.
+
+  This file is auto-applied to every `*.Tests` project by Directory.Build.props, so a
+  local run is bounded and names the offending test even when CI flags are forgotten.
+
+  TestSessionTimeout: hard cap on the whole test session (ms). Kill, never hang forever.
+  CollectDumpOnTestSessionHang: kill the hung testhost + children after TestTimeout and
+    let the blame logger emit Sequence.xml naming the last-started / never-finished test.
+    HangDumpType=None: kill only, no multi-hundred-MB dump.
+
+  Both values are sized from measured data, not guesswork:
+
+  TestSessionTimeout 30min — the longest project here is FusionRpg.Data.Tests, measured at
+  ~6.5min wall for its full 1259-test run. 30min leaves ~4.5x headroom for this repo's
+  documented heavy parallel load without letting a genuinely stuck session run for hours.
+
+  TestTimeout 10min (per test) — the slowest legitimate single test measured is ~107s
+  (Data.Tests ActionUnlockGrantWiringTests; Core.Tests also has a ~105s case — see the .trx
+  `duration` attributes). 10min leaves ~5x headroom over that. It was briefly raised from
+  5min to cover a 3 x 120s retry loop in two cold-process tests; that retry was removed
+  2026-09-12 (those tests now launch a prebuilt apphost in ~0.7s), but the cap stays at
+  10min for the 107s cases above. A real hang still fails in a useful time and names the test.
+-->
+<RunSettings>
+  <RunConfiguration>
+    <TestSessionTimeout>1800000</TestSessionTimeout>
+  </RunConfiguration>
+
+  <LoggerRunSettings>
+    <Loggers>
+      <Logger friendlyName="blame" enabled="True" />
+    </Loggers>
+  </LoggerRunSettings>
+
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="blame" enabled="True">
+        <Configuration>
+          <CollectDumpOnTestSessionHang TestTimeout="10min" HangDumpType="None" />
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

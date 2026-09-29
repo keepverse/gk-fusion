@@ -1,0 +1,22 @@
+[
+  {
+    "id": "power-armored-zombie-walk-v1",
+    "label": "Walk cycle · v1",
+    "kind": "WALK",
+    "file": "assets/power-armored-zombie/walk-v1.png",
+    "columns": 4,
+    "rows": 2,
+    "fps": 8,
+    "note": "8 frames · 4×2 atlas · loop"
+  },
+  {
+    "id": "power-armored-zombie-attack-v1",
+    "label": "Shotgun attack · v1",
+    "kind": "ATTACK",
+    "file": "assets/power-armored-zombie/attack-v1.png",
+    "columns": 3,
+    "rows": 2,
+    "fps": 8,
+    "note": "6 frames · 3×2 atlas · muzzle flash on frame 4"
+  }
+]

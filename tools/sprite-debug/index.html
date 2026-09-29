@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Sprite Debug Bench</title>
+    <style>
+      :root {
+        --ink: #eef4f2;
+        --muted: #95aaa8;
+        --dim: #617573;
+        --bg: #10191b;
+        --bg-raised: #172426;
+        --panel: #1c2b2c;
+        --panel-soft: #203233;
+        --line: rgba(181, 220, 208, 0.14);
+        --line-strong: rgba(181, 220, 208, 0.27);
+        --accent: #f4a62a;
+        --accent-soft: rgba(244, 166, 42, 0.16);
+        --teal: #6ad6c4;
+        --danger: #ff8475;
+        --radius: 14px;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+      }
+
+      * { box-sizing: border-box; }
+      body { margin: 0; min-width: 320px; background: radial-gradient(circle at 90% 0%, #203334 0, transparent 35rem), var(--bg); }
+      button, input, select { font: inherit; }
+      button { color: inherit; }
+
+      .topbar {
+        min-height: 68px;
+        padding: 0 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(16, 25, 27, 0.86);
+        backdrop-filter: blur(14px);
+        position: sticky;
+        top: 0;
+        z-index: 4;
+      }
+
+      .brand { display: flex; align-items: center; gap: 12px; }
+      .brand-mark {
+        width: 34px; height: 34px; display: grid; place-items: center;
+        border: 1px solid rgba(244, 166, 42, 0.55); border-radius: 9px;
+        background: var(--accent-soft); color: var(--accent); font-weight: 800;
+      }
+      .brand h1 { margin: 0; font-size: 16px; letter-spacing: 0.04em; }
+      .brand p { margin: 2px 0 0; font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+      .status { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+      .status-dot { width: 8px; height: 8px; border-radius: 99px; background: var(--teal); box-shadow: 0 0 14px var(--teal); }
+
+      .app-shell { width: min(1480px, calc(100% - 40px)); margin: 0 auto; padding: 34px 0 54px; }
+      .intro { display: flex; align-items: end; justify-content: space-between; gap: 32px; margin-bottom: 24px; }
+      .eyebrow { margin: 0 0 8px; color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+      .intro h2 { margin: 0; font-size: clamp(25px, 3vw, 38px); letter-spacing: -0.03em; line-height: 1; }
+      .intro p { max-width: 560px; margin: 10px 0 0; color: var(--muted); line-height: 1.55; font-size: 14px; }
+      .hotkeys { flex: 0 0 auto; display: flex; flex-wrap: wrap; justify-content: end; gap: 6px; color: var(--dim); font-size: 11px; }
+      kbd { padding: 4px 7px; border: 1px solid var(--line-strong); border-bottom-color: rgba(255,255,255,.04); border-radius: 5px; background: var(--panel); color: var(--ink); }
+
+      .workspace { display: grid; grid-template-columns: 240px minmax(0, 1fr) 250px; gap: 14px; align-items: start; }
+      .panel { border: 1px solid var(--line); border-radius: var(--radius); background: rgba(28, 43, 44, 0.88); box-shadow: 0 18px 60px rgba(0,0,0,.18); }
+      .panel-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 16px 13px; border-bottom: 1px solid var(--line); }
+      .panel-header h3 { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: .11em; }
+      .count { color: var(--dim); font-size: 11px; }
+
+      .library { min-height: 440px; overflow: hidden; }
+      .asset-list { display: grid; gap: 6px; padding: 10px; }
+      .asset-button { width: 100%; display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 10px; padding: 10px; border: 1px solid transparent; border-radius: 10px; background: transparent; text-align: left; cursor: pointer; }
+      .asset-button:hover { background: var(--panel-soft); }
+      .asset-button[aria-selected="true"] { border-color: rgba(244, 166, 42, .55); background: var(--accent-soft); }
+      .asset-thumb { width: 44px; height: 44px; display: grid; place-items: center; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background-color: #273637; background-image: linear-gradient(45deg, rgba(255,255,255,.06) 25%, transparent 25%), linear-gradient(-45deg, rgba(255,255,255,.06) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(255,255,255,.06) 75%), linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.06) 75%); background-size: 12px 12px; background-position: 0 0, 0 6px, 6px -6px, -6px 0; }
+      .asset-thumb canvas { max-width: 100%; max-height: 100%; image-rendering: pixelated; }
+      .asset-name { overflow: hidden; color: var(--ink); font-size: 12px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+      .asset-kind { margin-top: 4px; color: var(--muted); font-size: 10px; letter-spacing: .1em; }
+      .asset-frames { color: var(--dim); font-size: 10px; }
+      .dropzone { margin: 4px 10px 12px; padding: 14px 10px; border: 1px dashed var(--line-strong); border-radius: 10px; color: var(--muted); text-align: center; font-size: 11px; line-height: 1.45; cursor: pointer; }
+      .dropzone:hover, .dropzone.is-dragging { border-color: var(--accent); color: var(--ink); background: var(--accent-soft); }
+      .dropzone input { display: none; }
+
+      .stage-panel { min-width: 0; overflow: hidden; }
+      .stage-toolbar { min-height: 62px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+      .stage-title { min-width: 180px; }
+      .stage-title strong { display: block; font-size: 14px; }
+      .stage-title span { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; }
+      .toolbar-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+      .icon-button, .primary-button { border: 1px solid var(--line-strong); border-radius: 8px; background: var(--panel-soft); cursor: pointer; }
+      .icon-button { width: 34px; height: 34px; display: grid; place-items: center; }
+      .icon-button:hover { border-color: var(--teal); color: var(--teal); }
+      .primary-button { min-height: 34px; padding: 0 12px; border-color: rgba(244,166,42,.55); background: var(--accent); color: #201507; font-weight: 800; font-size: 12px; }
+      .primary-button:hover { filter: brightness(1.08); }
+
+      .stage-area { min-height: 500px; padding: 26px; display: grid; place-items: center; overflow: auto; background-color: #192829; background-image: linear-gradient(45deg, rgba(255,255,255,.035) 25%, transparent 25%), linear-gradient(-45deg, rgba(255,255,255,.035) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(255,255,255,.035) 75%), linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.035) 75%); background-size: 32px 32px; background-position: 0 0, 0 16px, 16px -16px, -16px 0; }
+      .stage-frame { position: relative; flex: 0 0 auto; border: 1px solid rgba(106,214,196,.28); border-radius: 4px; background: transparent; box-shadow: 0 0 0 1px rgba(0,0,0,.18), 0 22px 60px rgba(0,0,0,.3); }
+      #main-canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edges; }
+      .stage-frame.is-solid { background: #294043; }
+      .stage-frame.is-light { background: #efe5d0; }
+      .stage-frame.is-dark { background: #0c1314; }
+      .empty-state { color: var(--muted); text-align: center; }
+      .empty-state strong { display: block; color: var(--ink); }
+
+      .transport { display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-top: 1px solid var(--line); }
+      .transport .readout { min-width: 98px; color: var(--muted); font: 700 11px ui-monospace, SFMono-Regular, Consolas, monospace; }
+      .scrub { flex: 1; accent-color: var(--accent); }
+      .filmstrip-wrap { border-top: 1px solid var(--line); padding: 15px 16px 16px; }
+      .filmstrip-label { display: flex; justify-content: space-between; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .1em; }
+      .frame-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); gap: 7px; margin-top: 10px; }
+      .frame-button { position: relative; min-width: 0; padding: 5px; border: 1px solid var(--line); border-radius: 8px; background: #223536; cursor: pointer; }
+      .frame-button:hover { border-color: var(--teal); }
+      .frame-button[aria-current="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: var(--accent-soft); }
+      .frame-button canvas { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: contain; image-rendering: pixelated; }
+      .frame-number { display: block; margin-top: 4px; color: var(--muted); font: 10px ui-monospace, SFMono-Regular, Consolas, monospace; text-align: center; }
+
+      .inspector { overflow: hidden; }
+      .inspector-body { display: grid; gap: 18px; padding: 16px; }
+      .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .stat { padding: 10px; border: 1px solid var(--line); border-radius: 9px; background: rgba(32,50,51,.6); }
+      .stat span { display: block; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+      .stat strong { display: block; margin-top: 5px; font: 700 13px ui-monospace, SFMono-Regular, Consolas, monospace; }
+      .control-group { display: grid; gap: 9px; }
+      .control-label { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 12px; }
+      .control-label output { color: var(--ink); font: 700 11px ui-monospace, SFMono-Regular, Consolas, monospace; }
+      input[type="range"] { width: 100%; accent-color: var(--accent); }
+      select, input[type="number"] { width: 100%; min-height: 34px; padding: 0 8px; border: 1px solid var(--line-strong); border-radius: 7px; outline: none; background: var(--panel-soft); color: var(--ink); }
+      select:focus, input:focus-visible, button:focus-visible, .dropzone:focus-within { outline: 2px solid var(--teal); outline-offset: 2px; }
+      .checks { display: grid; gap: 9px; }
+      .check { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; cursor: pointer; }
+      .check input { accent-color: var(--accent); }
+      .note { padding: 11px; border-left: 2px solid var(--accent); background: var(--accent-soft); color: var(--muted); font-size: 11px; line-height: 1.5; }
+      .note strong { color: var(--ink); }
+      .error { color: var(--danger); font-size: 11px; line-height: 1.45; }
+      .footer-note { margin: 16px 2px 0; color: var(--dim); font-size: 11px; }
+
+      @media (max-width: 1050px) {
+        .workspace { grid-template-columns: 210px minmax(0, 1fr); }
+        .inspector { grid-column: 1 / -1; }
+        .inspector-body { grid-template-columns: repeat(3, 1fr); align-items: start; }
+        .inspector-body > .note { grid-column: span 2; }
+      }
+      @media (max-width: 700px) {
+        .topbar { padding: 0 16px; }
+        .app-shell { width: min(100% - 24px, 1480px); padding-top: 24px; }
+        .intro { display: block; }
+        .hotkeys { justify-content: start; margin-top: 14px; }
+        .workspace { grid-template-columns: 1fr; }
+        .library, .inspector { grid-column: auto; min-height: 0; }
+        .asset-list { grid-template-columns: 1fr 1fr; }
+        .stage-area { min-height: 380px; padding: 16px; }
+        .inspector-body { grid-template-columns: 1fr 1fr; }
+        .inspector-body > .note { grid-column: 1 / -1; }
+        .toolbar-actions { width: 100%; justify-content: start; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">▦</div>
+        <div>
+          <h1>Sprite Debug Bench</h1>
+          <p>Rise of Summoner · asset review</p>
+        </div>
+      </div>
+      <div class="status"><span class="status-dot" aria-hidden="true"></span><span id="load-status">Ready for review</span></div>
+    </header>
+
+    <main class="app-shell">
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Developer surface · animation QA</p>
+          <h2 id="page-title">Frame by frame, before gameplay.</h2>
+          <p>Review atlas registration, loop rhythm, silhouette drift, and attack readability without opening the game. Put new generated sheets in <code>assets/</code>, add one manifest row, and refresh.</p>
+        </div>
+        <div class="hotkeys" aria-label="Keyboard shortcuts">
+          <span><kbd>Space</kbd> play</span>
+          <span><kbd>←</kbd><kbd>→</kbd> step</span>
+          <span><kbd>G</kbd> guides</span>
+          <span><kbd>O</kbd> onion</span>
+        </div>
+      </section>
+
+      <div class="workspace">
+        <aside class="panel library" aria-label="Sprite asset library">
+          <div class="panel-header"><h3>Asset library</h3><span class="count" id="asset-count">0 sheets</span></div>
+          <div class="asset-list" id="asset-list"></div>
+          <label class="dropzone" id="dropzone" tabindex="0">
+            <input id="file-input" type="file" accept="image/png,image/webp,image/jpeg" multiple />
+            <strong>+ Import a local sheet</strong><br />Drop files here or choose from disk.
+          </label>
+        </aside>
+
+        <section class="panel stage-panel" aria-label="Sprite animation preview">
+          <div class="stage-toolbar">
+            <div class="stage-title"><strong id="selected-label">Select a sheet</strong><span id="selected-note">The current animation will appear here.</span></div>
+            <div class="toolbar-actions">
+              <button class="icon-button" id="previous-button" type="button" title="Previous frame" aria-label="Previous frame">←</button>
+              <button class="primary-button" id="play-button" type="button">Play</button>
+              <button class="icon-button" id="next-button" type="button" title="Next frame" aria-label="Next frame">→</button>
+              <select id="background-select" aria-label="Preview background" title="Preview background">
+                <option value="checker">Checker</option><option value="solid">Teal</option><option value="light">Light</option><option value="dark">Dark</option>
+              </select>
+            </div>
+          </div>
+          <div class="stage-area" id="stage-area">
+            <div class="stage-frame" id="stage-frame"><canvas id="main-canvas" aria-label="Current sprite frame"></canvas></div>
+            <div class="empty-state" id="empty-state" hidden><strong>No sheet selected</strong>Import an image or choose an asset from the library.</div>
+          </div>
+          <div class="transport">
+            <span class="readout" id="frame-readout">Frame — / —</span>
+            <input class="scrub" id="frame-scrub" type="range" min="0" max="0" value="0" step="1" aria-label="Current frame" />
+          </div>
+          <div class="filmstrip-wrap">
+            <div class="filmstrip-label"><span>Atlas frames</span><span id="sequence-readout">Row-major order</span></div>
+            <div class="frame-grid" id="frame-grid"></div>
+          </div>
+        </section>
+
+        <aside class="panel inspector" aria-label="Sprite inspection controls">
+          <div class="panel-header"><h3>Inspection</h3><span id="asset-kind-badge" class="count">—</span></div>
+          <div class="inspector-body">
+            <div class="stat-grid">
+              <div class="stat"><span>Source</span><strong id="source-size">—</strong></div>
+              <div class="stat"><span>Frame</span><strong id="frame-size">—</strong></div>
+              <div class="stat"><span>Atlas</span><strong id="atlas-size">—</strong></div>
+              <div class="stat"><span>Alpha</span><strong id="alpha-state">—</strong></div>
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="fps-range"><span>Playback speed</span><output id="fps-output" for="fps-range">8 FPS</output></label>
+              <input id="fps-range" type="range" min="1" max="24" value="8" step="1" />
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="zoom-select"><span>Preview zoom</span></label>
+              <select id="zoom-select"><option value="1">100%</option><option value="1.5">150%</option><option value="2" selected>200%</option><option value="3">300%</option></select>
+            </div>
+            <div class="control-group">
+              <span class="control-label"><span>Atlas grid</span></span>
+              <div class="stat-grid"><label><span class="control-label">Columns</span><input id="columns-input" type="number" min="1" max="32" value="1" /></label><label><span class="control-label">Rows</span><input id="rows-input" type="number" min="1" max="32" value="1" /></label></div>
+            </div>
+            <div class="checks">
+              <label class="check"><input id="guides-checkbox" type="checkbox" checked /> Show center + baseline guides</label>
+              <label class="check"><input id="onion-checkbox" type="checkbox" /> Onion-skin previous frame</label>
+            </div>
+            <div class="note"><strong>Consistency check</strong><br />Keep the feet on one baseline, the body center on one vertical, and armor/weapon landmarks fixed. Onion skin makes drift visible immediately.</div>
+            <p class="error" id="error-message" role="alert" hidden></p>
+          </div>
+        </aside>
+      </div>
+      <p class="footer-note">Standalone developer tool · no build step · preferred launch: <code>python -m http.server 8127 --directory tools/sprite-debug</code></p>
+    </main>
+
+    <script>
+      const FALLBACK_ASSETS = [
+        { id: "power-armored-zombie-walk-v1", label: "Walk cycle · v1", kind: "WALK", file: "assets/power-armored-zombie/walk-v1.png", columns: 4, rows: 2, fps: 8, note: "8 frames · 4×2 atlas · loop" },
+        { id: "power-armored-zombie-attack-v1", label: "Shotgun attack · v1", kind: "ATTACK", file: "assets/power-armored-zombie/attack-v1.png", columns: 3, rows: 2, fps: 8, note: "6 frames · 3×2 atlas · muzzle flash on frame 4" }
+      ];
+
+      const state = { assets: FALLBACK_ASSETS, selectedId: FALLBACK_ASSETS[0].id, image: null, frame: 0, fps: 8, zoom: 2, playing: false, timer: null };
+      const $ = (id) => document.getElementById(id);
+      const mainCanvas = $("main-canvas");
+      const ctx = mainCanvas.getContext("2d");
+
+      function selectedAsset() { return state.assets.find((asset) => asset.id === state.selectedId) || state.assets[0]; }
+      function frameCount(asset) { return Math.max(1, asset.columns * asset.rows); }
+      function frameMetrics(asset) { return { width: Math.floor(state.image.naturalWidth / asset.columns), height: Math.floor(state.image.naturalHeight / asset.rows) }; }
+
+      function drawCrop(target, asset, index, alpha = 1) {
+        const { width, height } = frameMetrics(asset);
+        const col = index % asset.columns;
+        const row = Math.floor(index / asset.columns);
+        target.save();
+        target.globalAlpha = alpha;
+        target.drawImage(state.image, col * width, row * height, width, height, 0, 0, width, height);
+        target.restore();
+      }
+
+      function drawGuides(target, width, height) {
+        target.save();
+        target.strokeStyle = "rgba(106, 214, 196, .62)";
+        target.lineWidth = Math.max(1, width / 256);
+        target.setLineDash([Math.max(3, width / 24), Math.max(3, width / 24)]);
+        target.beginPath(); target.moveTo(width / 2, 0); target.lineTo(width / 2, height); target.stroke();
+        target.strokeStyle = "rgba(244, 166, 42, .82)";
+        target.beginPath(); target.moveTo(0, height * .91); target.lineTo(width, height * .91); target.stroke();
+        target.restore();
+      }
+
+      function drawMain() {
+        const asset = selectedAsset();
+        if (!asset || !state.image) return;
+        const { width, height } = frameMetrics(asset);
+        mainCanvas.width = width; mainCanvas.height = height;
+        ctx.clearRect(0, 0, width, height);
+        if ($( "onion-checkbox" ).checked && state.frame > 0) drawCrop(ctx, asset, state.frame - 1, .2);
+        drawCrop(ctx, asset, state.frame, 1);
+        if ($( "guides-checkbox" ).checked) drawGuides(ctx, width, height);
+        mainCanvas.style.width = `${Math.round(width * state.zoom)}px`;
+        mainCanvas.style.height = `${Math.round(height * state.zoom)}px`;
+        $("stage-frame").style.width = `${Math.round(width * state.zoom)}px`;
+        $("stage-frame").style.height = `${Math.round(height * state.zoom)}px`;
+      }
+
+      function renderThumb(canvas, asset, index) {
+        if (!state.image || state.selectedId !== asset.id) return;
+        const { width, height } = frameMetrics(asset);
+        canvas.width = width; canvas.height = height;
+        const thumbCtx = canvas.getContext("2d");
+        thumbCtx.clearRect(0, 0, width, height);
+        drawCrop(thumbCtx, asset, index, 1);
+      }
+
+      function renderFrameGrid() {
+        const asset = selectedAsset();
+        const grid = $("frame-grid");
+        grid.replaceChildren();
+        if (!asset || !state.image) return;
+        for (let index = 0; index < frameCount(asset); index += 1) {
+          const button = document.createElement("button");
+          button.type = "button"; button.className = "frame-button"; button.setAttribute("aria-current", String(index === state.frame));
+          button.title = `Select frame ${index + 1}`;
+          const canvas = document.createElement("canvas");
+          renderThumb(canvas, asset, index);
+          const number = document.createElement("span"); number.className = "frame-number"; number.textContent = String(index + 1).padStart(2, "0");
+          button.append(canvas, number);
+          button.addEventListener("click", () => { state.frame = index; syncUi(); });
+          grid.append(button);
+        }
+      }
+
+      function updateReadouts() {
+        const asset = selectedAsset();
+        if (!asset || !state.image) return;
+        const { width, height } = frameMetrics(asset);
+        $("selected-label").textContent = asset.label;
+        $("selected-note").textContent = asset.note || "Imported local sheet";
+        $("asset-kind-badge").textContent = asset.kind || "IMPORTED";
+        $("source-size").textContent = `${state.image.naturalWidth}×${state.image.naturalHeight}`;
+        $("frame-size").textContent = `${width}×${height}`;
+        $("atlas-size").textContent = `${asset.columns}×${asset.rows}`;
+        $("alpha-state").textContent = "PNG / live";
+        $("frame-readout").textContent = `Frame ${state.frame + 1} / ${frameCount(asset)}`;
+        $("sequence-readout").textContent = `${asset.columns} columns · ${asset.rows} rows`;
+        $("frame-scrub").max = String(frameCount(asset) - 1);
+        $("frame-scrub").value = String(state.frame);
+        $("fps-range").value = String(state.fps);
+        $("fps-output").textContent = `${state.fps} FPS`;
+        $("columns-input").value = String(asset.columns);
+        $("rows-input").value = String(asset.rows);
+        $("play-button").textContent = state.playing ? "Pause" : "Play";
+        $("load-status").textContent = `${frameCount(asset)} frames ready`;
+      }
+
+      function syncUi() { updateReadouts(); drawMain(); renderFrameGrid(); renderLibrary(); }
+
+      function renderLibrary() {
+        const list = $("asset-list"); list.replaceChildren();
+        $("asset-count").textContent = `${state.assets.length} sheet${state.assets.length === 1 ? "" : "s"}`;
+        state.assets.forEach((asset) => {
+          const button = document.createElement("button"); button.type = "button"; button.className = "asset-button"; button.setAttribute("aria-selected", String(asset.id === state.selectedId));
+          const thumb = document.createElement("span"); thumb.className = "asset-thumb";
+          const thumbCanvas = document.createElement("canvas"); thumb.append(thumbCanvas);
+          const copy = document.createElement("span"); copy.innerHTML = `<span class="asset-name"></span><span class="asset-kind"></span>`;
+          copy.querySelector(".asset-name").textContent = asset.label; copy.querySelector(".asset-kind").textContent = asset.kind || "IMPORTED";
+          const frames = document.createElement("span"); frames.className = "asset-frames"; frames.textContent = `${frameCount(asset)}f`;
+          button.append(thumb, copy, frames); button.addEventListener("click", () => selectAsset(asset.id)); list.append(button);
+          if (state.image && asset.id === state.selectedId) { thumbCanvas.width = 64; thumbCanvas.height = 64; const thumbCtx = thumbCanvas.getContext("2d"); thumbCtx.clearRect(0, 0, 64, 64); drawCrop(thumbCtx, asset, 0, 1); }
+        });
+      }
+
+      function selectAsset(id) {
+        stop(); state.selectedId = id; state.frame = 0; state.image = null; $("error-message").hidden = true;
+        const asset = selectedAsset();
+        const image = new Image();
+        image.onload = () => { state.image = image; state.fps = asset.fps || 8; $("empty-state").hidden = true; $("stage-frame").hidden = false; syncUi(); };
+        image.onerror = () => { $("error-message").hidden = false; $("error-message").textContent = `Could not load ${asset.file}. Use the local server command in the footer, or check the manifest path.`; $("stage-frame").hidden = true; $("empty-state").hidden = false; };
+        image.src = asset.file;
+      }
+
+      function stop() { state.playing = false; if (state.timer) window.clearInterval(state.timer); state.timer = null; }
+      function play() { stop(); state.playing = true; state.timer = window.setInterval(() => { const count = frameCount(selectedAsset()); state.frame = (state.frame + 1) % count; updateReadouts(); drawMain(); document.querySelectorAll(".frame-button").forEach((button, index) => button.setAttribute("aria-current", String(index === state.frame))); }, 1000 / state.fps); updateReadouts(); }
+
+      function importFiles(files) {
+        Array.from(files).filter((file) => file.type.startsWith("image/")).forEach((file, index) => {
+          const id = `imported-${Date.now()}-${index}`;
+          state.assets.push({ id, label: file.name, kind: "IMPORTED", file: URL.createObjectURL(file), columns: 1, rows: 1, fps: 8, note: "Local preview · set the atlas grid in Inspection" });
+          state.selectedId = id;
+        });
+        if (files.length) selectAsset(state.selectedId);
+      }
+
+      $("play-button").addEventListener("click", () => state.playing ? stop() || updateReadouts() : play());
+      $("previous-button").addEventListener("click", () => { stop(); const count = frameCount(selectedAsset()); state.frame = (state.frame - 1 + count) % count; syncUi(); });
+      $("next-button").addEventListener("click", () => { stop(); const count = frameCount(selectedAsset()); state.frame = (state.frame + 1) % count; syncUi(); });
+      $("frame-scrub").addEventListener("input", (event) => { stop(); state.frame = Number(event.target.value); syncUi(); });
+      $("fps-range").addEventListener("input", (event) => { state.fps = Number(event.target.value); updateReadouts(); if (state.playing) play(); });
+      $("zoom-select").addEventListener("change", (event) => { state.zoom = Number(event.target.value); drawMain(); });
+      $("guides-checkbox").addEventListener("change", drawMain);
+      $("onion-checkbox").addEventListener("change", drawMain);
+      $("background-select").addEventListener("change", (event) => $("stage-frame").className = `stage-frame is-${event.target.value}`);
+      [$("columns-input"), $("rows-input")].forEach((input) => input.addEventListener("change", (event) => { const asset = selectedAsset(); asset[input.id === "columns-input" ? "columns" : "rows"] = Math.max(1, Number(event.target.value) || 1); state.frame = Math.min(state.frame, frameCount(asset) - 1); syncUi(); }));
+      $("file-input").addEventListener("change", (event) => importFiles(event.target.files));
+      const dropzone = $("dropzone");
+      ["dragenter", "dragover"].forEach((name) => dropzone.addEventListener(name, (event) => { event.preventDefault(); dropzone.classList.add("is-dragging"); }));
+      ["dragleave", "drop"].forEach((name) => dropzone.addEventListener(name, (event) => { event.preventDefault(); dropzone.classList.remove("is-dragging"); }));
+      dropzone.addEventListener("drop", (event) => importFiles(event.dataTransfer.files));
+      document.addEventListener("keydown", (event) => { if (["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement.tagName)) return; if (event.code === "Space") { event.preventDefault(); $("play-button").click(); } if (event.key === "ArrowLeft") $("previous-button").click(); if (event.key === "ArrowRight") $("next-button").click(); if (event.key.toLowerCase() === "g") { $("guides-checkbox").click(); } if (event.key.toLowerCase() === "o") { $("onion-checkbox").click(); } });
+
+      fetch("assets/manifest.json", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error("manifest unavailable"))).then((manifest) => { if (Array.isArray(manifest) && manifest.length) { state.assets = manifest; state.selectedId = manifest[0].id; renderLibrary(); selectAsset(state.selectedId); } }).catch(() => { renderLibrary(); selectAsset(state.selectedId); });
+    </script>
+  </body>
+</html>

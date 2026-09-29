@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "elemental-action-vfx",
+  "elementId": "earth",
+  "version": 2,
+  "generatedOn": "2026-09-18",
+  "source": {
+    "method": "built-in image generation",
+    "original": "source/impact.generated.png",
+    "style": "authored Earth color; transparent hand-painted impact sprite"
+  },
+  "asset": {
+    "name": "impact",
+    "topology": "strike|bolt|field",
+    "moment": "resolve",
+    "description": "mossy ochre stone eruption with jade geomantic energy",
+    "palette": ["jade", "moss", "ochre", "umber"],
+    "alphaRequired": true,
+    "variants": [
+      { "path": "impact-512x512.png", "width": 512, "height": 512 },
+      { "path": "impact-256x256.png", "width": 256, "height": 256 },
+      { "path": "impact-128x128.png", "width": 128, "height": 128 }
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- Pins asInvoker so Windows never applies installer-detection heuristics and asks for UAC. -->
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <RootNamespace>FusionRpg.Launcher</RootNamespace>
+    <AssemblyName>FusionRpg.Launcher</AssemblyName>
+    <ApplicationTitle>FusionRpg Launcher</ApplicationTitle>
+    <AssemblyTitle>FusionRpg Launcher</AssemblyTitle>
+    <Product>FusionRpg</Product>
+    <Company>FusionRpg (hobby OSS)</Company>
+    <Authors>Lê Tú Hào</Authors>
+    <Description>FusionRpg Launcher — unsigned hobby overlay for Fusion (AGPL)</Description>
+    <Copyright>Copyright (c) 2026 Lê Tú Hào</Copyright>
+    <Version>0.1.2</Version>
+    <InformationalVersion>0.1.2</InformationalVersion>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
+    <!-- Player zip: scripts/publish_player.py uses win-x64 self-contained publish -->
+    <PublishTrimmed>false</PublishTrimmed>
+    <PublishSingleFile>false</PublishSingleFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="WPF-UI" Version="3.0.5" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
+  </ItemGroup>
+    <ItemGroup>
+    <None Update="loader-manifest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\game-profiles.json" Link="game-profiles.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="FusionRpg.Launcher.Tests" />
+  </ItemGroup>
+</Project>

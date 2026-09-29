@@ -1,0 +1,56 @@
+{
+  "$schema": "./game-profiles.schema.json",
+  "defaultProfileId": "pvzrh-3.8.1",
+  "supportPolicy": "current+previous",
+  "profiles": [
+    {
+      "id": "pvzrh-3.8.1",
+      "displayName": "PVZ Fusion 3.8.1",
+      "zombieHpWidth": "int32",
+      "setZombieArity": { "bepInEx": 4, "melonLoader": 5 },
+      "namespaceStyle": { "bepInEx": "global", "melonLoader": "Il2Cpp" },
+      "loaders": ["BepInEx", "MelonLoader"],
+      "injectorDll": {
+        "BepInEx": "FusionRpg.Injector.dll",
+        "MelonLoader": "FusionRpg.Injector.MelonLoader.dll"
+      },
+      "dropRelative": {
+        "BepInEx": "DropIntoGame/pvzrh-3.8.1/BepInEx",
+        "MelonLoader": "DropIntoGame/pvzrh-3.8.1/MelonLoader"
+      },
+      "fingerprints": [
+        {
+          "label": "FULL MOD TOOL Bep / Blooms Melon (shared GameAssembly)",
+          "gameAssemblyLength": 47964672,
+          "assemblyCSharpPaths": [
+            "BepInEx/interop/Assembly-CSharp.dll",
+            "MelonLoader/Il2CppAssemblies/Assembly-CSharp.dll"
+          ],
+          "assemblyCSharpLengths": [8316416, 7772672]
+        }
+      ]
+    },
+    {
+      "id": "pvzrh-3.9",
+      "displayName": "PVZ Fusion 3.9 Melon",
+      "zombieHpWidth": "int64",
+      "setZombieArity": { "bepInEx": null, "melonLoader": 4 },
+      "namespaceStyle": { "bepInEx": null, "melonLoader": "Il2Cpp" },
+      "loaders": ["MelonLoader"],
+      "injectorDll": {
+        "MelonLoader": "FusionRpg.Injector.MelonLoader.39.dll"
+      },
+      "dropRelative": {
+        "MelonLoader": "DropIntoGame/pvzrh-3.9/MelonLoader"
+      },
+      "fingerprints": [
+        {
+          "label": "PVZ-Fusion-3.9_MelonLoader",
+          "gameAssemblyLength": 57717248,
+          "assemblyCSharpPaths": ["MelonLoader/Il2CppAssemblies/Assembly-CSharp.dll"],
+          "assemblyCSharpLengths": [8405504]
+        }
+      ]
+    }
+  ]
+}

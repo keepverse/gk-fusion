@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>FusionRpg.Tools.LawnCombatObserver</RootNamespace>
+    <AssemblyName>LawnCombatObserver</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- lawn-combat-observer (Task 0, lawn-combat-wire "Phase 0 — the ruler"): the same deliberate
+         divergence from ProveHubCombat/ProveAptitude's shape that tools/ProveLiveProbe already
+         established — real HTTP against a running FusionRpg.Server, never RpgStore.InMemory(). Only
+         FusionRpg.Contracts is needed (EventEnvelope, the wire shape /api/events already carries) —
+         unlike ProveLiveProbe this tool makes no POST that needs a Server-declared nested request
+         type: every call here is either a GET, or a POST with an empty/trivial body
+         (/api/debug/snapshot takes none), so there is nothing to reference FusionRpg.Server for. -->
+    <ProjectReference Include="$(GkCoreRoot)src\FusionRpg.Contracts\FusionRpg.Contracts.csproj" />
+  </ItemGroup>
+</Project>

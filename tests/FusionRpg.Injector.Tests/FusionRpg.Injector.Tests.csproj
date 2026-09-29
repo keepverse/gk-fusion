@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>FusionRpg.Injector.Tests</RootNamespace>
+    <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
+  </PropertyGroup>
+  <!--
+    E35 (spec-match-modify.md §2.3/§2.6): CheatState.SetLong/LVal and the scoped match-end restore
+    (MatchModifyWrites, EffectRuntime.NotifyMatchEnd) live in FusionRpg.Injector, whose files are
+    entangled with the rest of the injector graph (RpgHost, ActorHub, GameHooks) rather than being
+    standalone like InjectorDerivedOverride.cs (see FusionRpg.Core.Tests' own Compile-Include exception
+    for that file), so this project references the real host build, not individual files.
+
+    This means it needs the same interop DLLs FusionRpg.Injector.BepInEx.csproj needs to compile at
+    all: set $env:FUSIONRPG_GAME_DIR to a folder with BepInEx\core and BepInEx\interop before building
+    or running this project. It is NOT part of ci.yml's ten managed projects for the same reason
+    FusionRpg.Injector itself is not (docs/architecture/effect-atom/spec-match-modify.md §4 / AGENTS.md
+    "Injector not built by CI"); CI has no game directory. Local dev: same $env:FUSIONRPG_GAME_DIR
+    already documented in AGENTS.md's "Build and test (quick)" section.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\FusionRpg.Injector.BepInEx\FusionRpg.Injector.BepInEx.csproj" />
+  </ItemGroup>
+</Project>

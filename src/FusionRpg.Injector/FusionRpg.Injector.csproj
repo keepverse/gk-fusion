@@ -1,0 +1,12 @@
+<!-- Compatibility shim: prefer building FusionRpg.Injector.BepInEx.csproj directly. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FusionRpg.Injector.BepInEx\FusionRpg.Injector.BepInEx.csproj" />
+  </ItemGroup>
+</Project>

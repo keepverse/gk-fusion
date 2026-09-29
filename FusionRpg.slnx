@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FusionRpg.Injector.BepInEx/FusionRpg.Injector.BepInEx.csproj" />
+    <Project Path="src/FusionRpg.Injector.MelonLoader/FusionRpg.Injector.MelonLoader.csproj" />
+    <Project Path="src/FusionRpg.Injector.MelonLoader.39/FusionRpg.Injector.MelonLoader.39.csproj" />
+    <Project Path="src/FusionRpg.Launcher/FusionRpg.Launcher.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FusionRpg.Launcher.Tests/FusionRpg.Launcher.Tests.csproj" />
+  </Folder>
+</Solution>

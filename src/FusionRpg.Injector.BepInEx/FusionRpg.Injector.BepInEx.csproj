@@ -1,0 +1,216 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>FusionRpg.Injector</AssemblyName>
+    <RootNamespace>FusionRpg.Injector</RootNamespace>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+    <!-- Matrix cell: pvzrh-3.8.1 x BepInEx (the cell table lives in Directory.Build.props, which
+         also owns the pack-root rules). $(GameDir)/$(FUSIONRPG_GAME_DIR*) are read THERE, not here,
+         so one rule serves all three hosts; the repo-parent guess below is this project's own last
+         resort, kept last. -->
+    <BepGameDir Condition="'$(BepGameDir)' == ''">$(MSBuildThisFileDirectory)..\..\..</BepGameDir>
+    <GameDir>$(BepGameDir)</GameDir>
+    <OutputPath Condition="'$(OutputPath)' == ''">$(BepGameDir)\BepInEx\plugins\FusionRpg\</OutputPath>
+    <AssemblyTitle>FusionRpg Injector</AssemblyTitle>
+    <Product>FusionRpg</Product>
+    <Company>FusionRpg (hobby OSS)</Company>
+    <Authors>Lê Tú Hào</Authors>
+    <Description>FusionRpg BepInEx 6 IL2CPP host — game-side capture and apply (AGPL hobby project)</Description>
+    <Copyright>Copyright (c) 2026 Lê Tú Hào</Copyright>
+    <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
+    <Version>0.1.2</Version>
+    <InformationalVersion>0.1.2</InformationalVersion>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Shared game logic (host-agnostic). Host entry is Plugin.cs in this project. -->
+    <Compile Include="..\FusionRpg.Injector\**\*.cs"
+             Exclude="..\FusionRpg.Injector\obj\**;..\FusionRpg.Injector\bin\**;..\FusionRpg.Injector\Bridges\**" />
+    <!-- Bridges are chosen by the CELL, never by FUSIONRPG_GAME_PROFILE: that variable used to
+         re-point this host at Bridges/pvzrh-3.9, and 3.8.1 interop cannot satisfy an Int64 bridge. -->
+    <Compile Include="..\FusionRpg.Injector\Bridges\$(FusionRpgCellProfile)\**\*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(GkCoreRoot)src\FusionRpg.Contracts\FusionRpg.Contracts.csproj" />
+    <ProjectReference Include="$(GkCoreRoot)src\FusionRpg.Core\FusionRpg.Core.csproj" />
+    <ProjectReference Include="$(GkCoreRoot)src\FusionRpg.CheatCore\FusionRpg.CheatCore.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.36" />
+    <!-- In-game overlay host (overlayHost=injector). Ships the loader shim only; Chromium is the machine-wide Evergreen runtime. -->
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- tunables-ssot.md §7.2: the injector loads data/tuning/ and injects it (RpgHost.Initialize);
+         Core never reads a file. Copied next to the built DLL, same as the game-side plugin itself. -->
+    <Content Include="$(GkCoreRoot)data\tuning\**\*.json">
+      <Link>data\tuning\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <!-- catalog-runtime's Injector-side flip (seed-to-concrete, 2026-09-06) — see the MelonLoader.39
+         project's own comment for the full rationale; identical rule, kept in sync across all three hosts. -->
+    <Content Include="$(GkDataRoot)packs\fusion\data\generated\creatures\*.json" Exclude="$(GkDataRoot)packs\fusion\data\generated\creatures\_*.json">
+      <Link>data\generated\creatures\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <!-- RpgHost.Initialize reads these two authored registries straight off the plugin dir; see
+         the MelonLoader.39 project's own comment for the incident this fixes. Identical rule, all
+         three hosts. -->
+    <Content Include="$(GkDataRoot)packs\fusion\data\seed\dungeon\_registry\*.json">
+      <Link>data\seed\dungeon\_registry\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(GkDataRoot)packs\fusion\data\seed\commanders\_registry\*.json">
+      <Link>data\seed\commanders\_registry\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <!-- identity-rename T12: the commander registry names its antagonist by token, so the
+         injector resolves it through the lead-names registry beside the plugin. -->
+    <Content Include="$(GkDataRoot)packs\fusion\data\seed\narrative\_registry\*.json">
+      <Link>data\seed\narrative\_registry\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <!-- Shared generated Rift art: copied beside every supported injector host, never loaded from the web build. -->
+    <Content Include="$(GkWebRoot)web\fusion-rpg-web\public\assets\onboarding\rift-portal-pvz-style.png">
+      <Link>assets\onboarding\rift-portal-pvz-style.png</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\FusionRpg.Injector\Assets\actor-hud-elements\**\*.png">
+      <Link>assets\actor-hud-elements\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <EmbeddedResource Include="..\FusionRpg.Injector\Assets\elemental-action-vfx\earth\v2\impact-128x128.png">
+      <LogicalName>FusionRpg.Injector.Assets.ElementalActionVfx.Earth.V2.impact-128x128.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\FusionRpg.Injector\Assets\elemental-action-vfx\earth\v2\impact-256x256.png">
+      <LogicalName>FusionRpg.Injector.Assets.ElementalActionVfx.Earth.V2.impact-256x256.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\FusionRpg.Injector\Assets\elemental-action-vfx\earth\v2\impact-512x512.png">
+      <LogicalName>FusionRpg.Injector.Assets.ElementalActionVfx.Earth.V2.impact-512x512.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\FusionRpg.Injector\Assets\elemental-action-vfx\earth\charge-256x256.png">
+      <LogicalName>FusionRpg.Injector.Assets.ElementalActionVfx.Earth.charge-256x256.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\FusionRpg.Injector\Assets\elemental-action-vfx\earth\travel-256x64.png">
+      <LogicalName>FusionRpg.Injector.Assets.ElementalActionVfx.Earth.travel-256x64.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>$(BepGameDir)\BepInEx\core\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="BepInEx.Core">
+      <HintPath>$(BepGameDir)\BepInEx\core\BepInEx.Core.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="BepInEx.Unity.IL2CPP">
+      <HintPath>$(BepGameDir)\BepInEx\core\BepInEx.Unity.IL2CPP.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppInterop.Runtime">
+      <HintPath>$(BepGameDir)\BepInEx\core\Il2CppInterop.Runtime.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppInterop.Common">
+      <HintPath>$(BepGameDir)\BepInEx\core\Il2CppInterop.Common.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(BepGameDir)\BepInEx\interop\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2Cppmscorlib">
+      <HintPath>$(BepGameDir)\BepInEx\interop\Il2Cppmscorlib.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppSystem.Core">
+      <HintPath>$(BepGameDir)\BepInEx\interop\Il2CppSystem.Core.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(BepGameDir)\BepInEx\interop\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(BepGameDir)\BepInEx\interop\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>$(BepGameDir)\BepInEx\interop\UnityEngine.UIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(BepGameDir)\BepInEx\interop\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>$(BepGameDir)\BepInEx\interop\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>$(BepGameDir)\BepInEx\interop\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>$(BepGameDir)\BepInEx\interop\Unity.TextMeshPro.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(BepGameDir)\BepInEx\interop\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>$(BepGameDir)\BepInEx\interop\UnityEngine.ImageConversionModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>$(BepGameDir)\BepInEx\interop\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!--
+    The WebView2 package ships WPF/WinForms wrappers, XML docs and arm64/x86 natives. We use only
+    Core plus the x64 loader, and everything here lands in the player's game folder, so drop the
+    rest rather than shipping ~1.1 MB of unused payload into a modded IL2CPP install.
+  -->
+  <Target Name="TrimWebView2Payload" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths
+        Remove="@(ReferenceCopyLocalPaths)"
+        Condition="'%(Extension)' == '.xml' AND $([System.String]::new('%(Filename)').StartsWith('Microsoft.Web.WebView2'))" />
+      <ReferenceCopyLocalPaths
+        Remove="@(ReferenceCopyLocalPaths)"
+        Condition="'%(Filename)' == 'Microsoft.Web.WebView2.Wpf' OR '%(Filename)' == 'Microsoft.Web.WebView2.WinForms'" />
+    </ItemGroup>
+  </Target>
+
+  <!--
+    RID-specific natives resist item-group filtering (they are injected late by the SDK), so sweep
+    them from the output after the copy. The game is win-x64 only; arm64/x86 loaders would just sit
+    in the player's plugin folder looking like something they should worry about.
+  -->
+  <Target Name="TrimWebView2Natives" AfterTargets="Build">
+    <!--
+      Flatten the x64 loader next to the managed DLL. publish-player copies the plugin folder with
+      a top-level-files-only sweep, so anything under runtimes\ silently misses the player pack and
+      the in-game view degrades to "loader not found". Flat also matches where a reader expects it.
+    -->
+    <ItemGroup>
+      <_Wv2X64Loader Include="@(RuntimeTargetsCopyLocalItems)"
+                     Condition="'%(Filename)%(Extension)' == 'WebView2Loader.dll' AND $([System.String]::new('%(Identity)').Contains('win-x64'))" />
+    </ItemGroup>
+    <!-- Sourced from the package, not from $(OutputPath): an incremental build may not re-copy natives. -->
+    <Copy SourceFiles="@(_Wv2X64Loader)" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+    <ItemGroup>
+      <_Wv2Runtimes Include="$(OutputPath)runtimes\**\*" />
+    </ItemGroup>
+    <Delete Files="@(_Wv2Runtimes)" ContinueOnError="true" />
+    <RemoveDir Directories="$(OutputPath)runtimes" ContinueOnError="true" />
+  </Target>
+</Project>

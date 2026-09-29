@@ -1,0 +1,110 @@
+<Project>
+  <!-- kvsplit: workspace repo roots. Default = sibling folder in the Keepverse workspace. -->
+  <PropertyGroup>
+    <GkWorkflowRoot Condition="'$(GkWorkflowRoot)' == ''">$(MSBuildThisFileDirectory)..\</GkWorkflowRoot>
+    <GkCoreRoot Condition="'$(GkCoreRoot)' == ''">$(MSBuildThisFileDirectory)..\gk-core\</GkCoreRoot>
+    <GkForgeRoot Condition="'$(GkForgeRoot)' == ''">$(MSBuildThisFileDirectory)..\gk-forge\</GkForgeRoot>
+    <GkWebRoot Condition="'$(GkWebRoot)' == ''">$(MSBuildThisFileDirectory)..\gk-web\</GkWebRoot>
+    <GkTestsRoot Condition="'$(GkTestsRoot)' == ''">$(MSBuildThisFileDirectory)..\gk-tests\</GkTestsRoot>
+    <GkFusionRoot Condition="'$(GkFusionRoot)' == ''">$(MSBuildThisFileDirectory)..\gk-fusion\</GkFusionRoot>
+    <GkContentRoot Condition="'$(GkContentRoot)' == ''">$(MSBuildThisFileDirectory)..\gk-content\</GkContentRoot>
+    <GkDataRoot Condition="'$(GkDataRoot)' == ''">$(MSBuildThisFileDirectory)..\gk-data\</GkDataRoot>
+    <GkAssetsRoot Condition="'$(GkAssetsRoot)' == ''">$(MSBuildThisFileDirectory)..\gk-assets\</GkAssetsRoot>
+  </PropertyGroup>
+
+  <!--
+    Apply the repo-wide test hang guard (test.runsettings) to every test project, so a
+    local `dotnet test` cannot block forever with no report. CI passes blame-hang
+    explicitly; this makes the same protection the default for everyone else.
+
+    Gated to *.Tests so non-test projects (src/, tools/) are untouched.
+    RunSettingsFilePath is only read by the VSTest targets, so it does not affect builds.
+  -->
+  <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
+    <RunSettingsFilePath>$(MSBuildThisFileDirectory)test.runsettings</RunSettingsFilePath>
+  </PropertyGroup>
+
+  <!-- Keepverse resolver contract (tasks/keepverse-split-plan.md): every test project resolves content,
+       core and workspace paths through one shared helper instead of a private repo-root walk. -->
+  <ItemGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
+    <Compile Include="$(GkCoreRoot)tests\Shared\KeepverseRoots.cs" Link="Shared\KeepverseRoots.cs" />
+  </ItemGroup>
+
+  <!--
+    ── Injector build matrix: GameProfile × LoaderHost → one compiled DLL ────────────────────────────
+    docs/architecture/game-versioning.md §Model. ONE host project compiles ONE cell, so a host is
+    not re-targetable at build time and a pack belongs to exactly one cell. Three consequences, all
+    load-bearing. This block is the only place the pack rules live; the host projects read them.
+
+      * The cell is declared once, below, instead of per project. A host reads its own row:
+        $(FusionRpgCellProfile) picks Bridges/<cell>, $(BepGameDir)/$(MlGameDir) pick the interop
+        references. FUSIONRPG_GAME_PROFILE deliberately no longer reaches MSBuild — it is the
+        script-layer "which host do I build" selector, and it used to re-point the BepInEx and
+        3.8.1 MelonLoader hosts at Bridges/pvzrh-3.9, i.e. a 3.8.1 interop met by an Int64 bridge.
+
+      * A pack root is therefore named per CELL, next to the cell it belongs to: the profile id
+        upper-cased with '-' and '.' → '_' (pvzrh-3.8.1 → FUSIONRPG_ML_GAMEDIR_PVZRH_3_8_1). The
+        loader-wide roots (FUSIONRPG_GAME_DIR / FUSIONRPG_ML_GAMEDIR) predate the second MelonLoader
+        cell and cannot say WHICH cell their pack is for, so they feed a loader only while that
+        loader's cell list IS this cell — BepInEx today; MelonLoader has two cells and does not.
+
+      * An explicit -p:GameDir / -p:MlGameDir outranks both: a caller that already knows which cell
+        it is building may name that cell's pack outright (deploy-play.py, publish_player.py and
+        guard-injector-compile.py all do). Directory.Build.targets then fingerprints whatever
+        resolved and refuses a pack that belongs to another cell.
+
+    A cell with no root resolves nothing, and its project takes its own skip path, which prints at
+    high importance and is never counted as a compiled host. So one environment that declares the
+    legal packs per cell builds the whole solution, and one that does not says so per cell instead
+    of failing somewhere inside a bridge.
+  -->
+  <PropertyGroup>
+    <!-- Row: the cell this host project compiles, and the env var that names that cell's pack.
+         game-versioning.md "Author process" step 3: a new cell is an explicit edit here plus the
+         host project that serves it. Never a silent retarget. Empty for every other project. -->
+    <FusionRpgCellProfile Condition="'$(MSBuildProjectName)' == 'FusionRpg.Injector.BepInEx'">pvzrh-3.8.1</FusionRpgCellProfile>
+    <FusionRpgCellLoader Condition="'$(MSBuildProjectName)' == 'FusionRpg.Injector.BepInEx'">BepInEx</FusionRpgCellLoader>
+    <FusionRpgCellPackVar Condition="'$(MSBuildProjectName)' == 'FusionRpg.Injector.BepInEx'">FUSIONRPG_GAME_DIR_PVZRH_3_8_1</FusionRpgCellPackVar>
+    <FusionRpgCellPackDirEnv Condition="'$(MSBuildProjectName)' == 'FusionRpg.Injector.BepInEx'">$(FUSIONRPG_GAME_DIR_PVZRH_3_8_1)</FusionRpgCellPackDirEnv>
+
+    <FusionRpgCellProfile Condition="'$(MSBuildProjectName)' == 'FusionRpg.Injector.MelonLoader'">pvzrh-3.8.1</FusionRpgCellProfile>
+    <FusionRpgCellLoader Condition="'$(MSBuildProjectName)' == 'FusionRpg.Injector.MelonLoader'">MelonLoader</FusionRpgCellLoader>
+    <FusionRpgCellPackVar Condition="'$(MSBuildProjectName)' == 'FusionRpg.Injector.MelonLoader'">FUSIONRPG_ML_GAMEDIR_PVZRH_3_8_1</FusionRpgCellPackVar>
+    <FusionRpgCellPackDirEnv Condition="'$(MSBuildProjectName)' == 'FusionRpg.Injector.MelonLoader'">$(FUSIONRPG_ML_GAMEDIR_PVZRH_3_8_1)</FusionRpgCellPackDirEnv>
+
+    <FusionRpgCellProfile Condition="'$(MSBuildProjectName)' == 'FusionRpg.Injector.MelonLoader.39'">pvzrh-3.9</FusionRpgCellProfile>
+    <FusionRpgCellLoader Condition="'$(MSBuildProjectName)' == 'FusionRpg.Injector.MelonLoader.39'">MelonLoader</FusionRpgCellLoader>
+    <FusionRpgCellPackVar Condition="'$(MSBuildProjectName)' == 'FusionRpg.Injector.MelonLoader.39'">FUSIONRPG_ML_GAMEDIR_PVZRH_3_9</FusionRpgCellPackVar>
+    <FusionRpgCellPackDirEnv Condition="'$(MSBuildProjectName)' == 'FusionRpg.Injector.MelonLoader.39'">$(FUSIONRPG_ML_GAMEDIR_PVZRH_3_9)</FusionRpgCellPackDirEnv>
+
+    <!-- Every cell its loader host has to serve. This list is what makes reading a loader-wide
+         root safe: the count of cells is the count of packs that loader needs. -->
+    <FusionRpgLoaderCells Condition="'$(FusionRpgCellLoader)' == 'BepInEx'">pvzrh-3.8.1</FusionRpgLoaderCells>
+    <FusionRpgLoaderCells Condition="'$(FusionRpgCellLoader)' == 'MelonLoader'">pvzrh-3.8.1;pvzrh-3.9</FusionRpgLoaderCells>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(FusionRpgCellProfile)' != ''">
+    <!-- The loader-wide root is assignable only while this cell is the loader's ONLY cell. A cell
+         table that forgot a row degrades to "this cell needs its own root" (a loud skip), never to
+         a wrong pack, so a partial edit fails safe. -->
+    <FusionRpgLoaderPackVarAssignable Condition="'$(FusionRpgLoaderCells)' == '$(FusionRpgCellProfile)'">true</FusionRpgLoaderPackVarAssignable>
+    <!-- What the caller asked for, kept only to report a disagreement. The cell wins: a global
+         -p:GameProfile cannot move a bridge, and FUSIONRPG_GAME_PROFILE is never read as a profile. -->
+    <FusionRpgRequestedProfile>$(GameProfile)</FusionRpgRequestedProfile>
+    <FusionRpgRequestedProfile Condition="'$(FusionRpgRequestedProfile)' == ''">$(FUSIONRPG_GAME_PROFILE)</FusionRpgRequestedProfile>
+  </PropertyGroup>
+
+  <!-- Pack root for this cell: an explicit -p: first, then the cell's own env var, then the
+       loader-wide root while it is assignable. Empty is a legitimate result — the project then
+       skips loudly instead of guessing which cell a shared pack belongs to. -->
+  <PropertyGroup Condition="'$(FusionRpgCellLoader)' == 'BepInEx'">
+    <BepGameDir Condition="'$(BepGameDir)' == '' and '$(GameDir)' != ''">$(GameDir)</BepGameDir>
+    <BepGameDir Condition="'$(BepGameDir)' == ''">$(FusionRpgCellPackDirEnv)</BepGameDir>
+    <BepGameDir Condition="'$(BepGameDir)' == '' and '$(FusionRpgLoaderPackVarAssignable)' == 'true'">$(FUSIONRPG_GAME_DIR)</BepGameDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(FusionRpgCellLoader)' == 'MelonLoader'">
+    <MlGameDir Condition="'$(MlGameDir)' == ''">$(FusionRpgCellPackDirEnv)</MlGameDir>
+    <MlGameDir Condition="'$(MlGameDir)' == '' and '$(FusionRpgLoaderPackVarAssignable)' == 'true'">$(FUSIONRPG_ML_GAMEDIR)</MlGameDir>
+  </PropertyGroup>
+
+</Project>

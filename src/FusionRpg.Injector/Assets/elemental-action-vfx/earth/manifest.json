@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "kind": "elemental-action-vfx",
+  "elementId": "earth",
+  "generatedOn": "2026-09-18",
+  "source": {
+    "method": "built-in image generation",
+    "style": "transparent monochrome alpha masks; runtime tint supplies the catalog element colour",
+    "originals": "source/*.generated.png"
+  },
+  "assets": [
+    {
+      "topology": "strike|bolt|field",
+      "moment": "resolve",
+      "name": "impact",
+      "description": "outward tectonic fracture with stone chips",
+      "variants": ["impact-512x512.png", "impact-256x256.png", "impact-128x128.png"]
+    },
+    {
+      "topology": "any",
+      "moment": "prepare",
+      "name": "charge",
+      "description": "inward-floating stone plates around a geomantic core",
+      "variants": ["charge-512x512.png", "charge-256x256.png", "charge-128x128.png"]
+    },
+    {
+      "topology": "bolt|shift",
+      "moment": "travel",
+      "name": "travel",
+      "description": "left-to-right shard wedge with a tapered dust wake",
+      "variants": ["travel-512x128.png", "travel-256x64.png", "travel-128x32.png"]
+    }
+  ]
+}

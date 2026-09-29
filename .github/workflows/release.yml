@@ -1,0 +1,394 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # A release is a declared CI superset, not a second hand-maintained partial test list. This
+  # reusable call executes every gate in ci.yml at the tag's exact checked-out commit.
+  ci-superset:
+    name: CI superset — native/content/web/E2E/Server/importer/guards
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+
+  publish:
+    needs: ci-superset
+    runs-on: windows-latest
+    # ci.yml's own 2026-09-06 fix, same reason: a real, reproduced .NET process-redirection deadlock
+    # (CreatureSpeciesImportCliTests.cs/RealColdProcessTests.cs) can hang a dotnet test call with no
+    # diagnostic — bound the job so a future hang fails fast instead of idling toward GitHub Actions'
+    # own 6-hour default.
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Release and the reusable CI job inspect the complete tag range, not a shallow tip.
+          fetch-depth: 0
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            6.0.x
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/fusion-rpg-web/package-lock.json
+
+      - name: Resolve complete release verification range
+        id: release-range
+        shell: pwsh
+        run: |
+          $event = Get-Content $env:GITHUB_EVENT_PATH -Raw | ConvertFrom-Json
+          $head = [string]$event.after
+          if ([string]::IsNullOrWhiteSpace($head) -or $head -match '^0+$') { $head = $env:GITHUB_SHA }
+          if ([string]::IsNullOrWhiteSpace($head) -or $head -match '^0+$') { throw "release cannot resolve the tag SHA" }
+          $base = [string]$event.before
+          if ([string]::IsNullOrWhiteSpace($base) -or $base -match '^0+$') {
+            $defaultBranch = [string]$event.repository.default_branch
+            if ([string]::IsNullOrWhiteSpace($defaultBranch)) { $defaultBranch = 'main' }
+            $base = (git merge-base $head "origin/$defaultBranch").Trim()
+            if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($base)) { throw "release cannot resolve an explicit base for $head" }
+          }
+          $range = "$base..$head"
+          "range=$range" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          "FUSIONRPG_RELEASE_RANGE=$range" | Out-File -FilePath $env:GITHUB_ENV -Append
+          Write-Host "Release verification range: $range"
+
+      - name: CI superset contract
+        shell: pwsh
+        run: |
+          $ci = Get-Content .github/workflows/ci.yml -Raw
+          $release = Get-Content .github/workflows/release.yml -Raw
+          if ($ci -notmatch '(?m)^\s{2}workflow_call:\s*$') { throw "CI is not callable as a reusable workflow" }
+          if ($release -notmatch '(?m)^\s{4}uses:\s*\./\.github/workflows/ci\.yml\s*$') { throw "Release does not call the reusable CI workflow" }
+          if ($release -notmatch '(?m)^\s{4}needs:\s*ci-superset\s*$') { throw "Publish does not depend on the CI superset job" }
+          Write-Host "CI superset contract: release invokes the complete reusable CI workflow."
+
+      - name: Release session boundary
+        shell: pwsh
+        env:
+          FUSIONRPG_REVIEW_SESSION: ${{ vars.FUSIONRPG_REVIEW_SESSION }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:FUSIONRPG_REVIEW_SESSION)) {
+            throw "FUSIONRPG_REVIEW_SESSION is required for a release; a tag cannot publish without a reviewed session fence"
+          }
+          if ($env:FUSIONRPG_RELEASE_RANGE -notmatch '^(.+)\.\.([^.]+)$') { throw "release range is malformed" }
+          $sessionArgs = @('--ci', '--session', $env:FUSIONRPG_REVIEW_SESSION, '--diff-base-ref', $Matches[1], '--diff-head-ref', $Matches[2], '--require-diff-fence')
+          python .\scripts\session-boundary-check.py @sessionArgs
+          if ($LASTEXITCODE -ne 0) { throw "release session-boundary check failed" }
+
+      - name: Release generated-seed guard
+        shell: pwsh
+        run: |
+          python .\scripts\guard-generated-seed.py --require-explicit-range --range $env:FUSIONRPG_RELEASE_RANGE
+          if ($LASTEXITCODE -ne 0) { throw "release generated-seed guard failed" }
+
+      - name: Release guard runner (full CI catalog)
+        shell: pwsh
+        run: |
+          python .\scripts\run_guards.py --tier ci --ci-range $env:FUSIONRPG_RELEASE_RANGE
+          if ($LASTEXITCODE -ne 0) { throw "release run_guards.py --tier ci failed" }
+
+      - name: Release web dependency lock
+        working-directory: web/fusion-rpg-web
+        shell: pwsh
+        run: |
+          if (-not (Test-Path package-lock.json)) { throw "web package-lock.json is required for release" }
+          npm ci
+          if ($LASTEXITCODE -ne 0) { throw "release npm ci failed" }
+
+      - name: Unit tests (pre-publish)
+        shell: pwsh
+        run: |
+          # Each call checks its OWN exit code (fixed 2026-09-19). Before that, four `dotnet test`
+          # lines ran with no exit check between them, so only the Launcher line decided the step —
+          # Core.Tests, Data.Tests or Guard.Tests could fail and the release still published (the
+          # same masking defect ci.yml:124-129 documents from a real CI run). `WorkflowExitCheckTests`
+          # is the standing guard over both workflows.
+          # --blame-hang-timeout aligned 5min -> 10min: ci.yml:117-122 states the value must match
+          # test.runsettings' TestTimeout (10min); the release gate was the one place it did not.
+          #
+          # core-split-wiring E5 (TVB5.7): the release gate lists the Core test projects with the same
+          # lines as ci.yml, manifest order with the residual LAST. BalanceGuard lines stay in ci.yml
+          # only (W6's filter set is a ci.yml contract); this gate runs each project unfiltered.
+          dotnet test tests/FusionRpg.Core.AchievementTitlesTuningTests.Tests/FusionRpg.Core.AchievementTitlesTuningTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.AchievementTitlesTuningTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.ActorHub.Tests/FusionRpg.Core.ActorHub.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.ActorHub.Tests failed" }
+          dotnet test tests/FusionRpg.Core.ActorSurface.Tests/FusionRpg.Core.ActorSurface.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.ActorSurface.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Atoms.Tests/FusionRpg.Core.Atoms.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Atoms.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Aura.Tests/FusionRpg.Core.Aura.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Aura.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Balance.Tests/FusionRpg.Core.Balance.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Balance.Tests failed" }
+          dotnet test tests/FusionRpg.Core.BoardProjectionTests.Tests/FusionRpg.Core.BoardProjectionTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.BoardProjectionTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.CapPolicyTests.Tests/FusionRpg.Core.CapPolicyTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.CapPolicyTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.ClassSystem.Tests/FusionRpg.Core.ClassSystem.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.ClassSystem.Tests failed" }
+          dotnet test tests/FusionRpg.Core.CombatCounterTests.Tests/FusionRpg.Core.CombatCounterTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.CombatCounterTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.CombatDotTests.Tests/FusionRpg.Core.CombatDotTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.CombatDotTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.CombatFanoutTests.Tests/FusionRpg.Core.CombatFanoutTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.CombatFanoutTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.CombatHitEmitPolicyTests.Tests/FusionRpg.Core.CombatHitEmitPolicyTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.CombatHitEmitPolicyTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Commanders.Tests/FusionRpg.Core.Commanders.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Commanders.Tests failed" }
+          dotnet test tests/FusionRpg.Core.DamageFxPaletteTests.Tests/FusionRpg.Core.DamageFxPaletteTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.DamageFxPaletteTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Diagnostics.Tests/FusionRpg.Core.Diagnostics.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Diagnostics.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Dungeon.Tests/FusionRpg.Core.Dungeon.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Dungeon.Tests failed" }
+          dotnet test tests/FusionRpg.Core.EffectClock.Tests/FusionRpg.Core.EffectClock.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.EffectClock.Tests failed" }
+          dotnet test tests/FusionRpg.Core.EffectEventAdapterCoreTests.Tests/FusionRpg.Core.EffectEventAdapterCoreTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.EffectEventAdapterCoreTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.EffectGrantSessionRecorderTests.Tests/FusionRpg.Core.EffectGrantSessionRecorderTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.EffectGrantSessionRecorderTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.EffectGrantSessionTests.Tests/FusionRpg.Core.EffectGrantSessionTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.EffectGrantSessionTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.EffectOfflineKitTests.Tests/FusionRpg.Core.EffectOfflineKitTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.EffectOfflineKitTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.EffectPluginHostTests.Tests/FusionRpg.Core.EffectPluginHostTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.EffectPluginHostTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.EffectPluginLifecycleTests.Tests/FusionRpg.Core.EffectPluginLifecycleTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.EffectPluginLifecycleTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.EffectScenarioRunnerTests.Tests/FusionRpg.Core.EffectScenarioRunnerTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.EffectScenarioRunnerTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Effects.Tests/FusionRpg.Core.Effects.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Effects.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Events.Tests/FusionRpg.Core.Events.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Events.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Expeditions.Tests/FusionRpg.Core.Expeditions.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Expeditions.Tests failed" }
+          dotnet test tests/FusionRpg.Core.GameProfileConstantsTests.Tests/FusionRpg.Core.GameProfileConstantsTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.GameProfileConstantsTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Hud.Tests/FusionRpg.Core.Hud.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Hud.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Items.Tests/FusionRpg.Core.Items.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Items.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Lawn.Tests/FusionRpg.Core.Lawn.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Lawn.Tests failed" }
+          dotnet test tests/FusionRpg.Core.LawnCoordMathTests.Tests/FusionRpg.Core.LawnCoordMathTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.LawnCoordMathTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Match.Tests/FusionRpg.Core.Match.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Match.Tests failed" }
+          dotnet test tests/FusionRpg.Core.MatchAdmitTests.Tests/FusionRpg.Core.MatchAdmitTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.MatchAdmitTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.MatchInjectContractTests.Tests/FusionRpg.Core.MatchInjectContractTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.MatchInjectContractTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.MatchRuntimeTests.Tests/FusionRpg.Core.MatchRuntimeTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.MatchRuntimeTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.MatchValidatorTests.Tests/FusionRpg.Core.MatchValidatorTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.MatchValidatorTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Notify.Tests/FusionRpg.Core.Notify.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Notify.Tests failed" }
+          dotnet test tests/FusionRpg.Core.OnboardingCheckpointEvaluatorTests.Tests/FusionRpg.Core.OnboardingCheckpointEvaluatorTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.OnboardingCheckpointEvaluatorTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Overlay.Tests/FusionRpg.Core.Overlay.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Overlay.Tests failed" }
+          dotnet test tests/FusionRpg.Core.OverlayApplyGuardTests.Tests/FusionRpg.Core.OverlayApplyGuardTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.OverlayApplyGuardTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.OverlayProcTests.Tests/FusionRpg.Core.OverlayProcTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.OverlayProcTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.PassiveTree.Tests/FusionRpg.Core.PassiveTree.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.PassiveTree.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Power.Tests/FusionRpg.Core.Power.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Power.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Progression.Tests/FusionRpg.Core.Progression.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Progression.Tests failed" }
+          dotnet test tests/FusionRpg.Core.PvzActivityRollupBuilderTests.Tests/FusionRpg.Core.PvzActivityRollupBuilderTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.PvzActivityRollupBuilderTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.PvzStatsApplyGateTests.Tests/FusionRpg.Core.PvzStatsApplyGateTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.PvzStatsApplyGateTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.PvzStatsSheetComposerTests.Tests/FusionRpg.Core.PvzStatsSheetComposerTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.PvzStatsSheetComposerTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.RpgProgressionBalanceTests.Tests/FusionRpg.Core.RpgProgressionBalanceTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.RpgProgressionBalanceTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.RpgXpApplyTests.Tests/FusionRpg.Core.RpgXpApplyTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.RpgXpApplyTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.RpgXpAwardMapTests.Tests/FusionRpg.Core.RpgXpAwardMapTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.RpgXpAwardMapTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Saves.Tests/FusionRpg.Core.Saves.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Saves.Tests failed" }
+          dotnet test tests/FusionRpg.Core.SimEngineMatchIsolationTests.Tests/FusionRpg.Core.SimEngineMatchIsolationTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.SimEngineMatchIsolationTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.SimEngineMatchOverlayTests.Tests/FusionRpg.Core.SimEngineMatchOverlayTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.SimEngineMatchOverlayTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.SimEngineShieldTests.Tests/FusionRpg.Core.SimEngineShieldTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.SimEngineShieldTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.StatMathAndSimTests.Tests/FusionRpg.Core.StatMathAndSimTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.StatMathAndSimTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.StatSystemTests.Tests/FusionRpg.Core.StatSystemTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.StatSystemTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Stats.Tests/FusionRpg.Core.Stats.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Stats.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Status.Tests/FusionRpg.Core.Status.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Status.Tests failed" }
+          dotnet test tests/FusionRpg.Core.TargetResolverTests.Tests/FusionRpg.Core.TargetResolverTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.TargetResolverTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.TitleLifecyclePolicyTests.Tests/FusionRpg.Core.TitleLifecyclePolicyTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.TitleLifecyclePolicyTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.UniqueBindingsTests.Tests/FusionRpg.Core.UniqueBindingsTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.UniqueBindingsTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.UniqueEquipmentCatalogTests.Tests/FusionRpg.Core.UniqueEquipmentCatalogTests.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.UniqueEquipmentCatalogTests.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Vfx.Tests/FusionRpg.Core.Vfx.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Vfx.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Vocabulary.Tests/FusionRpg.Core.Vocabulary.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Vocabulary.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Workspace.Tests/FusionRpg.Core.Workspace.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Workspace.Tests failed" }
+          dotnet test tests/FusionRpg.Core.Tests/FusionRpg.Core.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Core.Tests failed" }
+          dotnet test tests/FusionRpg.Data.Tests/FusionRpg.Data.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Data.Tests failed" }
+          dotnet test tests/FusionRpg.Guard.Tests/FusionRpg.Guard.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Guard.Tests failed" }
+          dotnet test tests/FusionRpg.Launcher.Tests/FusionRpg.Launcher.Tests.csproj -c Release --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Launcher.Tests failed" }
+
+      # ip-censor T12 (owner ruling IC-3): the IP release gate. The scan is ADVISORY in CI (T11,
+      # ci.yml) and BLOCKING here — the release is the only thing a finding stops. It sits after the
+      # unit tests and before `Publish player pack`, so a mark that reached player-facing text fails
+      # the release instead of shipping.
+      #
+      # The scan runs from the REPOSITORY ROOT on purpose: `report` resolves the scanned tree from
+      # `git rev-parse --show-toplevel`, so a `working-directory: gk-core/tools/ip-censor` would enumerate
+      # only the tool and the gate would pass vacuously (plan D4, audit 2026-09-19). The installs
+      # name the tool explicitly for the same reason — one step, one working directory.
+      #
+      # `--authored-only` is what makes the gate deterministic and offline, as spec-report.md
+      # §Success criteria requires ("the gate needs no model and no network by construction").
+      # Without it `scan` builds the LLM proposer and waits on the endpoint named by IPCENSOR_LLM_*
+      # once per mark that has no authored replacement pair — minutes of block on any machine where a
+      # local model endpoint is listening, for a decision the gate does not make.
+      - name: IP release gate (ip-censor, IC-3)
+        shell: pwsh
+        run: |
+          python -m pip install -r tools/ip-censor/requirements.lock
+          if ($LASTEXITCODE -ne 0) { throw "ip-censor lockfile install failed" }
+          python -m pip install -e tools/ip-censor --no-deps
+          if ($LASTEXITCODE -ne 0) { throw "ip-censor editable install failed" }
+          python -m ipcensor.report scan --format json --fail-on enforced --authored-only > tasks/ip-censor/release-scan.json
+          if ($LASTEXITCODE -ne 0) { throw "ip-censor release gate: an enforced IP finding blocks this release (see the findings step below)" }
+
+      # Says WHAT the gate found, since the scan itself is redirected to a file. It runs only when
+      # an earlier step failed, and only prints when the gate actually produced a plan.
+      - name: IP release gate findings (ip-censor, IC-3)
+        if: failure()
+        shell: pwsh
+        run: |
+          if (-not (Test-Path tasks/ip-censor/release-scan.json)) { exit 0 }
+          $plan = Get-Content tasks/ip-censor/release-scan.json -Raw | ConvertFrom-Json
+          $blocking = @(
+            $plan.groups.PSObject.Properties.Value |
+              Where-Object { $_.bucket -in @('player-name', 'player-prose', 'generator-prompt') })
+          $blocking | ForEach-Object { Write-Host "  BLOCKING $($_.path):$($_.line)  $($_.matched) [$($_.mark)] $($_.bucket)" }
+          Write-Host "ip-censor: $($blocking.Count) enforced finding(s) across $((@($blocking.path | Sort-Object -Unique)).Count) file(s)"
+
+      - name: Prepare injector refs
+        shell: pwsh
+        env:
+          FUSIONRPG_GAME_DIR: ${{ vars.FUSIONRPG_GAME_DIR }}
+          FUSIONRPG_INTEROP_ZIP_URL: ${{ secrets.FUSIONRPG_INTEROP_ZIP_URL }}
+        run: |
+          $ciDrop = "artifacts/ci-drop-into-game/FusionRpg.Injector.dll"
+          try {
+            ./scripts/prepare-injector-refs.ps1
+            "FUSIONRPG_GAME_DIR=$env:FUSIONRPG_GAME_DIR" | Out-File -FilePath $env:GITHUB_ENV -Append
+          }
+          catch {
+            if (Test-Path $ciDrop) {
+              Write-Host "::warning::No game interop in CI — using committed artifacts/ci-drop-into-game (set secrets.FUSIONRPG_INTEROP_ZIP_URL to rebuild injector from source)."
+              "FUSIONRPG_USE_CI_DROP=1" | Out-File -FilePath $env:GITHUB_ENV -Append
+            }
+            else {
+              Write-Host "::error::Cloud release needs secrets.FUSIONRPG_INTEROP_ZIP_URL (or vars.FUSIONRPG_GAME_DIR) or committed artifacts/ci-drop-into-game. $_"
+              throw
+            }
+          }
+
+      - name: Publish player pack
+        shell: pwsh
+        env:
+          FUSIONRPG_VERSION: ${{ github.ref_name }}
+        run: python scripts/publish_player.py
+
+      - name: Smoke player pack
+        shell: pwsh
+        run: python scripts/smoke_player_pack.py --pack-dir dist/FusionRpg
+
+      - name: Zip FusionRpg-win-x64.zip
+        shell: pwsh
+        run: |
+          $src = "dist/FusionRpg"
+          if (-not (Test-Path $src)) { throw "Missing $src" }
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          $zip = "artifacts/FusionRpg-win-x64.zip"
+          if (Test-Path $zip) { Remove-Item $zip -Force }
+          Compress-Archive -Path "$src\*" -DestinationPath $zip -Force
+          Get-Item $zip | Format-List Name, Length
+
+          # Builds are unsigned, so a published hash is the only way anyone can check that what
+          # they downloaded is what CI produced. Emitted as a file and into the release notes.
+          $sha = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$sha  FusionRpg-win-x64.zip" | Set-Content "artifacts/FusionRpg-win-x64.zip.sha256" -NoNewline
+          Write-Host "SHA256 $sha"
+          "PACK_SHA256=$sha" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+          if (Test-Path "artifacts/player-pack-smoke.json") {
+            Write-Host "Smoke summary:"
+            Get-Content "artifacts/player-pack-smoke.json"
+          }
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/FusionRpg-win-x64.zip
+            artifacts/FusionRpg-win-x64.zip.sha256
+          generate_release_notes: true
+          body: |
+            ## FusionRpg ${{ github.ref_name }}
+
+            **Asset:** `FusionRpg-win-x64.zip` — **right-click the zip → Properties → Unblock** before
+            extracting, then double-click `FusionRpg.Launcher.exe`.
+
+            Windows marks downloaded files, and antivirus judges marked files far more harshly —
+            unblocking the zip first is the simplest way to avoid a false-positive quarantine.
+
+            `SHA256` — verify with `Get-FileHash FusionRpg-win-x64.zip`:
+
+            ```
+            ${{ env.PACK_SHA256 }}
+            ```
+
+            - Builds are **unsigned hobby OSS** — see Trust & security in the launcher / [players.md](https://github.com/letuhao/plant-vs-zombie-rise-of-summoner/blob/main/docs/runbook/players.md#trust--antivirus-unsigned-hobby-builds).
+            - Licensed **AGPL-3.0-or-later** (see `LICENSE` in the zip).
+            - Updates **FusionRpg only** (launcher + Server + DropIntoGame). Does **not** download or patch the PVZ Fusion game.
+            - Needs a legal game install. Use **Browse** then **Install BepInEx** from official GitHub if needed.
+            - Dual-loading BepInEx + MelonLoader is refused. MelonMod dual-host Play is not in this release.
+
+            Player guide: [docs/runbook/players.md](https://github.com/letuhao/plant-vs-zombie-rise-of-summoner/blob/main/docs/runbook/players.md)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

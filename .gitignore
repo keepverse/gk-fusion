@@ -26,7 +26,10 @@ bld/
 # .NET Core
 project.lock.json
 project.fragment.lock.json
-artifacts/
+# Local build outputs under artifacts/ (allow ci-drop-into-game for cloud release)
+artifacts/*
+!artifacts/ci-drop-into-game/
+!artifacts/ci-drop-into-game/**
 
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
@@ -55,3 +58,158 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# RPG runtime (never commit)
+# Live DB is next to the server exe: {exe}/data/rpg-hot.sqlite + rpg-media.sqlite
+**/dist/
+**/data/icons/
+
+**/node_modules/
+**/dist/
+
+# Local study clones (never commit)
+study/
+
+# Local IL/Cecil dumps (not product source)
+_cecil_dump/
+
+# Web test outputs
+web/fusion-rpg-web/coverage/
+**/playwright-report/
+**/test-results/
+**/blob-report/
+**/e2e/.artifacts/
+_tmp_reflect/
+src/FusionRpg.Injector/CheatMenuGui.Legacy.cs.bak
+
+# Third-party Claude agent skills (addyosmani/agent-skills) — vendored locally, not committed.
+# Update: git -C .claude/vendor/agent-skills pull
+#         cp -r .claude/vendor/agent-skills/skills/. .claude/skills/
+.claude/vendor/
+# Machine-local assistant overrides only; the rest of the assistant config is tracked
+.claude/settings.local.json
+.claude/worktrees/
+.kilo/worktrees/
+
+**/artifacts/perf-build/
+
+**/__pycache__/
+
+# Python build/venv artifacts — seedsmith became an installable package (pyproject.toml, 2026-09-01)
+**/*.egg-info/
+**/.venv/
+**/.venv-*/
+**/wwwroot/
+**/.playwright-mcp/
+**/.pytest_cache/
+.remember/
+**/artifacts/
+
+/data/seed/creatures/_runs/
+
+# Action-corpus mid pipeline (pre-acceptance scratch / A-P3 briefs). Final delivery stays
+# tracked: committed-round-*.json, _briefs/, _reports/, _generated/, _rounds/*/survivors.json
+# (+ rejects/review-queue/assembled), and *_runs/*.ledger.json.
+/data/seed/actions/_candidates/
+/data/seed/actions/_rounds/**/p3-briefs.json
+
+*sqlite-shm
+*.sqlite-wal
+*.log
+*.sqlite
+.worldmap-playtest-build/
+
+# tree-review per-tree cards (task H6/H7, spec-tree-review.md §5.6) — regenerated from the
+# committed plan + concrete catalog, never committed themselves. The corpus sheet and the verdict
+# queue are the opposite: docs/research/passive-tree/_review/ and
+# data/seed/passive-tree/_review/ are the review's own permanent record and stay tracked.
+/.review/
+data-out.txt
+*.bak-*
+/web/fusion-rpg-web/tmp/
+
+tools/seedsmith/.pytest_cache/
+tools/seedsmith/.ruff_cache/
+tools/seedsmith/.tmp-live-seedsmith/
+tools/seedsmith/.tmp-seedsmith/
+tools/seedsmith/.venv-verify/
+tools/seedsmith/_empty_sets_test/
+tools/seedsmith/_sample-runs/
+tools/seedsmith/.tmp-seedsmith-pytest-audit/
+tools/seedsmith/.tmp-seedsmith-pytest-audit-final/
+tools/seedsmith/.tmp-seedsmith-pytest-audit-full/
+tools/seedsmith/seedsmith.egg-info/
+# Local one-off scratch scripts (hardcoded machine paths) — never commit
+tools/seedsmith/.tmp_*.py
+.pytest_cache/
+.remember/
+.tmp-server-seed-audit-20260910/
+.worldstage-review-data/
+_cecil_dump/
+_tmp_reflect/
+.pytest-seedsmith-basetemp/
+.pytest-seedsmith-basetemp2/
+test-results/
+
+# Root-level scratch/deploy staging (e.g. tmp/bep-verify, a machine-local BepInEx verify copy).
+# Machine-local and never committed; leaving it untracked-but-unignored made it a first-class
+# doc-citation target, where its copies of data/** paths duplicated basenames and produced
+# hundreds of false D3 "ambiguous basename" guard findings (mega-merge QC fix cycle 6, 2026-09-24).
+/tmp/
+
+plant-vs-zombie-rise-of-summoner.code-workspace
+
+tools/sprite-debug/assets/*.png
+tools/sprite-debug/assets/*/*.png
+
+# Blender VFX intermediate renders.
+#   sheets/    IS committed - it is the deliverable, the same contract as
+#              web/fusion-rpg-web/public/actor-hud-elements/*.png.
+#   sequences/ is the packer's input and is fully regenerable from
+#              tools/shield_*.py (756 files, 49 MB).
+#   preview/   is for human review only and is rewritten on every build
+#              (174 files, 19 MB).
+# The tools, manifests, READMEs and .blend sources stay tracked, so a clone can
+# rebuild every asset with `python blender/tools/pack_sheets.py` after a re-render.
+blender/vfx/*/sequences/
+blender/vfx/*/preview/
+blender/tmp/
+blender/viewer/.smoke.png
+# Blender's rolling save alongside each .blend - it is a duplicate of the
+# previous commit's file and only exists to recover an in-progress save.
+*.blend1
+
+web/fusion-rpg-web/package-lock.json
+.artifacts/
+
+.vs/
+--check
+.claude/cmdc-agents/agents/
+
+skills-lock.json
+
+# Kilo per-session runtime state (machine-local; the tracked record lives in tasks/sessions/)
+.kilo/sessions/
+
+# Command Code per-machine permission state (local-only, never tracked: it carries a wildcard
+# shell grant and no verification boundary owns it). Deliberately narrow -- NOT `.commandcode/`
+# and NOT `.commandcode/taste/`, so the tracked taste files are not swallowed.
+# Owner ruling 2026-09-25; review: tasks/reports/resume-30-commandcode-config-review-20260925.md
+.commandcode/settings.json
+.commandcode/settings.local.json
+
+.claude/cmdc-agents/registry.jsonl
+
+.claude/cmdc-agents/retro.jsonl
+# Playwright CLI output (may contain credentials)
+.playwright-cli/
+
+# Perch Desktop local config (project rules + memory, machine-local)
+.perch/
+
+# Observer run files: the tool's own scratch output, which its Options docstring calls "never a repo path a
+# caller did not explicitly choose" -- but its DEFAULT is a bare relative filename, and the wrapper
+# runs it with the tool directory as the working directory, so the default DOES land inside the
+# repository. Tracked as ignored rather than left untracked-and-noisy: a real run is how the tool is
+# proven, and every such run otherwise shows up as an untracked file.
+tools/LawnCombatObserver/lawn-combat-observer-run.json

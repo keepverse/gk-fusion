@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>FusionRpg.Tools.ProveLiveProbe</RootNamespace>
+    <AssemblyName>ProveLiveProbe</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- live-probe-tool (spec-live-probe-tool.md): the deliberate divergence from ProveHubCombat/
+         ProveAptitude's shape — this tool does REAL HttpClient calls against a running
+         FusionRpg.Server, never RpgStore.InMemory(). FusionRpg.Contracts supplies the typed
+         request/response DTOs the wire already carries (UniqueActorDto, DeployUniqueActorRequest,
+         EventEnvelope, ...); FusionRpg.Server supplies the handful of request/outcome types that
+         live as public nested classes on the endpoint modules themselves (CreatureEndpoints.
+         SummonRequest/SpawnUniqueActorRequest, AptitudeEndpoints.AllocateUniqueAptitudesRequest,
+         ItemEquipEndpoints.EquipRequest, ItemEquipOutcomeDto) rather than in Contracts — referenced
+         directly so this tool never re-guesses their JSON shape. No FusionRpg.Data reference: this
+         tool never touches RpgStore directly, only HTTP. -->
+    <ProjectReference Include="$(GkCoreRoot)src\FusionRpg.Contracts\FusionRpg.Contracts.csproj" />
+    <ProjectReference Include="$(GkCoreRoot)src\FusionRpg.Server\FusionRpg.Server.csproj" />
+  </ItemGroup>
+</Project>

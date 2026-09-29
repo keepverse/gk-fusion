@@ -1,0 +1,885 @@
+{
+  "assetLibrary": "combat-action-vfx",
+  "status": "candidate-art",
+  "created": "2026-09-26",
+  "generator": "Built-in Codex image generation",
+  "license": "Original generated artwork; no external source art used",
+  "families": {
+    "elements": {
+      "fire": {
+        "status": "in-progress",
+        "styleReference": "src/FusionRpg.Injector/Assets/elemental-action-vfx/earth/v2/impact-512x512.png",
+        "palette": "molten orange, ember red, gold core, charcoal flecks",
+        "assets": {
+          "charge": {
+            "file": "elements/fire/charge/source/fire-charge.generated.png",
+            "status": "candidate",
+            "role": "Inward ember-flame gathering before release",
+            "sourceDimensions": "1254x1254",
+            "alpha": "Present; transparent canvas corner and visible partially transparent pixels sampled with System.Drawing",
+            "anchor": "center of gathering core",
+            "prompt": "Create a compact Fire charge: orange-red flame tongues and sparks curl inward to a molten gold center, visibly gathering before release. Premium hand-painted dimensional fantasy VFX. No ring, character, weapon, text, scenery or backdrop.",
+            "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-32e4c7d9-1ef7-444e-8c7b-79d8d56e0826.png"
+          },
+          "travel": {
+            "file": "elements/fire/travel/source/fire-travel.generated.png",
+            "status": "candidate",
+            "role": "Horizontal orange-red flame and ember trail with a sharp leading tip",
+            "sourceDimensions": "2172x724",
+            "alpha": "Present; transparent canvas corner and visible partially transparent pixels sampled with System.Drawing",
+            "anchor": "left tail; horizontal travel axis left-to-right",
+            "prompt": "Create a wide horizontal Fire travel ribbon: fast orange-red flame tongues, narrow gold core, trailing charcoal embers, sharp leading tip and tapered tail. No projectile ball, character, weapon, target, text, scenery or backdrop.",
+            "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-18946b73-29f1-46cc-be92-58f1a3988552.png"
+          },
+          "impact": {
+            "file": "elements/fire/impact/source/fire-impact.generated.png",
+            "status": "candidate",
+            "role": "Outward radial fire resolve with bright contact core and ember fragments",
+            "sourceDimensions": "1254x1254",
+            "alpha": "Present; transparent canvas corner and visible partially transparent pixels sampled with System.Drawing",
+            "anchor": "center of radial impact",
+            "prompt": "Create a compact radial Fire impact: flame petals and molten sparks burst outward from a bright gold-white center, with charcoal ember fragments, distinct from charge and travel. No character, weapon, target body, text, scenery or backdrop.",
+            "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-1995f1a7-7512-4bde-aa66-17b7c9d1184d.png"
+          }
+        }
+      },
+      "ice": {
+        "status": "in-progress",
+        "styleReference": "src/FusionRpg.Injector/Assets/elemental-action-vfx/earth/v2/impact-512x512.png",
+        "palette": "deep cobalt, glacial cyan, restrained white edge highlights",
+        "assets": {
+          "charge": {
+            "file": "elements/ice/charge/source/ice-charge.generated.png",
+            "status": "candidate",
+            "role": "Upright crystal core assembled by three inward-orbiting icy slivers",
+            "sourceDimensions": "1254x1254",
+            "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+            "anchor": "center of the upright crystal core",
+            "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input image: style reference only; match the dimensional hand-painted rendering, crisp sculpted facets, focused highlights and clean cutout finish, not its Earth subject or green palette. Scene/backdrop: genuinely transparent, isolated sprite. Subject: one compact Ice charge shown as a single upright translucent crystal core being assembled by exactly three narrow curved ice slivers orbiting inward; unmistakable gathering/charging, not an explosion. Give it a tall narrow silhouette with clear negative space between the slivers and core. Style/medium: hand-painted dimensional fantasy VFX, readable at small sprite scale. Lighting/mood: cold internal cyan light and restrained sharp edge glints; controlled glow, no broad white halo. Color palette: deep cobalt and glacial cyan with limited white highlights. Composition: centered, square sprite with generous transparent margin; bright center is the anchor. Constraints: one isolated effect, clean transparent alpha. Avoid: radial burst, ground eruption, many outward-flying fragments, wide ring of crystals, snowflake symbol, projectile trail, character, weapon, text, scenery, backdrop, excessive bloom, clipped edges, signature, watermark."
+          },
+          "travel": {
+            "file": "elements/ice/travel/source/ice-travel.generated.png",
+            "status": "candidate",
+            "role": "Fast horizontal frost ribbon led by a pointed ice shard with a tapering splinter tail",
+            "sourceDimensions": "1983x793",
+            "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+            "anchor": "left tail; horizontal travel axis left-to-right",
+            "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input images: Image 1 is a style reference only; match its dimensional hand-painted fantasy rendering, crisp sculpted facets, and clean cutout finish, but do not copy its earth/plant subject or green palette. Scene/backdrop: genuinely transparent, isolated sprite. Subject: one fast Ice travel streak: a long, narrow cyan-blue ribbon of cold vapor and several small angular ice splinters, with one clearly pointed leading shard and a tapering fragmented tail. Style/medium: hand-painted dimensional fantasy game VFX with sculpted crystalline facets. Composition/framing: wide horizontal silhouette, left-to-right travel axis, generous transparent padding, one continuous readable trail. Lighting/mood: sharp controlled icy glints, moderate glow, no broad white halo. Color palette: cobalt, glacial cyan, restrained white edges. Materials/textures: translucent cut-glass ice and thin frosty vapor. Constraints: one isolated sprite, aspect ratio wide, read as motion rather than impact. Avoid: radial burst, target, multiple projectiles, character, weapon, text, scenery, ground, backdrop, excessive bloom, clipped edges, signature, watermark."
+          },
+          "impact": {
+            "file": "elements/ice/impact/source/ice-impact.generated.png",
+            "status": "candidate",
+            "role": "Grounded frost fracture with jagged crystals snapping upward and outward from contact",
+            "sourceDimensions": "1254x1254",
+            "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+            "anchor": "lower-center fracture origin",
+            "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input images: Image 1 is a style reference only; match its dimensional hand-painted fantasy rendering, crisp sculpted facets, and clean cutout finish, but do not copy its earth/plant subject or green palette. Scene/backdrop: genuinely transparent, isolated sprite. Subject: one compact Ice impact at the instant of contact: a sharp fractured frost core with angular crystal shards snapping outward and a small cold-vapor curl. Style/medium: hand-painted dimensional fantasy game VFX with sculpted crystalline facets. Composition/framing: square, centered contact point, strong radial silhouette with visible negative gaps between shards. Lighting/mood: crisp cold highlights, controlled internal glow, clear contrast; do not turn the effect into a soft white cloud. Color palette: cobalt blue, glacial cyan, restrained white edge highlights. Materials/textures: translucent cut-glass ice and fine frost. Constraints: one isolated effect, distinct from a charge or snowflake icon, legible at small sprite scale, genuine transparent alpha. Avoid: perfect circle, ring, snowflake symbol, character, weapon, text, scenery, ground, backdrop, excessive bloom, clipped edges, signature, watermark."
+          }
+        }
+      },
+      "air": {
+        "status": "in-progress",
+        "styleReference": "src/FusionRpg.Injector/Assets/elemental-action-vfx/earth/v2/impact-512x512.png",
+        "palette": "pale turquoise, muted cyan, silver-white with restrained warm glints",
+        "assets": {
+          "charge": {
+            "file": "elements/air/charge/source/air-charge.generated.png",
+            "status": "candidate",
+            "role": "Compact opposing wind ribbons compressing inward around a tight vortex core",
+            "sourceDimensions": "1254x1254",
+            "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+            "anchor": "center of compressed-air core",
+            "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input image: style reference only for dimensional hand-painted rendering and crisp luminous edges; do not copy its Earth subject, rocks, or green palette. Scene/backdrop: genuinely transparent isolated sprite. Subject: compact Air charge made of two broad translucent wind ribbons curling inward in opposite directions around a small compressed-air core; the flow clearly gathers inward. Shape must be rounded and compact with negative space between the ribbons, not a tornado column. Style/medium: hand-painted dimensional fantasy VFX with smooth aerodynamic forms, restrained detail. Lighting/mood: cool pearly highlights, controlled glow, clean value separation. Palette: pale turquoise, muted cyan, silver-white with very restrained warm glints. Composition: centered square sprite with generous padding. Constraints: one isolated effect, read at small sprite scale, genuine alpha. Avoid: feathers, leaves, lightning, cloud puff, crystal shards, fire, radial explosion, circle emblem, character, weapon, text, scenery, background, broad white halo, clipped edges, signature, watermark."
+          },
+          "travel": {
+            "file": "elements/air/travel/source/air-travel.generated.png",
+            "status": "candidate",
+            "role": "Slender left-to-right curved wind sheet with a pointed leading curl and wispy tail",
+            "sourceDimensions": "1774x887",
+            "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+            "anchor": "left tail; curved left-to-right travel axis",
+            "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input image: style reference only for dimensional hand-painted rendering and crisp luminous edges; do not copy its Earth subject, rocks, or green palette. Scene/backdrop: genuinely transparent isolated sprite. Subject: one fast Air travel ribbon, a slender sweeping curve of layered translucent wind sheets with a clear pointed leading curl and long wispy tapered tail. Make the curve asymmetrical and visibly directional, like air slicing through space rather than a projectile. Style/medium: hand-painted dimensional fantasy VFX, smooth aerodynamic shapes, minimal but sculpted detail. Composition: wide diagonal or shallow-S curve, left-to-right flow, generous transparent margin. Lighting: cool pearly edge highlights, controlled glow, no broad halo. Palette: pale turquoise, muted cyan, silver-white. Constraints: single isolated trail, aspect wider than tall, legible at small scale. Avoid: tornado, circular ring, radial burst, leaves, feathers, crystals, fire, target, character, weapon, text, scenery, background, clipped edges, signature, watermark."
+          },
+          "impact": {
+            "file": "elements/air/impact/source/air-impact.generated.png",
+            "status": "candidate",
+            "role": "Crossing curved wind blades peel outward around a central pressure-split",
+            "sourceDimensions": "1254x1254",
+            "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+            "anchor": "center of the crossing wind blades",
+            "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input image: style reference only for dimensional hand-painted rendering and crisp luminous edges; do not copy its Earth subject, rocks, or green palette. Scene/backdrop: genuinely transparent isolated sprite. Subject: a decisive Air impact expressed as two sharp curved wind blades crossing and peeling outward around an open central pressure-split; asymmetric slicing vortex, not a round explosion. Style/medium: hand-painted dimensional fantasy VFX with smooth aerodynamic ribbons and crisp tapered edges. Composition: compact square, strong angled silhouette, central contact anchor and visible negative gaps so it reads at small sprite scale. Lighting: cool silver-cyan edge glints, controlled luminous core, no broad white cloud. Palette: pale turquoise, muted cyan, silver-white. Constraints: one isolated contact effect with a distinct curved cutting read. Avoid: tornado column, circular ring, radial fireball, debris, feathers, leaves, lightning bolts, ice crystals, character, weapon, text, scenery, background, excessive bloom, clipped edges, signature, watermark."
+          }
+        }
+      },
+      "light": {
+        "status": "in-progress",
+        "styleReference": "src/FusionRpg.Injector/Assets/elemental-action-vfx/earth/v2/impact-512x512.png",
+        "palette": "warm ivory, pale gold, subtle opal-cyan refracted edges",
+        "assets": {
+          "charge": {
+            "file": "elements/light/charge/source/light-charge.generated.png",
+            "status": "candidate",
+            "role": "Focused beam convergence into a single upright faceted prism",
+            "sourceDimensions": "1254x1254",
+            "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+            "anchor": "center of the central prism",
+            "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input image: style reference only for dimensional hand-painted rendering, crisp luminous facets, and clean alpha; do not copy its Earth subject or green palette. Scene/backdrop: genuinely transparent isolated sprite. Subject: a compact Light charge where several narrow beams converge into a single upright faceted prism, visibly focusing energy inward. Use refraction planes and sharp glass edges as the identity, not a celestial emblem. Style: hand-painted dimensional fantasy game VFX, clear at small sprite scale. Composition: centered vertical prism with a few thin inward rays and generous transparent padding. Lighting: brilliant but controlled central facet, clean value separation and no broad white halo. Palette: warm ivory, pale gold, subtle opal-cyan refracted edges. Constraints: one isolated sprite with real transparency. Avoid: sun, moon, star symbol, radiant halo ring, explosion, orb, character, weapon, text, scenery, background, excessive bloom, clipped edges, signature, watermark."
+          },
+          "travel": {
+            "file": "elements/light/travel/source/light-travel.generated.png",
+            "status": "candidate",
+            "role": "Narrow focused ivory beam with a pointed leading end and opal refraction",
+            "sourceDimensions": "2172x724",
+            "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+            "anchor": "left tail; horizontal travel axis left-to-right",
+            "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input image: style reference only for dimensional hand-painted rendering, crisp luminous facets, and clean alpha; do not copy its Earth subject or green palette. Scene/backdrop: genuinely transparent isolated sprite. Subject: one clean directional Light travel ray: a narrow warm-ivory beam with a sharp pointed leading end, precise parallel glints, and small opal-cyan refraction along the trailing edge. It must read as fast focused light, not a projectile object. Style: dimensional hand-painted fantasy VFX, restrained detail, precise geometry. Composition: wide horizontal left-to-right ray, thin silhouette with ample transparent margin. Lighting: strong narrow core and restrained bloom so the beam remains defined. Palette: ivory-white, pale gold, subtle opal-cyan. Constraints: one isolated trail, wide aspect, genuine transparent alpha. Avoid: sun, moon, star symbol, rainbow band, fire, crystal projectile, radial burst, target, character, weapon, text, scenery, background, broad haze, clipped edges, signature, watermark."
+          },
+          "impact": {
+            "file": "elements/light/impact/source/light-impact.generated.png",
+            "status": "candidate",
+            "role": "Faceted prism planes fracture outward from a concentrated contact point",
+            "sourceDimensions": "1254x1254",
+            "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+            "anchor": "center of the refraction fracture",
+            "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input image: style reference only for dimensional hand-painted rendering, crisp luminous facets, and clean alpha; do not copy its Earth subject or green palette. Scene/backdrop: genuinely transparent isolated sprite. Subject: a compact Light impact at contact: sharp geometric refraction planes split around a bright central point and cast a few faceted wedges outward, like a prism breaking a focused ray into planes. Avoid a starburst emblem; the geometry should feel like broken/refracted glass. Style: hand-painted dimensional fantasy VFX with crisp glass facets and clean edges. Composition: square centered contact effect with asymmetrical angular silhouette and negative gaps, readable at small sprite scale. Lighting: intense center but narrow controlled highlights, no soft white cloud or broad halo. Palette: warm ivory, pale gold, opal-cyan edges. Constraints: one isolated effect, genuine transparent alpha. Avoid: sun, moon, star symbol, halo ring, snowflake, fireball, character, weapon, text, scenery, background, excessive bloom, clipped edges, signature, watermark."
+          }
+        }
+      },
+      "dark": {
+        "status": "in-progress",
+        "styleReference": "src/FusionRpg.Injector/Assets/elemental-action-vfx/earth/v2/impact-512x512.png",
+        "palette": "near-black plum, deep indigo, electric-violet accents",
+        "assets": {
+          "charge": {
+            "file": "elements/dark/charge/source/dark-charge.generated.png",
+            "status": "candidate",
+            "role": "Torn shadow ribbons and angular fragments folding inward around a dense void core",
+            "sourceDimensions": "1254x1254",
+            "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+            "anchor": "center of the void core",
+            "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input image: style reference only for dimensional painterly rendering, material separation and clean alpha; do not copy its Earth subject or green palette. Scene/backdrop: genuinely transparent isolated sprite. Subject: compact Dark charge: torn obsidian-violet ribbons fold inward around a small dense void core while several angular shadow fragments rotate toward it. Clearly gathering inward, not exploding. Style: dimensional hand-painted fantasy VFX with strong dark mass and crisp violet rim details. Composition: compact asymmetrical diamond-like knot, center anchor, visible negative gaps, generous transparent margin. Lighting: restrained indigo-violet edges and tiny lavender glints, no broad glow. Palette: near-black plum, deep indigo, electric-violet accents. Constraints: single isolated sprite, readable at small scale with its dark silhouette preserved. Avoid: moon, crescent, star symbol, skull, smoke cloud, radial burst, bright white core, character, weapon, text, scenery, background, excessive bloom, clipped edges, signature, watermark."
+          },
+          "travel": {
+            "file": "elements/dark/travel/source/dark-travel.generated.png",
+            "status": "candidate",
+            "role": "Directional torn shadow streak led by a sharp rift edge with indigo-violet filaments",
+            "sourceDimensions": "1983x793",
+            "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+            "anchor": "left tail; horizontal travel axis left-to-right",
+            "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input image: style reference only for dimensional painterly rendering, material separation and clean alpha; do not copy its Earth subject or green palette. Scene/backdrop: genuinely transparent isolated sprite. Subject: one directional Dark travel streak, a narrow torn shadow ribbon with a sharp forward rift edge, ragged indigo-violet filaments and a few fragments being drawn along its wake. It should look like darkness being pulled through space, not a projectile. Style: dimensional hand-painted fantasy VFX, crisp contrasting violet edge light around a readable near-black body. Composition: wide horizontal left-to-right axis, tapering tail, generous margins. Lighting: controlled violet rim, low overall bloom. Palette: near-black plum, deep indigo, electric-violet accents. Constraints: one isolated trail, wide aspect, discernible on both light and dark backgrounds. Avoid: moon, crescent, star symbol, skull, smoke puff, fire, radial burst, target, character, weapon, text, scenery, background, broad haze, clipped edges, signature, watermark."
+          },
+          "impact": {
+            "file": "elements/dark/impact/source/dark-impact.generated.png",
+            "status": "candidate",
+            "role": "Inward implosion fracture with angular shadow planes collapsing toward a void",
+            "sourceDimensions": "1254x1254",
+            "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+            "anchor": "center of the implosion fracture",
+            "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input image: style reference only for dimensional painterly rendering, material separation and clean alpha; do not copy its Earth subject or green palette. Scene/backdrop: genuinely transparent isolated sprite. Subject: Dark impact as an inward implosion fracture: four torn shadow planes and jagged violet cracks collapse toward a small central void, leaving a few fragments pulled inward. The silhouette should be broad and angular with an obvious inward direction, not a conventional outward explosion. Style: dimensional hand-painted fantasy VFX, near-black material with crisp violet edge separation. Composition: square centered contact point, asymmetric broken planes, clear negative gaps, readable at small scale. Lighting: narrow electric-violet fracture highlights and a tiny restrained core, no broad halo. Palette: near-black plum, deep indigo, electric-violet, tiny lavender sparks. Constraints: one isolated effect with clear alpha. Avoid: moon, crescent, star symbol, skull, outward fireball, smoke cloud, character, weapon, text, scenery, background, excessive bloom, clipped edges, signature, watermark."
+          }
+        }
+      }
+    },
+    "elemental-shields": {
+      "status": "candidate-art",
+      "shapeReference": "src/FusionRpg.Injector/Assets/combat-action-vfx/reactions/block/source/block.generated.png",
+      "styleReference": "src/FusionRpg.Injector/Assets/elemental-action-vfx/earth/v2/impact-512x512.png",
+      "sourceNote": "Six separate element materials keep the same intact barrier silhouette; remove incoming beams and impact flashes when used as shield identity art.",
+      "assets": {
+        "earth": {
+          "file": "elements/earth/shield/source/earth-shield.generated.png",
+          "status": "candidate",
+          "role": "Layered ochre stone shield with moss seams and luminous jade energy fissures",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; all four corner samples alpha 0; sampled alpha 0–253 with 55% transparent sample grid; in-context contrast review pending",
+          "anchor": "center of the intact barrier plane",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D elemental shield VFX sprite for a Unity game. Input image 1 is a silhouette/composition reference only: preserve its single upright faceted barrier plane shape and front-facing view, but REMOVE the incoming beams/impact streaks and any impact burst. Input image 2 is a rendering-style reference only: match its dimensional hand-painted fantasy material, sculpted facets, crisp highlights, and clean cutout; do not copy its Earth rocks or moss unless the requested element is Earth. Scene/backdrop: genuinely transparent isolated shield asset. One intact shield only, no actor or attack. Centered shield with transparent margin, legible at small gameplay scale, controlled glow, no text/emblem/UI, no scenery/background, no clipped edges, no signature/watermark. Element material identity: layered ochre stone facets, restrained moss seams, and luminous jade energy fissures; grounded and resilient."
+        },
+        "fire": {
+          "file": "elements/fire/shield/source/fire-shield.generated.png",
+          "status": "candidate",
+          "role": "Charcoal and obsidian shield plates with molten orange-red seams and ember flecks",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; all four corner samples alpha 0; sampled alpha 0–255 with 50% transparent sample grid; in-context brightness review pending",
+          "anchor": "center of the intact barrier plane",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D elemental shield VFX sprite for a Unity game. Input image 1 is a silhouette/composition reference only: preserve its single upright faceted barrier plane shape and front-facing view, but REMOVE the incoming beams/impact streaks and any impact burst. Input image 2 is a rendering-style reference only: match its dimensional hand-painted fantasy material, sculpted facets, crisp highlights, and clean cutout; do not copy its Earth rocks or moss unless the requested element is Earth. Scene/backdrop: genuinely transparent isolated shield asset. One intact shield only, no actor or attack. Centered shield with transparent margin, legible at small gameplay scale, controlled glow, no text/emblem/UI, no scenery/background, no clipped edges, no signature/watermark. Element material identity: charcoal and obsidian plates with molten orange-red seams, ember flecks, and a hot gold inner rim; intense but not a fireball."
+        },
+        "ice": {
+          "file": "elements/ice/shield/source/ice-shield.generated.png",
+          "status": "candidate",
+          "role": "Deep cobalt translucent crystal shield with glacial cyan edges and frost core",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; one corner sample at alpha 1 and remaining corners 0; sampled alpha 0–253 with 57% transparent sample grid; inspect transparent edge in context",
+          "anchor": "center of the intact barrier plane",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D elemental shield VFX sprite for a Unity game. Input image 1 is a silhouette/composition reference only: preserve its single upright faceted barrier plane shape and front-facing view, but REMOVE the incoming beams/impact streaks and any impact burst. Input image 2 is a rendering-style reference only: match its dimensional hand-painted fantasy material, sculpted facets, crisp highlights, and clean cutout; do not copy its Earth rocks or moss unless the requested element is Earth. Scene/backdrop: genuinely transparent isolated shield asset. One intact shield only, no actor or attack. Centered shield with transparent margin, legible at small gameplay scale, controlled glow, no text/emblem/UI, no scenery/background, no clipped edges, no signature/watermark. Element material identity: deep cobalt translucent crystal facets, glacial cyan edge light, and a cool internal frost core; crisp and crystalline."
+        },
+        "air": {
+          "file": "elements/air/shield/source/air-shield.generated.png",
+          "status": "candidate",
+          "role": "Pale turquoise wind-sheets folded into the shared faceted barrier silhouette",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; all four corner samples alpha 0; sampled alpha 0–253 with 53% transparent sample grid; check fine curls at gameplay scale",
+          "anchor": "center of the intact barrier plane",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D elemental shield VFX sprite for a Unity game. Input image 1 is a silhouette/composition reference only: preserve its single upright faceted barrier plane shape and front-facing view, but REMOVE the incoming beams/impact streaks and any impact burst. Input image 2 is a rendering-style reference only: match its dimensional hand-painted fantasy material, sculpted facets, crisp highlights, and clean cutout; do not copy its Earth rocks or moss unless the requested element is Earth. Scene/backdrop: genuinely transparent isolated shield asset. One intact shield only, no actor or attack. Centered shield with transparent margin, legible at small gameplay scale, controlled glow, no text/emblem/UI, no scenery/background, no clipped edges, no signature/watermark. Element material identity: pale turquoise and pearl wind-sheets folded into the same barrier silhouette, with sweeping curved edge currents; airy, not feathers or leaves."
+        },
+        "light": {
+          "file": "elements/light/shield/source/light-shield.generated.png",
+          "status": "candidate",
+          "role": "Warm ivory opal-glass shield with gold refraction and subtle cyan edges",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; one corner sample at alpha 1 and remaining corners 0; sampled alpha 0–254 with 49% transparent sample grid; inspect transparent edge and brightness in context",
+          "anchor": "center of the intact barrier plane",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D elemental shield VFX sprite for a Unity game. Input image 1 is a silhouette/composition reference only: preserve its single upright faceted barrier plane shape and front-facing view, but REMOVE the incoming beams/impact streaks and any impact burst. Input image 2 is a rendering-style reference only: match its dimensional hand-painted fantasy material, sculpted facets, crisp highlights, and clean cutout; do not copy its Earth rocks or moss unless the requested element is Earth. Scene/backdrop: genuinely transparent isolated shield asset. One intact shield only, no actor or attack. Centered shield with transparent margin, legible at small gameplay scale, controlled glow, no text/emblem/UI, no scenery/background, no clipped edges, no signature/watermark. Element material identity: warm ivory opal-glass facets with pale gold refraction lines and subtle cyan prismatic edges; luminous but not a sun or star emblem."
+        },
+        "dark": {
+          "file": "elements/dark/shield/source/dark-shield.generated.png",
+          "status": "candidate",
+          "role": "Near-black indigo shield plates with electric-violet fissures and narrow lavender edges",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; one corner sample at alpha 1 and remaining corners 0; sampled alpha 0–254 with 50% transparent sample grid; inspect transparent edge and silhouette contrast in context",
+          "anchor": "center of the intact barrier plane",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D elemental shield VFX sprite for a Unity game. Input image 1 is a silhouette/composition reference only: preserve its single upright faceted barrier plane shape and front-facing view, but REMOVE the incoming beams/impact streaks and any impact burst. Input image 2 is a rendering-style reference only: match its dimensional hand-painted fantasy material, sculpted facets, crisp highlights, and clean cutout; do not copy its Earth rocks or moss unless the requested element is Earth. Scene/backdrop: genuinely transparent isolated shield asset. One intact shield only, no actor or attack. Centered shield with transparent margin, legible at small gameplay scale, controlled glow, no text/emblem/UI, no scenery/background, no clipped edges, no signature/watermark. Element material identity: near-black indigo and plum glass plates with electric-violet fissures and narrow lavender edge light; preserve dark mass and silhouette."
+        }
+      }
+    },
+    "fields": {
+      "status": "candidate-art",
+      "styleReference": "src/FusionRpg.Injector/Assets/elemental-action-vfx/earth/v2/impact-512x512.png",
+      "assets": {
+        "boundary": {
+          "file": "fields/boundary/source/field-boundary.generated.png",
+          "status": "candidate",
+          "role": "Irregular open turquoise perimeter tracing a ground field with sparse anchor facets",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; all four corner samples alpha 0; sampled alpha 0–255 with 83% transparent sample grid",
+          "anchor": "center of the marked ground patch; perimeter is open and may be scaled to area",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input image is a style reference only: match its dimensional hand-painted fantasy finish, sculpted facets, crisp highlights and clean cutout, but do not copy its Earth stones/moss or green palette unless requested. Scene/backdrop: genuinely transparent isolated asset. Legible at small gameplay scale, controlled glow, no text/UI, no character or target body, no scenery/background, no clipped edges, no signature/watermark. Subject: a reusable ground-field boundary: a low, slightly irregular open oval of thin pearl-cyan and pale jade energy tracing a patch on the lawn, with a few small anchor facets embedded along the perimeter. It marks an active area, not a shield and not a UI circle. Overhead-leaning 2D cutout, wide footprint, visible open gaps, sparse detail. No interior target markers, grid cells, scenery, complete geometric emblem, or ground texture."
+        },
+        "pulse": {
+          "file": "fields/pulse/source/field-pulse.generated.png",
+          "status": "candidate",
+          "role": "Gentle ground-hugging field ripple travelling outward from a low central anchor",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; all four corner samples alpha 0; sampled alpha 0–253 with 75% transparent sample grid",
+          "anchor": "low central field anchor; shallow ripples travel outward",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input image is a style reference only: match its dimensional hand-painted fantasy finish, sculpted facets, crisp highlights and clean cutout, but do not copy its Earth stones/moss or green palette unless requested. Scene/backdrop: genuinely transparent isolated asset. Legible at small gameplay scale, controlled glow, no text/UI, no character or target body, no scenery/background, no clipped edges, no signature/watermark. Subject: a gentle ground-hugging field pulse traveling from a low central anchor toward an irregular perimeter: shallow turquoise-ivory ripples, a few lifted motes, no tall explosion. This is a repeating area-field activity cue, visually distinct from a hit impact. Wide low silhouette, transparent margins, controlled bloom. No full UI ring, target marks, grid, body, floor plane, or backdrop."
+        },
+        "fade": {
+          "file": "fields/fade/source/field-fade.generated.png",
+          "status": "candidate",
+          "role": "Broken field perimeter strands and sparse motes dissolving outward at field end",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; all four corner samples alpha 0; sampled alpha 0–255 with 79% transparent sample grid",
+          "anchor": "ground perimeter; fragments dissolve outward from the field edge",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input image is a style reference only: match its dimensional hand-painted fantasy finish, sculpted facets, crisp highlights and clean cutout, but do not copy its Earth stones/moss or green palette unless requested. Scene/backdrop: genuinely transparent isolated asset. Legible at small gameplay scale, controlled glow, no text/UI, no character or target body, no scenery/background, no clipped edges, no signature/watermark. Subject: the quiet end of a ground field: broken perimeter strands lift into a few fading pale motes and dissolve outward, leaving an open center and no blast. Low horizontal footprint, sparse pearl-cyan and muted jade accents, clear distinction from a status expiry and from shield break. No complete circle, target symbols, grid, character, scenery, or background."
+        },
+        "arming-telegraph": {
+          "file": "fields/arming-telegraph/source/field-arming-telegraph.generated.png",
+          "status": "candidate",
+          "role": "Separated amber-silver perimeter clusters forming around an empty ground area",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; all four corner samples alpha 0; sampled alpha 0–255 with 78% transparent sample grid",
+          "anchor": "center of pending area; low oval segments communicate the supplied extent",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input image is a style reference only; match its dimensional hand-painted fantasy finish, sculpted facets, crisp focused highlights and clean cutout, but do not copy its Earth rocks or green palette. Scene/backdrop: genuinely transparent isolated sprite. Subject: a pending area-effect arming telegraph seen as a low oval perimeter of four or five clearly separated angular ground-hugging energy segments, each with a few inward-leaning facets gathering toward the empty center. The perimeter is visibly incomplete with generous gaps so it cannot be mistaken for an already-active continuous field boundary. Palette restrained pale amber and silver with small jade accents; controlled glow. Wide low oval, centered empty area, grounded perspective, small-scale readability. Avoid complete ring, continuous ribbon, target reticle, runes, cell markers, characters, scenery, text, UI, background, broad bloom, clipped edges, watermark."
+        }
+      }
+    },
+    "summons": {
+      "status": "candidate-art",
+      "styleReference": "src/FusionRpg.Injector/Assets/elemental-action-vfx/earth/v2/impact-512x512.png",
+      "assets": {
+        "arrival": {
+          "file": "summons/arrival/source/summon-arrival.generated.png",
+          "status": "candidate",
+          "role": "Narrow upward spiral of translucent facets and motes manifesting at a ground anchor",
+          "sourceDimensions": "1145x1374",
+          "alpha": "Present; all four corner samples alpha 0; sampled alpha 0–254 with 75% transparent sample grid",
+          "anchor": "ground contact point; motion rises vertically",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input image is a style reference only: match its dimensional hand-painted fantasy finish, sculpted facets, crisp highlights and clean cutout, but do not copy its Earth stones/moss or green palette unless requested. Scene/backdrop: genuinely transparent isolated asset. Legible at small gameplay scale, controlled glow, no text/UI, no character or target body, no scenery/background, no clipped edges, no signature/watermark. Subject: a reusable summon-arrival manifestation at a ground point: several translucent facets and luminous motes rise in a narrow spiral from a small contact anchor, briefly suggesting something has appeared without drawing any creature or plant silhouette. Palette pearl-ivory with restrained jade/cyan edges. Vertical compact cutout, readable upward flow, no portal doorway, no floor scene, character, text, or background."
+        },
+        "construct-assembly": {
+          "file": "summons/construct-assembly/source/construct-assembly.generated.png",
+          "status": "candidate",
+          "role": "Faceted stone-and-metal plates rising and locking around an open center",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; one corner sample at alpha 1 and remaining corners 0; sampled alpha 0–255 with 61% transparent sample grid; edge review pending",
+          "anchor": "base-center of the assembly, aligned to the placement point",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input image is a style reference only: match its dimensional hand-painted fantasy finish, sculpted facets, crisp highlights and clean cutout, but do not copy its Earth stones/moss or green palette unless requested. Scene/backdrop: genuinely transparent isolated asset. Legible at small gameplay scale, controlled glow, no text/UI, no character or target body, no scenery/background, no clipped edges, no signature/watermark. Subject: a reusable construct-assembly cue: three or four distinct faceted stone-and-metal plates rise from a ground anchor and visibly slot together around an open center, with thin warm-ivory seam light and restrained teal accents. It should communicate assembly/placement, not a finished wall or a hit explosion. Compact low-to-mid vertical composition, transparent margins. No character, weapon, text, scenery, background, or UI frame."
+        },
+        "dismissal": {
+          "file": "summons/dismissal/source/summon-dismiss.generated.png",
+          "status": "candidate",
+          "role": "Orderly translucent facets and motes fold inward along an upward path toward a narrow fading convergence point",
+          "sourceDimensions": "1024x1536",
+          "alpha": "Present; all four corner samples alpha 0; sampled transparent margins and partial-alpha glow; haze/contrast and native-scale review pending",
+          "anchor": "upper convergence point; candidate represents controlled withdrawal, not defeat",
+          "prompt": "Use case: stylized-concept. Create one reusable 2D combat VFX sprite for a Unity game. Subject: a summoned ally or construct being deliberately recalled/dismissed, not killed. Show a few intact translucent facets and luminous motes folding inward along orderly upward-curving paths into one narrow fading point near the top, as if the manifestation is being cleanly withdrawn. Open negative space, no creature or body. Read as controlled recall/de-manifestation, not arrival, defeat, damage, or explosion: facets compact and disappear; no falling ash fragments. Dimensional hand-painted fantasy VFX, crisp sculpted facets, elegant restrained flow, readable small. Neutral pearl-ivory with restrained cool jade/turquoise edge glints. Vertical compact isolated sprite, clear bottom-to-top inward flow, transparent padding. Genuinely transparent cutout. Avoid portal, ground, character, weapon, text, UI, circular rune, smoke, scattered debris, background, clipped edges, signature, watermark.",
+          "editHistory": "Two non-destructive revisions tightened the portrait framing and outer transparent margins; the selected candidate has zero alpha at all four corners. A broad soft glow remains and requires contrast review."
+        }
+      }
+    },
+    "reactions": {
+      "status": "in-progress",
+      "styleReference": "src/FusionRpg.Injector/Assets/elemental-action-vfx/earth/v2/impact-512x512.png",
+      "assets": {
+        "critical-overload": {
+          "file": "reactions/critical-overload/source/critical-overload.generated.png",
+          "status": "candidate",
+          "role": "Asymmetric ivory-gold facet overload at the center of an unusually forceful hit",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; one corner sample at alpha 1 and remaining corners 0; sampled alpha 0–253 with 63% transparent sample grid; edge review pending",
+          "anchor": "center of the impact core",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat consequence VFX sprite for a Unity game. Scene/backdrop: genuinely transparent, isolated cutout. Subject: a decisive critical-hit overload at contact: a compact, asymmetric burst of sharp ivory-gold facets split by a concentrated hot core, with a broken partial arc and a few flying glints; it must read as an unusually forceful impact, not a star or UI emblem. Style: dimensional hand-painted fantasy game VFX, sculpted facets, crisp edge light, controlled bloom, clear at small sprite scale. Composition: square, centered impact anchor, generous transparent margins, distinct negative gaps. Avoid: text, numbers, badge, star symbol, character, weapon, scenery, background, broad halo, clipped edges, signature, watermark."
+        },
+        "interrupt-snap": {
+          "file": "reactions/interrupt-snap/source/interrupt-snap.generated.png",
+          "status": "candidate",
+          "role": "Horizontal action signal severed by a bright transverse snap with recoiling ends",
+          "sourceDimensions": "2172x724",
+          "alpha": "Present; transparent corners; sampled alpha 0–253 with 80% transparent sample grid; edge review pending",
+          "anchor": "central snap point; preserve wide aspect ratio",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat consequence VFX sprite for a Unity game. Scene/backdrop: genuinely transparent isolated cutout. Subject: a compact interrupted spell/action signal: one thin horizontal energy line is abruptly severed by a single hard transverse snap, leaving a clearly visible empty gap in the middle; the two short ends recoil away from that gap as angular broken sparks. It must read as cancellation/interruption, not a successful combo, not a continuous ribbon, and not a weapon slash. Palette: muted violet, icy cyan, one ivory snap spark. Style: sculpted hand-painted fantasy VFX, crisp silhouette, controlled bloom, legible small. Composition: short wide shape, broken center anchor, generous transparent padding. Avoid: long flowing ribbons, interwoven strands, X/cancel UI icon, text, characters, weapons, scenery, backdrop, clipped edges, watermark."
+        },
+        "stagger-burst": {
+          "file": "reactions/stagger-burst/source/stagger-burst.generated.png",
+          "status": "candidate",
+          "role": "Low uneven pressure ripple that disrupts an invisible target's footing",
+          "sourceDimensions": "1536x1024",
+          "alpha": "Present; transparent corners; sampled alpha 0–254 with 78% transparent sample grid; soft haze requires game-background review",
+          "anchor": "low center of the lateral pressure lobes",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat consequence VFX sprite for a Unity game. Scene/backdrop: genuinely transparent, isolated cutout. Subject: a low, off-balance stagger shock around an invisible target: two uneven lateral pressure lobes and a short tilted after-ripple, as if the target's footing was disrupted; no body is shown. Palette: muted steel, pale turquoise, restrained warm impact fleck. Style: dimensional hand-painted fantasy VFX, grounded, sculpted, readable at small sprite scale, controlled glow. Composition: broad low silhouette, offset center, visible negative space. Avoid: circular UI ring, damage explosion, feet, character, scenery, text, backdrop, clipped edges, watermark."
+        },
+        "combo-reaction": {
+          "file": "reactions/combo-reaction/source/combo-reaction.generated.png",
+          "status": "candidate",
+          "role": "Two distinct energy strands interlocking and peeling forward as one reaction",
+          "sourceDimensions": "1536x1024",
+          "alpha": "Present; transparent corners; sampled alpha 0–254 with 69% transparent sample grid; in-context brightness review pending",
+          "anchor": "central join where the two strands interlock",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat consequence VFX sprite for a Unity game. Scene/backdrop: genuinely transparent, isolated cutout. Subject: two distinct attack energies meet and interlock into a compact reaction knot, then peel forward as a single sharper arc; communicate successful combination/synergy, not an explosion. Palette: cool cyan and warm amber held as two readable strands. Style: dimensional hand-painted fantasy game VFX, glassy facets, crisp highlights, controlled bloom, small-scale legibility. Composition: diagonal crossing strands, bright central join, asymmetrical forward flow, transparent padding. Avoid: text, combo numbers, UI emblem, character, weapons, scenery, backdrop, rainbow gradient, clipped edges, watermark."
+        },
+        "defeat-dissolve": {
+          "file": "reactions/defeat-dissolve/source/defeat-dissolve.generated.png",
+          "status": "candidate",
+          "role": "Residual energy dissolving downward into fading slate-violet facets and motes",
+          "sourceDimensions": "1024x1536",
+          "alpha": "Present; transparent corners; sampled alpha 0–253 with 83% transparent sample grid; soft haze requires game-background review",
+          "anchor": "upper remnant, with the dissolve falling downward",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat consequence VFX sprite for a Unity game. Scene/backdrop: genuinely transparent isolated cutout. Subject: a defeated target's residual energy dissolving downward into a small trail of fading ash-like facets and dim motes; no target body is shown. The shape should feel like a clean life-state end, distinct from an explosive hit and from smoke. Palette: cool slate, muted indigo, a few fading pale glints. Style: elegant hand-painted fantasy game VFX, readable taper, controlled glow. Composition: vertical loose fall from a fading upper remnant toward a sparse lower tail, no floor plane, transparent margins. Avoid: corpse, skull, blood, fire, large explosion, text, scenery, backdrop, clipped edges, watermark."
+        },
+        "status-expire": {
+          "file": "reactions/status-expire/source/status-expire.generated.png",
+          "status": "candidate",
+          "role": "Sparse flecks and an incomplete arc quietly collapsing at status withdrawal",
+          "sourceDimensions": "1341x1173",
+          "alpha": "Present; transparent corners; sampled alpha 0–252 with 93% transparent sample grid; in-context contrast review pending",
+          "anchor": "quiet central wink-out point",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D status-effect end VFX sprite for a Unity game. Scene/backdrop: genuinely transparent isolated cutout. Subject: a generic active-status aura cleanly expiring: a few small luminous flecks and a thin incomplete arc drift inward and wink out at a quiet central point, communicating end/withdrawal rather than impact or absorption. Neutral palette: pearl-silver with subdued violet-cyan edge glints so existing status colors can remain authoritative. Style: restrained hand-painted fantasy VFX, minimal silhouette, clean alpha, legible small. Composition: compact, sparse, open center, no complete UI circle. Avoid: explosion, shield break, inward vacuum vortex, text, characters, scenery, backdrop, broad halo, clipped edges, watermark."
+        },
+        "shield-impact": {
+          "file": "reactions/shield-impact/source/shield-impact.generated.png",
+          "status": "candidate",
+          "role": "Directional shield contact ripple for a successfully absorbed or blocked hit",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; transparent canvas pixels and partially transparent effect pixels sampled with System.Drawing",
+          "anchor": "horizontal center, content-biased toward lower-center contact point",
+          "prompt": "Create one reusable shield-impact VFX: bright shallow concave shield ripple at the instant a hit is stopped, one crisp contact spark and a few readable energy facets. Isolated transparent alpha, neutral pearl-silver/warm ivory suitable for element tint, premium hand-painted dimensional fantasy-game VFX, match Earth's polished luminous finish without copying its rocks/moss/jade. No text, frame, shield emblem, character, weapon, ground, or backdrop.",
+          "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-89fa972e-0a0f-407e-be47-a3c3814e609a.png"
+        },
+        "shield-break": {
+          "file": "reactions/shield-break/source/shield-break.generated.png",
+          "status": "candidate",
+          "role": "Outward shattering consequence with a broken center gap",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; transparent canvas corner and partially transparent effect pixels sampled with System.Drawing",
+          "anchor": "horizontal center, lower-center origin for outward fragment motion",
+          "prompt": "Create a reusable shield-break effect paired with shield-impact: shattered protective arc bursting outward into large translucent shield-glass facets, visible center gap and a few fading motes. Preserve the pearl-silver/warm-ivory dimensional fantasy VFX style. No intact shield, emblem, character, weapon, text, scenery, floor, or backdrop.",
+          "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-176f720b-a2f1-4e15-b486-d85a1a644ebd.png"
+        },
+        "shield-reform": {
+          "file": "reactions/shield-reform/source/shield-reform.generated.png",
+          "status": "candidate",
+          "role": "Inward-reassembling faceted barrier with a partly open central reconnect seam",
+          "sourceDimensions": "1145x1374",
+          "alpha": "Present; all four canvas corners sampled at alpha 0; partial alpha sampled across effect pixels; in-context and small-scale readability review pending",
+          "anchor": "center of the narrow reconnect seam; barrier plane remains open while facets converge",
+          "prompt": "Use case: stylized-concept. Create one reusable 2D combat VFX sprite for a Unity game. Subject: a damaged protective shield reforming after a break: an upright shallow concave barrier arc with a central gap that is almost closed, faceted shield-glass pieces and energy slivers visibly moving inward toward it, short curved inward filaments, and a bright narrow seam beginning to reconnect. Read as restoration/reassembly, not outward shatter or an already-intact shield. Dimensional hand-painted fantasy VFX, sculpted luminous facets, crisp cutout edges, readable small. Neutral pearl-silver and warm ivory with restrained turquoise seam light; reusable across shield elements. Controlled glow. Centered tall composition with transparent margins and a partly open center. Genuinely transparent isolated sprite. Avoid complete uninterrupted shield face, ward dome, bubble, explosion, outward debris, projectile, weapon, character, ground, scenery, text, emblem, UI frame, background, clipped edges, signature, watermark. Final edit added inward-pulling filaments and a reconnecting seam while retaining the original palette, framing, facets, and transparent cutout.",
+          "editHistory": "Initial shield-reform draft was revised to strengthen inward shard motion and the reconnecting seam; the first draft is not retained as a project asset."
+        },
+        "shield-stress": {
+          "file": "reactions/shield-stress/source/shield-stress.generated.png",
+          "status": "candidate",
+          "role": "Contained center-contact compression of an intact shield membrane with a few luminous stress cracks and no detached fragments",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; sampled on an approximately 9px grid: 9691 transparent, 6182 partial-alpha, and 3 fully opaque pixels",
+          "anchor": "center contact point",
+          "styleReferences": [
+            "reactions/shield-impact/source/shield-impact.generated.png",
+            "reactions/shield-break/source/shield-break.generated.png"
+          ],
+          "generatedSource": "Built-in Codex image-generation tool (2026-09-26)",
+          "prompt": "Use case: stylized-concept. Asset type: reusable transparent 2D combat VFX sprite for a fantasy garden-defense game, candidate source art. Input images: Image 1 is a style/material reference only for the existing luminous, hand-painted dimensional VFX finish; Image 2 is a contrast reference only—do not copy its exploding shards or broken-apart silhouette. Scene/backdrop: genuinely transparent isolated sprite. Subject: a single intact, slightly convex shield membrane being struck at one small contact point; the center visibly dents inward for an instant and shows only three to five fine luminous stress cracks across the still-connected surface. Add a tight, restrained contact flash and two short compression ripples hugging the surface. The barrier must remain whole, with its perimeter continuous and no detached pieces. Style/medium: polished hand-painted dimensional fantasy game VFX, crisp sculpted translucent facets, controlled glow and clean cutout edges, matching the reference rendering without copying its composition. Color palette: neutral pearl-silver membrane with restrained cool cyan cracks and a tiny warm-white contact core; not tied to one element. Composition: compact front-facing oval/curved plane centered in a square canvas, generous transparent padding, contact point near center, strong readable silhouette at small game scale. Constraints: transient shield-impact treatment, not a new persistent damage state; the shield is visibly intact. Genuine transparent alpha, one isolated sprite, no baked background. Avoid: explosion, outward shard spray, separated halves, broken shield, large radial burst, circle emblem, rune, symbol, character, weapon, text, scenery, ground, opaque backdrop, broad white halo, clipped edges, signature, watermark."
+        },
+        "parry": {
+          "file": "reactions/parry/source/parry.generated.png",
+          "status": "candidate",
+          "role": "Precise tangential deflection of an incoming strike",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; transparent canvas corner and partially transparent effect pixels sampled with System.Drawing",
+          "anchor": "contact point near lower-left third; redirected motion sweeps toward upper-right",
+          "prompt": "Create a reusable parry deflection effect in the same dimensional pearl-silver/warm-ivory fantasy VFX style: one asymmetric diagonal crescent with a concentrated contact spark and redirected streaks. No broad symmetric shield arc, shield plane, weapon, character, text, emblem, scenery, floor, or backdrop.",
+          "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-3d38e0c1-8d85-42bf-b696-6927fdb54880.png"
+        },
+        "block": {
+          "file": "reactions/block/source/block.generated.png",
+          "status": "candidate",
+          "role": "Controlled stop against a stable faceted barrier",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; transparent canvas corner and partial-alpha sprite pixels sampled with System.Drawing",
+          "anchor": "center of barrier plane",
+          "prompt": "Create a reusable block effect: compact front-facing faceted energy plane catching incoming force; two or three short streaks visibly stop on its surface; pearl-silver/warm-ivory style matching the reference. No character, weapon, emblem, text, scenery, or background.",
+          "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-fca29650-2071-468a-9f92-b5fd6db08cd9.png"
+        },
+        "miss": {
+          "file": "reactions/miss/source/miss.generated.png",
+          "status": "candidate",
+          "role": "Evasive strike passing around an untouched center",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; canvas-corner alpha 1/255, visible partial-alpha ribbon sampled with System.Drawing",
+          "anchor": "empty center around which the strike slips",
+          "prompt": "Create a reusable miss/evade effect: narrow pearl-silver/warm-ivory slash curves around an empty central gap and fades past without contact. No collision flash, target, person, weapon, text, scenery, or backdrop.",
+          "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-06b7a675-11e5-4c7b-ad6d-8b9226fb61cf.png"
+        },
+        "dodge-slip": {
+          "file": "reactions/dodge-slip/source/dodge-slip-v2.generated.png",
+          "status": "candidate",
+          "role": "Twin offset displacement crescents around an untouched center, distinct from a miss trail",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; transparent canvas corner; sampled alpha 0–255; content bounds x=33..1234, y=20..1228",
+          "anchor": "empty center; orient along the real evasion displacement",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input images: both references are style-only; match their dimensional hand-painted fantasy rendering, crisp translucent facets, narrow bright edges, and refined cutout finish, not their subjects or exact shapes. Primary request: create a compact Dodge / evade-slip outcome sprite, visibly distinct from a generic missed attack. Subject: two short offset phase-afterimages curving around an untouched empty center, with a crisp displaced edge and only a few tiny motes; suggest the target slipped sideways through a narrow gap, without showing a body or a hit. Keep the marks broken and compact rather than forming a long travel trail or full loop. Style: polished jewel-like fantasy combat VFX, readable solid facets, restrained jade/cyan accent over silver-white, controlled glow. Composition: square transparent canvas; keep every visible pixel entirely inside the central 65% of the canvas, with at least 17% clean transparent margin on every edge. Center the empty dodge gap. Constraints: genuinely transparent background, isolated single effect. Avoid: parry contact spark, shield, dome, explosion, slash impact, long dash trail, portal/fold seam, character/body silhouette, weapon, target, text, scenery, backdrop, clipped edges, signature, watermark.",
+          "supersededCandidateFiles": [
+            {
+              "file": "reactions/dodge-slip/source/dodge-slip.generated.png",
+              "reason": "First generated pass touched the left and bottom canvas edges; retained for comparison, not selected."
+            }
+          ]
+        },
+        "absorb": {
+          "file": "reactions/absorb/source/absorb.generated.png",
+          "status": "candidate",
+          "role": "Incoming energy strands curling into and collapsing at a central core",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; transparent canvas corner and partial-alpha sprite pixels sampled with System.Drawing",
+          "anchor": "small central absorption core",
+          "prompt": "Create a reusable absorb effect: three or four neutral translucent luminous facets and ribbons visibly curl inward and collapse into a small bright core, with motion converging rather than exploding. No shield, character, weapon, text, scenery, or backdrop.",
+          "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-20c451ad-fd49-425e-aaae-85fb0d817c1b.png"
+        },
+        "pierce": {
+          "file": "reactions/pierce/source/pierce.generated.png",
+          "status": "candidate",
+          "role": "Thin horizontal pass-through with distinct entry and exit flashes",
+          "sourceDimensions": "1774x887",
+          "alpha": "Present; transparent canvas corner and partial-alpha sprite pixels sampled with System.Drawing",
+          "anchor": "entry point; output axis is horizontal left-to-right",
+          "prompt": "Create a reusable pierce/penetrate effect: thin horizontal neutral crystal-light streak passes through a small opening, with a sharp entry glint and brighter exit flare, continuing beyond the target point. No visible target, weapon, character, explosion, text, scenery, or backdrop.",
+          "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-8d8fb176-75e6-43cc-a5df-106c84c7c6de.png"
+        }
+      }
+    },
+    "counter-responses": {
+      "status": "candidate-art",
+      "styleReference": "src/FusionRpg.Injector/Assets/elemental-action-vfx/earth/v2/impact-512x512.png",
+      "assets": {
+        "reflect-return": {
+          "file": "counter-responses/reflect-return/source/reflect-return.generated.png",
+          "status": "candidate",
+          "role": "Two converging crystal-light paths rebound from one bright contact into a return sweep",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; all four corner samples alpha 0; alpha range and partial pixels sampled with System.Drawing",
+          "anchor": "contact knot; two paths diverge toward their return directions",
+          "promptRecord": "Summary only; exact generation prompt was not retained in the handoff.",
+          "promptSummary": "Create a reusable reflect-return combat VFX: two incoming icy energy paths meet at a bright deflection point, then sweep back outward in a clear forked return shape. Hand-painted faceted fantasy VFX, isolated transparent cutout, no character, weapon, text, scenery, or backdrop."
+        },
+        "counter-release": {
+          "file": "counter-responses/counter-release/source/counter-release.generated.png",
+          "status": "candidate",
+          "role": "Low grounded crystal-and-energy fan bursting outward from a counter contact point",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; all four corner samples alpha 0; alpha range and partial pixels sampled with System.Drawing",
+          "anchor": "lower-center contact point; motion fans upward and outward",
+          "promptRecord": "Summary only; exact generation prompt was not retained in the handoff.",
+          "promptSummary": "Create a reusable counter-release VFX: an ivory-gold crystalline counter burst with a low contact anchor, angular fragments and restrained turquoise energy sweeping upward/outward. Keep its ground-oriented fan distinct from a shield parry arc. Hand-painted fantasy style, isolated transparent cutout, no character, weapon, text, scenery, or backdrop."
+        },
+        "resist-nullification": {
+          "file": "counter-responses/resist-nullification/source/resist-nullification.generated.png",
+          "status": "candidate",
+          "role": "Compact closed crystal shell with a nullified center and outward-pointing facets",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; all four corner samples alpha 0; alpha range and partial pixels sampled with System.Drawing",
+          "anchor": "center of the contained nullification core",
+          "promptRecord": "Summary only; exact generation prompt was not retained in the handoff.",
+          "promptSummary": "Create a reusable resistance/immune nullification VFX: a compact closed faceted crystal shell briefly seals around a small dark center, with a few shards turning outward to show the incoming effect was rejected. Hand-painted fantasy style, isolated transparent cutout, no character, weapon, text, scenery, or backdrop."
+        }
+      }
+    },
+    "neutral-phases": {
+      "status": "candidate-art",
+      "styleReference": "src/FusionRpg.Injector/Assets/elemental-action-vfx/earth/v2/impact-512x512.png",
+      "assets": {
+        "cast-focus": {
+          "file": "neutral-phases/cast-focus/source/cast-focus.generated.png",
+          "status": "candidate",
+          "role": "Vertical arrangement of floating facets and motes converging on a quiet center",
+          "sourceDimensions": "1142x1377",
+          "alpha": "Present; all four corner samples alpha 0; alpha range and partial pixels sampled with System.Drawing",
+          "anchor": "central convergence point",
+          "promptRecord": "Summary only; exact generation prompt was not retained in the handoff.",
+          "promptSummary": "Create a reusable element-neutral cast-focus VFX: several ivory-gold facets and thin energy curls gather toward a calm central point in a compact vertical composition, visibly preparatory rather than explosive. Hand-painted fantasy style, isolated transparent cutout, no character, weapon, text, scenery, or backdrop."
+        },
+        "release": {
+          "file": "neutral-phases/launch/source/neutral-release.generated.png",
+          "status": "candidate",
+          "role": "Wide silver-white energy ribbon released from a sharp crystal flare",
+          "sourceDimensions": "1774x887",
+          "alpha": "Present; all four corner samples alpha 0; alpha range and partial pixels sampled with System.Drawing",
+          "anchor": "bright left-side release origin; horizontal travel axis left-to-right",
+          "promptRecord": "Summary only; exact generation prompt was not retained in the handoff.",
+          "promptSummary": "Create a reusable element-neutral release/travel VFX: one sharp ivory crystal flare at the left launches a narrow silver-white energy ribbon toward the right with a tapered tail and restrained facets. Hand-painted fantasy style, isolated transparent cutout, no character, weapon, target, text, scenery, or backdrop."
+        }
+      }
+    },
+    "channels": {
+      "status": "candidate-art",
+      "styleReference": "src/FusionRpg.Injector/Assets/elemental-action-vfx/earth/v2/impact-512x512.png",
+      "note": "Visual exploration only; a beam is a future primitive/spec decision, not runtime-supported by this asset record.",
+      "assets": {
+        "source-flare": {
+          "file": "channels/source-flare/source/channel-source-flare.generated.png",
+          "status": "candidate",
+          "role": "Vertical faceted source crystal and contained core feeding a short rightward current",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; all four corner samples alpha 0; sampled alpha 0–255 with 74% transparent sample grid",
+          "anchor": "contained lower-center ignition core; current flows right",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Match the reference's dimensional hand-painted fantasy finish, sculpted facets, crisp highlights and clean cutout, but not its Earth rocks or green palette. Subject: compact neutral-energy channel ignition at the source end of a beam: small angular facets and narrow silver-teal currents converge into a bright contained core, with a clear outward direction to the right. Palette pearl-silver, pale turquoise and a tiny warm-ivory glint; controlled emission, future tint possible. Near-square composition, source anchor at left-center and short directional tails to the right. Must read as sustained energy emitted, not a one-shot explosion or cast charge. Transparent isolated sprite; no text, character, weapon, target, scenery or backdrop."
+        },
+        "core-ribbon": {
+          "file": "channels/core-ribbon/source/channel-core-ribbon.generated.png",
+          "status": "candidate",
+          "role": "Uniform-thickness silver-white channel body with parallel turquoise currents and no endpoint flare",
+          "sourceDimensions": "2172x724",
+          "alpha": "Present; all four corner samples alpha 0; sampled alpha 0–253 with 81% transparent sample grid",
+          "anchor": "center axis; transparent ends are safe for future stretch/rotation tests",
+          "prompt": "Use case: stylized-concept. Asset type: reusable stretchable 2D combat VFX sprite for a Unity game. Match the reference's dimensional hand-painted fantasy material, crisp sculpted energy edges and clean cutout, not its Earth rocks or green palette. Subject: middle body of a neutral magical beam/channel, one narrow horizontal silver-white energy ribbon with two subtle parallel turquoise currents and a gently faceted inner core. Keep thickness nearly uniform through the central 70 percent; fade cleanly at both ends with no endpoint flare so a future renderer can rotate and stretch the middle safely. Low detail for small-scale readability; controlled emission. Very wide horizontal line, centered with transparent padding, no arrowhead. Must read as sustained beam, not projectile trail, slash, or explosion. Transparent isolated sprite; no source/target globes, sparks at either end, character, weapon, scenery, text or backdrop."
+        },
+        "target-terminus": {
+          "file": "channels/target-terminus/source/channel-target-terminus.generated.png",
+          "status": "candidate",
+          "role": "Compact receiving crescent of pearl-silver facets around a turquoise contact core",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; all four corner samples alpha 0; sampled alpha 0–255 with 82% transparent sample grid",
+          "anchor": "center contact core; shallow notch faces the incoming beam",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D game VFX sprite for a Unity beam/channel endpoint. Image 1 is a style reference only for dimensional hand-painted fantasy materials, crisp facets and clean isolated cutout; do not copy Earth rocks or green palette. Scene/backdrop: genuinely transparent. Subject: compact terminal receiving flare for an energy beam: a small asymmetrical open crescent of pearl-silver facets wraps around a bright turquoise contact core; the left side has a shallow inward notch where a beam would meet, and three short facets turn away from the point. Keep the mark compact and centered, no line extending from either side, no visible beam body. Controlled glow, readable at small gameplay scale, no debris cloud. Palette cool pearl, restrained teal, warm-ivory center. Avoid long ribbon, trail, arrow, projectile, large radial explosion, shield plane, complete ring, character, weapon, target body, text, scenery, backdrop, broad halo, clipped edges, watermark."
+        }
+      }
+    },
+    "delivery": {
+      "status": "candidate-art",
+      "styleReference": "src/FusionRpg.Injector/Assets/elemental-action-vfx/earth/v2/impact-512x512.png",
+      "assets": {
+        "melee-multicut-sweep": {
+          "file": "delivery/melee-multicut-sweep/source/melee-multicut-sweep.generated.png",
+          "status": "candidate",
+          "role": "Three parallel source-side melee cuts with sharp tips and no contact spark",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; all four corner samples alpha 0; sampled alpha 0–254 with 75% transparent sample grid",
+          "anchor": "source-side lower-left stroke ends; orient the group to the actual attack direction",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input image: Image 1 is a rendering-style reference only; match its dimensional hand-painted fantasy finish, crisp sculpted facets and clean transparent cutout, but not its Earth rocks or green palette. Scene/backdrop: genuinely transparent isolated sprite. Subject: a source-anchored close-range multi-cut attack sweep: three short, parallel, sharply curved silver energy cuts travel together along one diagonal, with small gaps and stagger so it reads as a rapid slash sequence rather than one crescent. Keep the source-side pivot visually quieter and the stroke tips sharp. No contact point or target impact is shown. Style: dimensional hand-painted fantasy VFX, low detail density, crisp silhouette and restrained glow for gameplay scale. Palette: pearl-silver with subtle jade and warm-ivory edge glints. Composition: wide diagonal group that can rotate together; generous transparent margin. Distinguish it from a single parry deflection arc: no central contact spark, no shield curve, no rebound path. Avoid character, weapon, target, explosion, projectile, text, UI, scenery, backdrop, broad halo, clipped edges, watermark."
+        },
+        "lobbed-projectile-arc": {
+          "file": "delivery/lobbed-projectile-arc/source/lobbed-projectile-arc.generated.png",
+          "status": "candidate",
+          "role": "Single elevated curved flight ribbon with a compact leading projectile focus",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; all four corner samples alpha 0; sampled alpha 0–254 with 85% transparent sample grid",
+          "anchor": "trajectory start, leading seed, and actual supplied curve; do not infer path from endpoints",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input image: Image 1 is a rendering-style reference only; match its dimensional hand-painted fantasy finish, crisp sculpted facets and clean cutout, but not its Earth rocks or green palette. Scene/backdrop: genuinely transparent isolated sprite. Subject: one lobbed magical projectile in flight, shown as a single high smooth ballistic curve rising from a low left-side tail toward a compact bright leading seed at the upper right; a narrow pearl-silver ribbon and a few sparse facets follow the curve. The trajectory is one continuous arc, clearly unlike a horizontal straight beam or straight elemental travel streak. Style: hand-painted dimensional fantasy game VFX, clear silhouette, restrained emission and sparse detail for small-scale readability. Palette: pearl-silver, muted turquoise, tiny warm-ivory projectile core. Composition: wide diagonal parabolic path with transparent padding and no ground or target. This art may only be placed along a real supplied projectile path; it does not define a gameplay arc. Avoid multiple projectiles, arrowhead, full ring, impact explosion, character, weapon, target body, text, scenery, background, broad halo, clipped edges, watermark."
+        }
+      }
+    },
+    "support": {
+      "status": "in-progress",
+      "styleReference": "src/FusionRpg.Injector/Assets/elemental-action-vfx/earth/v2/impact-512x512.png",
+      "assets": {
+        "ward": {
+          "file": "support/ward/source/ward.generated.png",
+          "status": "candidate",
+          "role": "Open-centered protective dome frame for an ally-facing ward",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+          "anchor": "center of the protected actor; open center preserves actor visibility",
+          "prompt": "Create a reusable protective ward VFX: an open-centered, faceted aqua and warm-ivory shield dome/frame with a clear lower contact edge and small luminous accents. Isolated transparent alpha, dimensional hand-painted fantasy game style. No character, emblem, text, scenery, or backdrop."
+        },
+        "ally-link": {
+          "file": "support/ally-link/source/ally-link.generated.png",
+          "status": "candidate",
+          "role": "Symmetric two-endpoint support tether with shared bidirectional flow",
+          "sourceDimensions": "2172x724",
+          "alpha": "Present; sampled alpha 0–255; content bounds x=110..2009, y=26..706",
+          "anchor": "both matching endpoint crystals; stretch only between actual linked actors",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input images: Image 1 is a style reference only; do not copy its red palette or one-way siphon shape. Image 2 is a style reference only; do not copy its enclosing ward silhouette. Match dimensional hand-painted fantasy rendering, crisp translucent facets, clean cutout, and controlled glints. Primary request: an elegant positive ally-support link, unmistakably shared rather than draining. Subject: two matching small aqua/ivory endpoint crystals joined by two delicate, interwoven energy filaments; a tiny midpoint knot sends equal pulses in both directions. Keep both endpoints identical in size and brightness, and keep the connecting filaments thin. This is a calm connection, not a powerful spell. Composition: wide horizontal 3:1 canvas; the entire effect including both endpoint crystals must occupy only the central 70% of the image, leaving broad clean transparent margins on every side. Keep all visible pixels away from canvas edges. Style: hand-painted dimensional fantasy VFX, pearl-silver, soft jade/aqua, and small warm-ivory glints; refined highlights, restrained glow, no bloom haze. Show two clear anchor nodes and an open center. Constraints: genuinely transparent background; no characters; only two endpoints; no directional arrow, drain stream, heart symbol, or status badge; this candidate may be stretched only between actual gameplay anchors. Avoid: asymmetry, oversized end clusters, one-way flow, motes moving toward one node, rose/red siphon, heart, chain, arrow, shield/dome, beam attack, projectile, explosion, text, scenery, backdrop, cropped or edge-touching content, signature, watermark.",
+          "supersededCandidateFiles": [
+            {
+              "file": "support/ally-link/source/ally-link-v1.generated.png",
+              "reason": "First pass nearly touched the lower canvas edge; retained for comparison, selected revision has safe transparent margins."
+            }
+          ]
+        },
+        "guard-intercept": {
+          "file": "support/guard-intercept/source/guard-intercept.generated.png",
+          "status": "candidate",
+          "role": "Off-center protective catch with force deflected aside, distinct from a persistent ward or reflect trail",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; transparent canvas corner alpha 0; contact-core sample alpha 252; visible partially transparent sprite pixels",
+          "anchor": "off-center contact point where the defender catches the incoming strike",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat VFX sprite for a Unity game. Input images: both references are style-only; match their dimensional hand-painted fantasy rendering, crisp sculpted translucent facets, narrow bright edges, and refined cutout finish, not their subjects or exact shapes. Primary request: one compact guard-intercept contact cue: a brief protective catch at an off-center point, as if a defender momentarily takes an incoming strike meant for an ally. Subject: a small concave side-caught facet arc with a concentrated contact glint and two short force lines bending away tangentially; keep it momentary and local rather than a sustained barrier. Style: polished jewel-like fantasy combat VFX, controlled glow with legible solid facets, not overexposed. Palette: silver-white with restrained jade/cyan edge accents. Composition: centered, asymmetric diagonal impact on a square transparent canvas, generous padding, readable as a small sprite. Constraints: genuinely transparent background, one isolated effect, no characters or baked-in endpoint relationship. Avoid: complete shield silhouette, enclosing ward/dome, shield-break fragments, parry crescent, reflect-return projectile, long beam, arrow glyph, text, scenery, backdrop, clipped edges, signature, watermark."
+        },
+        "heal": {
+          "file": "support/heal/source/heal.generated.png",
+          "status": "candidate",
+          "role": "Upward restorative growth of luminous leaves and motes",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+          "anchor": "ground point beneath the healed actor; upward motion axis",
+          "prompt": "Create a reusable healing VFX: a rising vertical stream of jade leaves, warm-ivory light, and restorative motes lifting from a small ground pulse. Keep it gentle and clearly supportive, not an impact blast. Isolated transparent alpha, dimensional hand-painted fantasy game style. No character, text, scenery, or backdrop."
+        },
+        "cleanse": {
+          "file": "support/cleanse/source/cleanse.generated.png",
+          "status": "candidate",
+          "role": "Sweeping crescent of cleansing aqua light with dark fragments dispersing outward",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+          "anchor": "target center, with sweep traveling from lower-left toward upper-right",
+          "prompt": "Create a reusable cleanse VFX: a sweeping aqua and warm-ivory crescent ribbon that carries dark fragments away from its path, readable as removal and release rather than damage. Isolated transparent alpha, dimensional hand-painted fantasy game style. No character, text, scenery, or backdrop."
+        },
+      "buff": {
+          "file": "support/buff/source/buff.generated.png",
+          "status": "candidate",
+          "role": "Symmetric golden lift of ascending facets around a central axis",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+          "anchor": "centered on the actor; vertical axis",
+          "prompt": "Create a reusable buff VFX: a symmetrical vertical lift of warm golden light, rising facets, and a few bright motes, with a stable center and no weapon-like silhouette. Isolated transparent alpha, dimensional hand-painted fantasy game style. No character, text, scenery, or backdrop."
+        }
+      }
+    },
+    "movement": {
+      "status": "in-progress",
+      "styleReference": "src/FusionRpg.Injector/Assets/elemental-action-vfx/earth/v2/impact-512x512.png",
+      "palette": "neutral pearl-silver and restrained cool turquoise; runtime-tintable",
+      "assets": {
+        "dash": {
+          "file": "movement/dash/source/dash.generated.png",
+          "status": "candidate",
+          "role": "Fast tapered double ribbon indicating a character's dash path without drawing the character",
+          "sourceDimensions": "1774x887",
+          "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+          "anchor": "starting end of the streak; directional travel toward the pointed tail end",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat movement VFX sprite for a Unity game. Input image: style reference only for dimensional hand-painted finish and crisp highlights. Scene/backdrop: genuinely transparent isolated sprite. Subject: one fast dash after-streak: two or three close, parallel, tapered motion ribbons with a short sharp leading flare and a few trailing motes; imply a body moved rapidly without drawing any body. Palette: neutral pearl-silver and restrained cool turquoise, tintable in runtime. Composition: wide diagonal/horizontal directional slash, long taper, generous transparent padding. Style: clean sculpted fantasy VFX, controlled glow, legible at small scale. Avoid: sword, weapon, character silhouette, projectile, impact explosion, text, scenery, background, broad white halo, clipped edges, signature, watermark."
+        },
+        "leap": {
+          "file": "movement/leap/source/leap.generated.png",
+          "status": "candidate",
+          "role": "Open-ended diagonal leap trajectory from lower-left takeoff to upper-right landing",
+          "sourceDimensions": "1774x887",
+          "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+          "anchor": "lower-left takeoff end; trajectory travels diagonally toward the upper-right open end",
+          "prompt": "Edit Image 1 only: keep the exact diagonal open-ended leap trajectory, overall silhouette, direction, proportions, and transparent canvas unchanged. Remove every brown stone, moss, leaf-like fragment, and Earth-colored detail. Replace them only with a few small translucent pearl-silver and cool-turquoise wind motes that follow the existing path. Maintain the dimensional hand-painted fantasy VFX finish, controlled cyan-white edge light, low bloom, and genuine transparent background. Do not add a character, feet, portal, arch, ground, text, or scenery.",
+          "editHistory": "Initial generated arc was rejected because it read as an arch and inherited Earth-colored stones; this non-destructive edit preserved the diagonal motion path and replaced the materials."
+        },
+        "blink": {
+          "file": "movement/blink/source/blink.generated.png",
+          "status": "candidate",
+          "role": "Two opposing translucent planes pinching across a central space-fold seam",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+          "anchor": "center seam of the spatial fold",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat movement VFX sprite for a Unity game. Input image: style reference only for dimensional hand-painted finish and crisp highlights. Scene/backdrop: genuinely transparent isolated sprite. Subject: one blink/teleport space-fold cue: two thin opposing translucent planes pinch and fold across a narrow central seam, with subtle displaced edge echoes and a few motes being drawn through the fold. No portal destination, no circle. Palette: neutral pearl-silver with cool turquoise edge light, tintable in runtime. Composition: compact asymmetric vertical crease with clear center seam and negative space, generous padding. Style: dimensional but restrained fantasy VFX, controlled glow, readable at small scale. Avoid: magic circle, doorway, character, smoke puff, projectile, impact explosion, text, scenery, background, broad white halo, clipped edges, signature, watermark."
+        },
+        "landing": {
+          "file": "movement/landing/source/landing.generated.png",
+          "status": "candidate",
+          "role": "Shallow ground-level oval pressure ripple at the central landing contact point",
+          "sourceDimensions": "1774x887",
+          "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+          "anchor": "center contact point on the ground plane",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat movement VFX sprite for a Unity game. Input image: style reference only for dimensional hand-painted finish and crisp highlights. Scene/backdrop: genuinely transparent isolated sprite. Subject: one ground-level landing ripple: a compressed shallow oval pressure wave expanding outward from a central contact point, with a few tiny dust motes and short ground-hugging streaks. Do not draw a vertical explosion. Palette: neutral pearl-silver, pale stone, restrained cool turquoise edge light, tintable in runtime. Composition: low wide silhouette, centered contact anchor, generous transparent padding. Style: clean sculpted fantasy VFX, moderate contrast and controlled glow, legible at small scale. Avoid: crater, large debris, feet, character, radial fireball, vertical shockwave, circular UI ring, text, scenery, background, broad white halo, clipped edges, signature, watermark."
+        },
+        "knockback": {
+          "file": "movement/knockback/source/knockback.generated.png",
+          "status": "candidate",
+          "role": "Outward pressure wake with three separated concave force blades; intended for a push/knockback visual",
+          "sourceDimensions": "1536x1024",
+          "alpha": "Present; transparent corners and partially transparent sprite pixels sampled with System.Drawing; visible artwork approaches the canvas edges, so add safe padding before runtime export",
+          "anchor": "compressed force origin at left; directional pressure expands rightward and can be mirrored",
+          "prompt": "Use case: stylized-concept. Create one reusable 2D combat VFX sprite for a Unity game, not a sheet or mockup. Subject: a forceful outward push / knockback pressure wake, shown as one isolated side-on directional effect. The pressure emerges from a tight compressed contact point on the left and expands rapidly toward the right as three broad, separated, concave shockwave blades with torn feathered edges and a few sharp energy splinters. The center remains open and transparent; read as force pushing away, not a hit explosion, projectile, shield, slash, or arrow symbol. Art direction: dimensional hand-painted fantasy VFX with sculpted brush facets, confident silhouette, crisp cutout edges, detail near the pressure source and leading edges. Palette: luminous ivory core, cool steel-blue and muted jade edge light, restrained warm amber sparks. Controlled glow, no broad haze. Wide horizontal sprite, generous transparent margins, mirrorable. Genuinely transparent background. Avoid characters, bodies, weapons, ground, scenery, text, UI, frame, emblem, enclosing ring, signature, watermark, clipped edges, or extra effects."
+        },
+        "pull-in": {
+          "file": "movement/pull-in/source/pull-in.generated.png",
+          "status": "candidate",
+          "role": "Three separated curved streamers converging inward on a small focal point; intended for draw-in/pull visuals",
+          "sourceDimensions": "1774x887",
+          "alpha": "Present; transparent corners and partially transparent sprite pixels sampled with System.Drawing; visible artwork approaches the canvas edges, so add safe padding before runtime export",
+          "anchor": "convergence focal point at right; inward flow can be mirrored",
+          "prompt": "Use case: stylized-concept. Create one reusable 2D combat VFX sprite for a Unity game, separate from any other effect. Subject: an inward pull / draw-in force ribbon that visually attracts toward a focal point. Show three clearly separated, long curved streamers entering from a wide left and right spread and bending inward to converge at a small bright focal point just right of center. Their shape is smooth and tensioned, with a few angular jade/steel facets and tiny ivory sparks traveling inward. Leave generous open transparent space between the streamers: no body, target, orb, or projectile. Read inward, not outward explosion, link tether between two endpoints, shield, suction mouth, or circular vortex. Art direction: dimensional hand-painted fantasy VFX, sculpted brush facets, confident clean silhouette, crisp edge treatment, restrained glow, high contrast for small sprite scale. Palette: cool steel-blue and muted jade streamers, ivory focal glints, a few restrained amber motes. Wide horizontal side-view ribbon with visible curved paths converging inward, mirrorable. Genuinely transparent background with clean alpha. Avoid backdrop, scenery, ground, character, body, weapon, text, UI, frame, emblem, enclosing ring, broad haze, signature, watermark, clipped edges, or extra effects."
+        }
+      }
+    },
+    "statuses": {
+      "status": "candidate-art",
+      "sourceNote": "Optional art motifs supplement the existing status-specific apply/sustain cues; they do not replace or remap the runtime catalog.",
+      "styleReference": "src/FusionRpg.Injector/Assets/elemental-action-vfx/earth/v2/impact-512x512.png",
+      "assets": {
+        "debuff-mark": {
+          "file": "statuses/debuff-mark/source/debuff-mark.generated.png",
+          "status": "candidate",
+          "role": "Downward fractured notch with a short tether for debuff application",
+          "sourceDimensions": "1024x1536",
+          "alpha": "Present; one corner sample at alpha 1 and remaining corners 0; sampled alpha 0–253 with 76% transparent sample grid; edge review pending",
+          "anchor": "top attachment, with pointed motion directed down toward the target",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D combat/status VFX sprite for a Unity game. Scene/backdrop: genuinely transparent isolated cutout. Subject: a compact debuff application mark: a sharp downward notch with a short tether and two descending fractured wisps, attaching above an invisible target to imply weakened or hindered state. This is an application accent, not a second sustained aura. Palette: restrained smoky violet and steel with one muted rose glint. Style: hand-painted dimensional fantasy VFX, crisp negative space, controlled glow, readable small. Composition: vertically oriented, anchor at top, pointed motion down, generous transparent padding. Avoid: UI arrow icon, text, character, weapon, scenery, floor, background, large damage burst, clipped edges, watermark."
+        },
+        "rally-command": {
+          "file": "statuses/rally-command/source/rally-command.generated.png",
+          "status": "candidate",
+          "appliesTo": ["rally", "command"],
+          "role": "Vertical blue-violet command crest that reads as a steady rallying signal",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; corners sampled 0 alpha; partial sprite alpha sampled through 253; in-context edge review pending",
+          "anchor": "lower-center, with the crest rising above the actor",
+          "promptRecord": "Summary only; exact generation prompt was not retained in the handoff.",
+          "promptSummary": "Create a reusable status VFX motif for rally and command: a confident vertical blue-violet facet crest, compact and legible, with rising signal-like geometry; isolated transparent cutout, hand-painted dimensional fantasy finish, no UI emblem, character, scenery, text, or backdrop."
+        },
+        "mind-charm": {
+          "file": "statuses/mind-charm/source/mind-charm.generated.png",
+          "status": "candidate",
+          "appliesTo": ["hypno", "charm_pulse"],
+          "role": "Interwoven pink-violet ribbons suggesting a controlled mental influence",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; one corner sample at alpha 1 and remaining corners 0; partial sprite alpha sampled through 253; inspect transparent edge in context",
+          "anchor": "center of the ribbon weave",
+          "promptRecord": "Summary only; exact generation prompt was not retained in the handoff.",
+          "promptSummary": "Create a reusable mind/charm status VFX motif with elegant pink-violet interwoven ribbons and a controlled, hypnotic flow; isolated transparent cutout, hand-painted dimensional fantasy finish, readable at small sprite scale, no character, scenery, text, UI symbol, or backdrop."
+        },
+        "contagion": {
+          "file": "statuses/contagion-spark/source/contagion-spark.generated.png",
+          "status": "candidate",
+          "appliesTo": ["spore"],
+          "role": "Dispersive cluster of green spores with an outward-contagion read",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; corners sampled 0 alpha; partial sprite alpha sampled through 254; in-context edge review pending",
+          "anchor": "center of the spore cluster",
+          "promptRecord": "Summary only; exact generation prompt was not retained in the handoff.",
+          "promptSummary": "Create a reusable spore/contagion status VFX motif: a dispersive green cluster of distinct spores with a light outward-drifting composition; isolated transparent cutout, hand-painted dimensional fantasy finish, no plants, characters, scenery, text, or backdrop."
+        },
+        "spark": {
+          "file": "statuses/contagion-spark/source/spark.generated.png",
+          "status": "candidate",
+          "appliesTo": ["spark"],
+          "role": "Chained golden arcs linking several compact electrical nodes",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; corners sampled 0 alpha; partial sprite alpha sampled through 253; in-context edge review pending",
+          "anchor": "center of the connected arc cluster",
+          "promptRecord": "Summary only; exact generation prompt was not retained in the handoff.",
+          "promptSummary": "Create a reusable spark status VFX motif with several chained golden electrical arcs and compact nodes, distinct from a single lightning bolt; isolated transparent cutout, hand-painted dimensional fantasy finish, no character, scenery, text, or backdrop."
+        },
+        "nerve-unsettled": {
+          "file": "statuses/nerve-ladder/source/nerve-unsettled.generated.png",
+          "status": "candidate",
+          "appliesTo": ["nerve.unsettled"],
+          "role": "Sparse pale fissures for the first stage of the nerve ladder",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; corners sampled 0 alpha; partial sprite alpha sampled through 253; in-context edge review pending",
+          "anchor": "center of the fissure pattern",
+          "promptRecord": "Summary only; exact generation prompt was not retained in the handoff.",
+          "promptSummary": "Create the lightest nerve-status stage: sparse pale grey-violet fissures with generous negative space, same centered visual family as the later stages; isolated transparent cutout, hand-painted dimensional fantasy finish, no character, scenery, text, or backdrop."
+        },
+        "nerve-shaken": {
+          "file": "statuses/nerve-ladder/source/nerve-shaken.generated.png",
+          "status": "candidate",
+          "appliesTo": ["nerve.shaken"],
+          "role": "Denser grey-violet fissures for the middle nerve stage",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; one corner sample at alpha 1 and remaining corners 0; partial sprite alpha sampled through 253; inspect transparent edge in context",
+          "anchor": "center of the fissure pattern",
+          "promptRecord": "Summary only; exact generation prompt was not retained in the handoff.",
+          "promptSummary": "Create the middle nerve-status stage: more numerous and intense grey-violet fissures than the sparse unsettled stage, preserving the shared centered family silhouette; isolated transparent cutout, hand-painted dimensional fantasy finish, no character, scenery, text, or backdrop."
+        },
+        "nerve-afflicted": {
+          "file": "statuses/nerve-ladder/source/nerve-afflicted.generated.png",
+          "status": "candidate",
+          "appliesTo": ["nerve.afflicted"],
+          "role": "Dense dark-violet core and fissures for the strongest nerve stage",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; one corner sample at alpha 1 and remaining corners 0; partial sprite alpha sampled through 255; inspect transparent edge in context",
+          "anchor": "center of the dense fissure core",
+          "promptRecord": "Summary only; exact generation prompt was not retained in the handoff.",
+          "promptSummary": "Create the strongest nerve-status stage: a dense dark-violet fissure core, clearly more intense than unsettled and shaken while retaining their shared visual family; isolated transparent cutout, hand-painted dimensional fantasy finish, no character, scenery, text, or backdrop."
+        },
+        "cold-control": {
+          "file": "statuses/cold-control/source/cold-control.generated.png",
+          "status": "candidate",
+          "appliesTo": ["butter", "freeze", "cold", "kelp"],
+          "role": "Translucent frost bands clasp inward around an invisible target center",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+          "anchor": "center of the restraint, leaving an open center",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D status-effect VFX sprite for a Unity game. Input image: style reference only for dimensional hand-painted rendering, sculpted facets and clean alpha; do not copy Earth rocks, moss, or green palette. Scene/backdrop: genuinely transparent isolated sprite. Subject: a cold/control status motif: three translucent frost bands clasp inward around an invisible target center, with a few small ice facets and a visible open center. Read as binding/chilling restraint, not an impact blast. Style: hand-painted dimensional fantasy VFX, crisp faceted edges and controlled glow. Palette: cyan, cold blue and restrained white edge light. Composition: compact vertical oval silhouette with clear negative center and generous transparent padding. Avoid: character, hands, chains, snowflake icon, ring emblem, projectile, ground, text, scenery, broad white halo, clipped edges, signature, watermark."
+        },
+        "decay": {
+          "file": "statuses/decay/source/decay.generated.png",
+          "status": "candidate",
+          "appliesTo": ["poison", "ember", "jala", "wither", "blight", "rot"],
+          "role": "Sinking cluster of corrosive droplets and ragged lingering wisps",
+          "sourceDimensions": "1024x1536",
+          "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing; soft haze needs in-context edge review",
+          "anchor": "upper-center of the droplet cluster; motion sinks downward",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D status-effect VFX sprite for a Unity game. Input image: style reference only for dimensional hand-painted rendering and clean alpha; do not copy Earth rocks, moss, or jade. Scene/backdrop: genuinely transparent isolated sprite. Subject: a toxic decay status motif: a suspended cluster of sickly glowing droplets and soft ragged wisps sinking downward, with two or three small corrosive bubbles and a sparse trailing haze. Make it read as lingering poison/rot, not a blast. Style: dimensional hand-painted fantasy VFX, clear silhouette and moderate texture density. Palette: muted acid-lime, deep olive, smoky grey with limited yellow-green highlights. Composition: vertical uneven cluster with tapering drip direction and open space around it. Lighting: restrained inner glow, no broad halo. Avoid: skull, bottle, character, gore, fireball, spores shaped as flowers, ground, text, scenery, backdrop, clipped edges, signature, watermark."
+        },
+        "burn-sustain": {
+          "file": "statuses/burn-sustain/source/burn-sustain.generated.png",
+          "status": "candidate",
+          "appliesTo": ["ember", "jala"],
+          "variantOf": "statuses/decay",
+          "role": "Paired tapered ember wisps curling around an open actor silhouette as a warm-toned status-art variant",
+          "sourceDimensions": "1145x1374",
+          "alpha": "Present; sampled on an approximately 9px grid: 12444 transparent, 3554 partial-alpha, and 2 fully opaque pixels",
+          "anchor": "lower-center curl; keep the implied actor silhouette open between the two wisps",
+          "styleReference": "elements/fire/impact/source/fire-impact.generated.png",
+          "generatedSource": "Built-in Codex image-generation tool (2026-09-26)",
+          "prompt": "Use case: stylized-concept. Asset type: reusable transparent 2D sustained-status VFX sprite for a fantasy garden-defense game, candidate source art. Input image: Image 1 is a style/material reference only for the hand-painted dimensional flame facets and warm ember palette; do not copy its radial explosion or large attack-impact shape. Scene/backdrop: genuinely transparent isolated sprite. Subject: a restrained warm burn-status motif around an invisible actor: three short, tapered ember curls rising at different heights, with a few pinprick sparks and a small low ember knot; the middle stays open for the actor sprite. It should feel persistent and gently alive, not like an attack being launched or a hit landing. Style/medium: dimensional hand-painted fantasy game VFX, sculpted flame edges, readable silhouette, very controlled glow and no broad haze. Palette: deep ember red, burnt orange, warm amber, with small gold cores; darker and less white-hot than the reference. Composition: compact vertical loose spiral with generous transparent margins, center kept mostly clear, visually contained close to the implied actor. Constraints: one isolated sprite, genuinely transparent alpha, no character or baked ground; candidate motif for existing ember/jala state only, no new status or gameplay mechanic. Avoid: radial burst, fireball, horizontal travel ribbon, tall roaring flame column, complete ring, circular rune, all-over body silhouette, text, emblem, weapon, scenery, opaque backdrop, broad halo, clipped edges, signature, watermark."
+        },
+        "link-drain": {
+          "file": "statuses/link-drain/source/link-drain.generated.png",
+          "status": "candidate",
+          "appliesTo": ["bond", "leech", "pact_mark"],
+          "role": "Two endpoint nodes joined by a curved siphon ribbon carrying motes toward one side",
+          "sourceDimensions": "1774x887",
+          "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+          "anchor": "one attachment point at each endpoint; horizontal span can be stretched between actors",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D status-effect VFX sprite for a Unity game. Input image: style reference only for dimensional hand-painted finish and clean alpha; do not copy Earth rocks, moss, or green palette. Scene/backdrop: genuinely transparent isolated sprite. Subject: a reusable link/drain tether motif with two distinct luminous endpoints connected by a narrow curved siphon ribbon; tiny motes travel along the ribbon toward one endpoint to imply transfer. Keep both endpoint anchors visually separate so a renderer can stretch or attach them. Style: hand-painted dimensional fantasy VFX with glassy edge facets and restrained detail. Palette: muted rose, deep crimson, pearl highlights. Composition: wide horizontal S-curve with one small node at each end and generous transparent padding. Lighting: controlled glints, no broad bloom. Avoid: heart symbol, chain links, characters, hands, weapon, impact burst, ground, text, scenery, backdrop, clipped edges, signature, watermark."
+        },
+        "fracture": {
+          "file": "statuses/fracture/source/fracture.generated.png",
+          "status": "candidate",
+          "appliesTo": ["expose", "shatter"],
+          "role": "Contained glass-like cracks opening from a central vulnerability point",
+          "sourceDimensions": "1254x1254",
+          "alpha": "Present; transparent canvas corner and partially transparent sprite pixels sampled with System.Drawing",
+          "anchor": "center of the weak point",
+          "prompt": "Use case: stylized-concept. Asset type: reusable 2D status-effect VFX sprite for a Unity game. Input image: style reference only for dimensional hand-painted rendering, crisp sculpted facets and clean alpha; do not copy Earth rocks, moss, or green palette. Scene/backdrop: genuinely transparent isolated sprite. Subject: a fracture/exposure status motif: a compact central weak point with several long, sharp glass-like cracks opening outward through a translucent surface plane; a few hairline fragments lift away but the effect remains mostly attached/contained. Read as a vulnerability mark, not an explosion. Style: hand-painted dimensional fantasy VFX, angular clear silhouette with negative gaps. Palette: pearl-silver, cool blue-white and restrained violet crack edges. Composition: square, slightly asymmetric crack network around a centered anchor. Lighting: narrow highlights, moderate glow. Avoid: target reticle, starburst emblem, blood, shattered shield arc, character, weapon, text, scenery, backdrop, broad white halo, clipped edges, signature, watermark."
+        }
+      }
+    }
+  }
+}

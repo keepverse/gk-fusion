@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "kind": "actor-hud-element-icons",
+  "source": {
+    "method": "built-in image generation",
+    "generatedOn": "2026-09-18",
+    "prompt": "Premium hand-painted arcane energy crest tokens, designed for a readable 64px actor HUD. Fire: scarlet/orange angular combustion crest; Ice: cyan/white crystalline frost crest; Air: turquoise vortex crest; Earth: ochre/emerald fractured geomantic crest; Light: gold/white vertical radiant prism, never a sun or star; Dark: violet/indigo fractured void rift, never a moon or crescent. Transparent background, no text."
+  },
+  "normalization": {
+    "sourceCanvasPixels": [1254, 1254],
+    "sourceLayout": "3 columns by 2 rows",
+    "crop": "per-element alpha bounds, expanded 14% to preserve the energy silhouette",
+    "outputCanvasPixels": [64, 64],
+    "availableCanvasPixels": [64, 128, 256],
+    "variants": {
+      "64": "root PNG files; Unity runtime source",
+      "128": "128/<hudGlyph>.png; reserved for FE display",
+      "256": "256/<hudGlyph>.png; reserved for FE display"
+    },
+    "alpha": "preserved",
+    "resampling": "high-quality bicubic"
+  },
+  "assets": [
+    { "elementId": "fire", "hudGlyph": "flame", "path": "flame.png", "catalogColor": "#ff5a36" },
+    { "elementId": "ice", "hudGlyph": "crystal", "path": "crystal.png", "catalogColor": "#7ec8ff" },
+    { "elementId": "air", "hudGlyph": "wind", "path": "wind.png", "catalogColor": "#c8f0ff" },
+    { "elementId": "earth", "hudGlyph": "stone", "path": "stone.png", "catalogColor": "#c4a35a" },
+    { "elementId": "light", "hudGlyph": "star", "path": "star.png", "catalogColor": "#ffe566" },
+    { "elementId": "dark", "hudGlyph": "eclipse", "path": "eclipse.png", "catalogColor": "#6b4cff" }
+  ]
+}

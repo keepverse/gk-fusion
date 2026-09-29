@@ -1,0 +1,19 @@
+{
+  "bepInEx": {
+    "owner": "BepInEx",
+    "repo": "BepInEx",
+    "tag": "v6.0.0-pre.2",
+    "assetRegex": "BepInEx-Unity\\.IL2CPP-win-x64.*\\.zip$"
+  },
+  "melonLoader": {
+    "owner": "LavaGang",
+    "repo": "MelonLoader",
+    "tag": "latest",
+    "assetRegex": "MelonLoader\\.(x64|win-x64).*\\.zip$|MelonLoader\\.Windows\\.x64.*\\.zip$"
+  },
+  "fusionRpg": {
+    "owner": "letuhao",
+    "repo": "plant-vs-zombie-rise-of-summoner",
+    "assetRegex": "^FusionRpg-win-x64\\.zip$"
+  }
+}
