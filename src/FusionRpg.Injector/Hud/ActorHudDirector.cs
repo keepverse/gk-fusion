@@ -4,7 +4,7 @@ using FusionRpg.Core.Vfx;
 using FusionRpg.Injector.Effects;
 using FusionRpg.Injector.Fx;
 
-namespace FusionRpg.Injector.Hud;
+namespace FusionRpg.Bridge.Hud;
 
 /// <summary>Tick entry for world Actor HUD — called from <see cref="Fx.VfxDirector"/>.</summary>
 public static class ActorHudDirector

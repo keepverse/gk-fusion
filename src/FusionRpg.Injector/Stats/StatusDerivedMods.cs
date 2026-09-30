@@ -4,7 +4,7 @@ using FusionRpg.Core.Stats;
 using FusionRpg.Core.Stats.Derived.Subsystems;
 using FusionRpg.Core.Status;
 
-namespace FusionRpg.Injector.Stats;
+namespace FusionRpg.Bridge.Stats;
 
 /// <summary>
 /// The injector half of the STATUS `stat.derived` executor (mechanism-wiring G1's injector half,

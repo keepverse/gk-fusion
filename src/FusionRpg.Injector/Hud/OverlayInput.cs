@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace FusionRpg.Injector.Hud;
+namespace FusionRpg.Bridge.Hud;
 
 /// <summary>
 /// Edge-detect overlay hotkeys on the Update thread — never inside OnGUI.

@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using Microsoft.Web.WebView2.Core;
 
-namespace FusionRpg.Injector.Hud;
+namespace FusionRpg.Bridge.Hud;
 
 /// <summary>
 /// All P/Invoke for the in-game overlay window lives here, so the rest of the injector never

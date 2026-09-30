@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace FusionRpg.Injector.Hud;
+namespace FusionRpg.Bridge.Hud;
 
 /// <summary>
 /// Real-cursor input (game-control module <c>control-cursor</c>). Win32

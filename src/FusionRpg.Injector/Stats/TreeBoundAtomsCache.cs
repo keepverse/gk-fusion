@@ -1,7 +1,7 @@
 using FusionRpg.Core.Stats;
 using FusionRpg.Core.Stats.Derived.Subsystems;
 
-namespace FusionRpg.Injector.Stats;
+namespace FusionRpg.Bridge.Stats;
 
 /// <summary>
 /// lawn-tree-hydrate (T13): the injector-side cache for the commander-scope shared-tree

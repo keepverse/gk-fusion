@@ -1,5 +1,5 @@
 using FusionRpg.Core.Effects;
-using FusionRpg.Injector.Hud;
+using FusionRpg.Bridge.Hud;
 
 namespace FusionRpg.Injector.Effects;
 

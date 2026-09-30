@@ -1,7 +1,7 @@
 using FusionRpg.Injector.Host;
 using UnityEngine;
 
-namespace FusionRpg.Injector.Hud;
+namespace FusionRpg.Bridge.Hud;
 
 /// <summary>
 /// Loads the authored element glyph selected by the injected element catalog. The uGUI presenter

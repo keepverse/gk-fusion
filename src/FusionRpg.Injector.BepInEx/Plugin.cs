@@ -4,7 +4,7 @@ using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using FusionRpg.Injector.Fx;
 using FusionRpg.Injector.Host;
-using FusionRpg.Injector.Hud;
+using FusionRpg.Bridge.Hud;
 using UnityEngine;
 
 namespace FusionRpg.Injector;

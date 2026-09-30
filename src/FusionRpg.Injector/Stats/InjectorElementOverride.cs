@@ -1,7 +1,7 @@
 using FusionRpg.Core.Combat;
 using FusionRpg.Core.Stats.Derived;
 
-namespace FusionRpg.Injector.Stats;
+namespace FusionRpg.Bridge.Stats;
 
 /// <summary>Per-ptr element type pin for LIVE overlay combat prove — no SQL.</summary>
 public static class InjectorElementOverride

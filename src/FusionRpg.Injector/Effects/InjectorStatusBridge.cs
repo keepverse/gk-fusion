@@ -1,7 +1,7 @@
 using FusionRpg.Core.Status;
 using FusionRpg.Core.Stats;
 using FusionRpg.Core.Stats.Derived;
-using FusionRpg.Injector.Stats;
+using FusionRpg.Bridge.Stats;
 
 namespace FusionRpg.Injector.Effects;
 

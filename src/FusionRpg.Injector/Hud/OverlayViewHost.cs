@@ -5,7 +5,7 @@ using Microsoft.Web.WebView2.Core;
 using FusionRpg.Core.Overlay;
 using FusionRpg.Injector.Host;
 
-namespace FusionRpg.Injector.Hud;
+namespace FusionRpg.Bridge.Hud;
 
 /// <summary>
 /// The in-game web view (overlayHost=injector): a borderless top-level window owned by the game

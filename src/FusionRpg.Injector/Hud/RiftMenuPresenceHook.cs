@@ -3,7 +3,7 @@ using HarmonyLib;
 using FusionRpg.Core.Overlay;
 using FusionRpg.Injector.Host;
 
-namespace FusionRpg.Injector.Hud;
+namespace FusionRpg.Bridge.Hud;
 
 /// <summary>
 /// The menu-screen **presence** signal (map Decision 17): "the PVZ main menu exists right now".

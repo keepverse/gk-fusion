@@ -39,6 +39,11 @@
   <ItemGroup>
     <ProjectReference Include="$(GkCoreRoot)src\FusionRpg.Contracts\FusionRpg.Contracts.csproj" />
     <ProjectReference Include="$(GkCoreRoot)src\FusionRpg.Core\FusionRpg.Core.csproj" />
+    <!-- The shared bridge types (ActorHudCache, ActorHudUniqueFlags,
+         InjectorDerivedOverride) live in gk-core's FusionRpg.Bridge module: they are
+         Unity-free per-pointer state that both sides agree on, and keeping them here
+         made gk-core compile host sources, which its own AGENTS.md forbids. -->
+    <ProjectReference Include="$(GkCoreRoot)src\FusionRpg.Bridge\FusionRpg.Bridge.csproj" />
     <ProjectReference Include="$(GkCoreRoot)src\FusionRpg.CheatCore\FusionRpg.CheatCore.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.36" />
     <!-- In-game overlay host (overlayHost=injector). Ships the loader shim only; Chromium is the machine-wide Evergreen runtime. -->

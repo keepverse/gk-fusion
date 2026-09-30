@@ -6,7 +6,7 @@ using FusionRpg.Core.Stats;
 using FusionRpg.Core.Stats.Derived;
 using FusionRpg.Injector.Bridges;
 using FusionRpg.Injector.Lawn;
-using FusionRpg.Injector.Stats;
+using FusionRpg.Bridge.Stats;
 
 using FusionRpg.Injector.Host;
 

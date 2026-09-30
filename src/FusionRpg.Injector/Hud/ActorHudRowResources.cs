@@ -3,7 +3,7 @@ using FusionRpg.Core.Vfx;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace FusionRpg.Injector.Hud;
+namespace FusionRpg.Bridge.Hud;
 
 /// <summary>Element-coloured shield segments and pips in screen-space pixels.</summary>
 static class ActorHudRowResources

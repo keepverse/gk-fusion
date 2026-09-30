@@ -7,7 +7,7 @@ using FusionRpg.Core.Effects.Plugins;
 using FusionRpg.Core.Status;
 using FusionRpg.Injector.Fx;
 using FusionRpg.Injector.Host;
-using FusionRpg.Injector.Stats;
+using FusionRpg.Bridge.Stats;
 
 namespace FusionRpg.Injector.Effects;
 

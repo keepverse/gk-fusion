@@ -1,7 +1,7 @@
 using FusionRpg.Core.Overlay;
 using UnityEngine;
 
-namespace FusionRpg.Injector.Hud;
+namespace FusionRpg.Bridge.Hud;
 
 /// <summary>
 /// Lightweight presentation settings panel (F7). Does not host gameplay cheats.

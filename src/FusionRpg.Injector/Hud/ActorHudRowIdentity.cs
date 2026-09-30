@@ -2,7 +2,7 @@ using FusionRpg.Core.Hud;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace FusionRpg.Injector.Hud;
+namespace FusionRpg.Bridge.Hud;
 
 /// <summary>Identity row, laid out below the resource/status rows in Canvas pixels.</summary>
 static class ActorHudRowIdentity

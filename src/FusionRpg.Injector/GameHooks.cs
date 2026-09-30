@@ -4,7 +4,7 @@ using FusionRpg.Core;
 using FusionRpg.Core.Diagnostics;
 using FusionRpg.Core.Effects;
 using FusionRpg.Core.Stats;
-using FusionRpg.Injector.Stats;
+using FusionRpg.Bridge.Stats;
 using HarmonyLib;
 using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.InteropTypes;

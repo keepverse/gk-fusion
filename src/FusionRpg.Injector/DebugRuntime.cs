@@ -1,7 +1,7 @@
 using System.Text.Json;
 using FusionRpg.Injector.Host;
 using FusionRpg.Injector.Lawn;
-using FusionRpg.Injector.Stats;
+using FusionRpg.Bridge.Stats;
 using FusionRpg.Core.Commanders;
 using UnityEngine;
 

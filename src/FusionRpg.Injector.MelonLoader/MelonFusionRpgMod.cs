@@ -1,7 +1,7 @@
 using System.Reflection;
 using FusionRpg.Injector.Fx;
 using FusionRpg.Injector.Host;
-using FusionRpg.Injector.Hud;
+using FusionRpg.Bridge.Hud;
 using MelonLoader;
 using UnityEngine;
 

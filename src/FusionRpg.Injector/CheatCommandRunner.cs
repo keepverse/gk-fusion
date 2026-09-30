@@ -12,8 +12,8 @@ using FusionRpg.Core.Vfx;
 using FusionRpg.Injector.Effects;
 using FusionRpg.Injector.Fx;
 using FusionRpg.Injector.Host;
-using FusionRpg.Injector.Hud;
-using FusionRpg.Injector.Stats;
+using FusionRpg.Bridge.Hud;
+using FusionRpg.Bridge.Stats;
 using FusionRpg.Core.Time;
 
 namespace FusionRpg.Injector;

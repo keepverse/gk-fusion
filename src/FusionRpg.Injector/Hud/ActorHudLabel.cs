@@ -5,7 +5,7 @@ using Il2CppTMPro;
 using TMPro;
 #endif
 
-namespace FusionRpg.Injector.Hud;
+namespace FusionRpg.Bridge.Hud;
 
 /// <summary>Screen-space TMP glyph used by the actor HUD Canvas.</summary>
 public sealed class ActorHudLabel

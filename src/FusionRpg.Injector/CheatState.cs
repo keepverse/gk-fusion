@@ -11,7 +11,7 @@ using FusionRpg.Core.Stats.Derived;
 using FusionRpg.Injector.Host;
 using FusionRpg.Injector.Lawn;
 using FusionRpg.Injector.Match;
-using FusionRpg.Injector.Stats;
+using FusionRpg.Bridge.Stats;
 
 namespace FusionRpg.Injector;
 

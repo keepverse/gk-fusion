@@ -7,9 +7,9 @@ using FusionRpg.Core.Status;
 using FusionRpg.Core.Stats.Derived;
 using FusionRpg.Injector.Effects;
 using FusionRpg.Injector.Match;
-using FusionRpg.Injector.Stats;
+using FusionRpg.Bridge.Stats;
 
-namespace FusionRpg.Injector.Hud;
+namespace FusionRpg.Bridge.Hud;
 
 /// <summary>Single Hot gather entry for per-unit HUD snapshots (actor-hud-dump spec).</summary>
 public static class ActorHudBuilder

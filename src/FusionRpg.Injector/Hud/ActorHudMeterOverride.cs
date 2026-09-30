@@ -1,7 +1,7 @@
 using FusionRpg.Core.Combat;
 using FusionRpg.Core.Hud;
 
-namespace FusionRpg.Injector.Hud;
+namespace FusionRpg.Bridge.Hud;
 
 /// <summary>
 /// E41 (spec-ui-attach-point.md §2b/§4): per-ptr atom-authored HUD meters — the store

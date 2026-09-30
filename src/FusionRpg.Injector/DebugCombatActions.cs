@@ -5,7 +5,7 @@ using FusionRpg.Core.Combat;
 using FusionRpg.Core.Combat.Element;
 using FusionRpg.Core.Stats.Derived;
 using FusionRpg.Injector.Effects;
-using FusionRpg.Injector.Stats;
+using FusionRpg.Bridge.Stats;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 

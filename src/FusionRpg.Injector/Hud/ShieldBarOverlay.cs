@@ -1,4 +1,4 @@
-namespace FusionRpg.Injector.Hud;
+namespace FusionRpg.Bridge.Hud;
 
 /// <summary>
 /// Status helper for debug.shield.bar-status — drawing lives in <see cref="ActorHudPool"/> resource row.
