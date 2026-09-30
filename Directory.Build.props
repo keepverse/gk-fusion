@@ -27,7 +27,24 @@
   <!-- Keepverse resolver contract (tasks/keepverse-split-plan.md): every test project resolves content,
        core and workspace paths through one shared helper instead of a private repo-root walk. -->
   <ItemGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
-    <Compile Include="$(GkCoreRoot)tests\Shared\KeepverseRoots.cs" Link="Shared\KeepverseRoots.cs" />
+    <!-- The cross-repository Compile Include that used to be here is GONE, deliberately.
+         It pulled gk-core's tests/Shared/KeepverseRoots.cs - a set of INTERNAL test-support classes
+         (ContentRoot, CoreRoot, WorkspaceRoot) - into this repository's test projects, so a
+         standalone clone could not build. That is the same shape as the defect
+         src/FusionRpg.Bridge/FusionRpg.Bridge.csproj records as the reason that module exists, and it
+         is removed rather than left armed for the next caller.
+
+         Those classes were a duplicate of FusionRpg.Core.Workspace.KeepverseRoots, which is PUBLIC and
+         which this repository already references. Four test helpers here named their resolver
+         `RepoRoot()` while returning the gk-data CONTENT PACK, which is how this repository's own
+         tools/ tree came to be looked up under gk-data/packs/fusion/. Those call sites now name the
+         accessor they mean - KeepverseRoots.Forge() for this repository's generators,
+         KeepverseRoots.Core() for gk-core's sources - and five of them were dead assignments that
+         forced a pack resolution for a variable nobody read.
+
+         Measured: 0 remaining code references to ContentRoot / CoreRoot / WorkspaceRoot /
+         KeepverseLayout in this repository. If one is ever needed again, call
+         FusionRpg.Core.Workspace.KeepverseRoots; do not compile another repository's source. -->
   </ItemGroup>
 
   <!--
