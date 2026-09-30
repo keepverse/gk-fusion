@@ -51,6 +51,20 @@ from dataclasses import dataclass
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from keepverse_roots import core_root  # noqa: E402
+# cscan is gk-core's shared C# lexer and there is no copy of it in this repository. In the monorepo
+# every tool shared one scripts/ directory, so "the sibling module" was literally true; the split
+# moved the lexer a repository away and both of these guards have died with ModuleNotFoundError on
+# every run - exit 1, the same code a real finding uses, inside a guard that no CI job invokes,
+# which is why the crash went unnoticed rather than being fixed.
+#
+# Resolved, not vendored. A second copy of a comment-and-string lexer is a second implementation of
+# what a finding MEANS - which lines exist, which are masked - and the two copies would drift into
+# disagreeing about the same source. The resolver is a byte-identical copy of gk-core's, and this
+# line is the link that policy asks for: a repository needing another repository's code uses a
+# link, and a guard needing another repository's lexer is that case.
+sys.path.insert(0, str(core_root(Path(__file__).resolve().parent.parent) / "scripts"))
 from cscan import strip_comments_and_literals  # noqa: E402
 
 GUARD_ID = "single-writer"

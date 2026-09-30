@@ -49,6 +49,20 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from keepverse_roots import core_root  # noqa: E402
+# cscan is gk-core's shared C# lexer and there is no copy of it in this repository. In the monorepo
+# every tool shared one scripts/ directory, so "the sibling module" was literally true; the split
+# moved the lexer a repository away and both of these guards have died with ModuleNotFoundError on
+# every run - exit 1, the same code a real finding uses, inside a guard that no CI job invokes,
+# which is why the crash went unnoticed rather than being fixed.
+#
+# Resolved, not vendored. A second copy of a comment-and-string lexer is a second implementation of
+# what a finding MEANS - which lines exist, which are masked - and the two copies would drift into
+# disagreeing about the same source. The resolver is a byte-identical copy of gk-core's, and this
+# line is the link that policy asks for: a repository needing another repository's code uses a
+# link, and a guard needing another repository's lexer is that case.
+sys.path.insert(0, str(core_root(Path(__file__).resolve().parent.parent) / "scripts"))
 from cscan import line_of, strip_whole_line_comments  # noqa: E402
 
 GUARD_ID = "funnel-delta"
@@ -156,8 +170,28 @@ class Refusal(Exception):
         self.detail = detail
 
 
+# WHICH REPOSITORY OWNS A SCOPE. Two of this guard's three rule scopes are gk-core's -
+# src/FusionRpg.Core and src/FusionRpg.Core/Effects/Plugins - and the third, src/FusionRpg.Injector,
+# is this repository's. The module docstring says "All four paths are load-bearing in this repo",
+# which was true of the monorepo and is now false for two of them, so the docstring is corrected
+# where the correction belongs: at the code that resolves them.
+#
+# The guard refused with MISSING_SCOPE on every run rather than reporting green, which is the
+# right failure and the wrong subject: the scope exists, in a sibling. The named refusal is not
+# being made to pass by widening what counts as a scope - it is being given the owner it lost.
+_CROSS_REPO_SCOPE = ("src/FusionRpg.Core",)
+
+
+def owning_root(root: Path, scope: str) -> Path:
+    """The root that OWNS `scope`, which is not always this repository."""
+    norm = scope.replace("\\", "/").rstrip("/")
+    if any(norm == s or norm.startswith(s + "/") for s in _CROSS_REPO_SCOPE):
+        return core_root(root)
+    return root
+
+
 def source_files(root: Path, scope: str) -> list[Path]:
-    base = root / scope
+    base = owning_root(root, scope) / scope
     if not base.is_dir():
         raise Refusal("MISSING_SCOPE", scope)
     return sorted(p for p in base.rglob("*.cs") if not BUILD_OUTPUT.search(str(p)))
@@ -171,7 +205,16 @@ def read(path: Path) -> str:
 
 
 def relative(root: Path, path: Path) -> str:
-    return path.relative_to(root).as_posix()
+    try:
+        return path.relative_to(root).as_posix()
+    except ValueError:
+        # A finding in gk-core, reported from this guard. It names the repository rather than
+        # falling back to an absolute path: a finding has to be locatable from a clean checkout,
+        # and an absolute path locates it only on the machine that produced it.
+        try:
+            return f"gk-core/{path.relative_to(core_root(root)).as_posix()}"
+        except ValueError:
+            return path.name
 
 
 def scan_rule(root: Path, rule: Rule, already: set[str]) -> tuple[list[dict], set[str]]:
