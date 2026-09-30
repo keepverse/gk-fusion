@@ -16,15 +16,22 @@ Order: the KEEPVERSE_*_ROOT environment override wins; otherwise walk up from `s
 file) to the first legacy repo (FusionRpg.slnx next to gk-data/packs/fusion/data/seed/) or Keepverse workspace (gk-core/
 next to gk-data/). Nothing found raises; a root is never guessed.
 
-THIS MODULE HAS THREE IMPLEMENTATIONS and they are one contract, not three:
+THIS MODULE HAS FOUR IMPLEMENTATIONS and they are one contract, not four:
     FusionRpg.Core/Workspace/KeepverseRoots.cs      (C#, production, seven accessors)
     gk-core/scripts/lib/keepverse_roots.py         (this file)
+    gk-fusion/scripts/lib/keepverse_roots.py
     gk-forge/tools/seedsmith/seedsmith/workspace_roots.py
-They have already drifted once - the C# half gained AuthoredContent and Fusion while this one had
-neither - so "keep them in step" is a real requirement with a real cost, not a formality. The two
-Python copies are byte-identical except for the line naming where the copy lives, which cannot be
-otherwise without the sentence contradicting itself; a test asserts that, so the exception is
-recorded rather than left to be rediscovered.
+They have already drifted twice - the C# half gained AuthoredContent and Fusion while this one had
+neither, and an audit later found KEEPVERSE_*_ROOT in gk-fusion's copy and not in gk-core's, with the
+divergence invisible until something read it - so "keep them in step" is a real requirement with a
+real cost, not a formality.
+
+The THREE Python copies are byte-identical, with no exception to record: SHA-256 over the three files
+yields ONE distinct digest, measured rather than assumed, and ResolverCopyParityTests fails when that
+stops being true. An earlier version of this paragraph claimed an exception for "the line naming
+where the copy lives" and said a test asserted it. No test did. The copies were made identical
+instead, and the claim was removed rather than left to be rediscovered - a documented exception that
+nothing enforces is worse than no exception, because it reads as permission.
 """
 
 from __future__ import annotations
@@ -202,23 +209,21 @@ def fusion_root_or_owner(start: Path | None = None) -> Path:
 def root_carrying(start: Path | None, relative: str) -> Path | None:
     """The nearest root - `start` included - that actually CARRIES `relative`, or None.
 
-    <para><b>What this is for.</b> A guard that reads a document the workspace owns - the power
-    inventory at `docs/architecture/power/inventory.json` is gk-workflow's and gk-core has no such
-    file at all - resolves that document's root with `workspace_root()`. Correct in the workspace, and
-    unanswerable in a planted fixture, because a temporary directory has no qualifying ancestor. So the
-    guard refused `WORKSPACE-ROOT-MISSING` before reading anything, and four tests read that as a broken
-    contract.
+    WHAT THIS IS FOR. A guard that reads a document the workspace owns - the power inventory at
+    `docs/architecture/power/inventory.json` is gk-workflow's and gk-core has no such file at all -
+    resolves that document's root with `workspace_root()`. Correct in the workspace, and unanswerable
+    inside a planted fixture, because a temporary directory has no qualifying ancestor. So the guard
+    refused before reading anything, and four tests read that as a broken contract.
 
-    <para><b>Why the marker is a path rather than a name.</b> The fallback asks whether a root carries
-    the SUBJECT the caller cares about. That is the same evidence `workspace_root` would have used one
-    level up, so a root that has it is demonstrably the owner of that document - not a directory that
-    merely happens to exist. Return None rather than `start` when nothing matches, so a caller that
-    forgets to check cannot accidentally treat "no evidence" as "this is the owner".
+    WHY THE MARKER IS A PATH RATHER THAN A NAME. The fallback asks whether a root carries the SUBJECT
+    the caller cares about. That is the same evidence `workspace_root` would have used one level up,
+    so a root that has it is demonstrably the owner of that document, rather than a directory that
+    merely happens to exist. None is returned rather than `start` when nothing matches, so a caller
+    that forgets to check cannot read "no evidence" as "this is the owner".
 
-    <para>This is the general form of what `fusion_root_or_owner` does for the engine sources, and it
-    lives here for the same reason: the three copies of this contract are held byte-identical by
+    This is the general form of what `fusion_root_or_owner` does for the engine sources, and it lives
+    here for the same reason: the copies of this contract are held byte-identical by
     `ResolverCopyParityTests`, so a rule written per caller is a rule that will drift.
-    </para>
     """
     here = Path(start or Path.cwd()).resolve()
     rel = str(relative).replace("\\", "/").strip("/")
