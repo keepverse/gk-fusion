@@ -1,7 +1,7 @@
 using FusionRpg.Core.Hud;
 using UnityEngine;
 
-namespace FusionRpg.Bridge.Hud;
+namespace FusionRpg.Injector.Hud;
 
 /// <summary>
 /// Resolves the visible plant/zombie footprint. The HUD deliberately consumes the union of the

@@ -12,9 +12,11 @@ using FusionRpg.Core.Vfx;
 using FusionRpg.Injector.Effects;
 using FusionRpg.Injector.Fx;
 using FusionRpg.Injector.Host;
+using FusionRpg.Injector.Hud;
+using FusionRpg.Injector.Stats;
+using FusionRpg.Core.Time;
 using FusionRpg.Bridge.Hud;
 using FusionRpg.Bridge.Stats;
-using FusionRpg.Core.Time;
 
 namespace FusionRpg.Injector;
 
@@ -998,7 +1000,7 @@ public static class CheatCommandRunner
             ["maxHp"] = result.Instance?.MaxHp ?? 0,
             ["evicted"] = result.Evicted?.ShieldId ?? ""
         });
-        try { Hud.ActorHudCache.MarkDirty(ptr); } catch { }
+        try { FusionRpg.Bridge.Hud.ActorHudCache.MarkDirty(ptr); } catch { }
     }
 
     /// <summary>debug.shield.clear — RemoveAll on target/selected (no Funnel write).</summary>
@@ -1032,7 +1034,7 @@ public static class CheatCommandRunner
             ["targetPtr"] = ptr!,
             ["removed"] = before
         });
-        try { Hud.ActorHudCache.MarkDirty(ptr); } catch { }
+        try { FusionRpg.Bridge.Hud.ActorHudCache.MarkDirty(ptr); } catch { }
     }
 
     /// <summary>

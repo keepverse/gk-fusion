@@ -4,10 +4,11 @@ using FusionRpg.Core.Status;
 using FusionRpg.Core.Stats;
 using FusionRpg.Injector.Bridges;
 using FusionRpg.Injector.Lawn;
-using FusionRpg.Bridge.Stats;
+using FusionRpg.Injector.Stats;
 using Il2CppInterop.Runtime;
 using UnityEngine;
 using UObject = UnityEngine.Object;
+using FusionRpg.Bridge.Stats;
 
 namespace FusionRpg.Injector;
 

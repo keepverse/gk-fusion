@@ -1,7 +1,7 @@
 using FusionRpg.Core.Hud;
 using UnityEngine;
 
-namespace FusionRpg.Bridge.Hud;
+namespace FusionRpg.Injector.Hud;
 
 /// <summary>Unity adapter from actor silhouette to the pure, top-centred HUD screen anchor.</summary>
 internal static class ActorScreenAnchorResolver

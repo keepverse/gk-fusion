@@ -5,7 +5,7 @@ using Il2CppInterop.Runtime;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace FusionRpg.Bridge.Hud;
+namespace FusionRpg.Injector.Hud;
 
 /// <summary>
 /// The clickable Rift tombstone, **inside the game's own menu hierarchy** (map Decisions 17 + 18).

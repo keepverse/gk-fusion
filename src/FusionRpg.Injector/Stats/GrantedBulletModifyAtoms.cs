@@ -4,7 +4,7 @@ using FusionRpg.Contracts;
 using FusionRpg.Core.Effects;
 using FusionRpg.Core.Effects.Atoms;
 
-namespace FusionRpg.Bridge.Stats;
+namespace FusionRpg.Injector.Stats;
 
 /// <summary>
 /// The injector half of the lawn <c>bullet.modify</c> executor (E37, spec-projectile-control.md §2b)

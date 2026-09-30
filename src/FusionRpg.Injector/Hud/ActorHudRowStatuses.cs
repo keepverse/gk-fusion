@@ -2,7 +2,7 @@ using FusionRpg.Core.Hud;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace FusionRpg.Bridge.Hud;
+namespace FusionRpg.Injector.Hud;
 
 /// <summary>Catalog token strip in screen-space pixels.</summary>
 static class ActorHudRowStatuses

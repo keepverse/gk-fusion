@@ -2,7 +2,7 @@
 using FusionRpg.Injector.Host;
 using UnityEngine;
 
-namespace FusionRpg.Bridge.Hud;
+namespace FusionRpg.Injector.Hud;
 
 /// <summary>
 /// Turns the authored Rift art into a <see cref="Sprite"/> for a uGUI <see cref="UnityEngine.UI.Image"/>

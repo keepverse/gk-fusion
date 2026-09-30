@@ -6,9 +6,11 @@ using FusionRpg.Core.Stats;
 using FusionRpg.Core.Stats.Derived;
 using FusionRpg.Injector.Bridges;
 using FusionRpg.Injector.Lawn;
-using FusionRpg.Bridge.Stats;
+using FusionRpg.Injector.Stats;
 
 using FusionRpg.Injector.Host;
+using FusionRpg.Bridge.Hud;
+using FusionRpg.Bridge.Stats;
 
 namespace FusionRpg.Injector;
 
@@ -89,7 +91,7 @@ public static class EntityApply
                 pvzStatsMods: CheatState.PvzStatsMods);
             var resolved = CheatState.ActorHub.Resolve(ctx);
             InjectorDerivedOverride.Pin(key, resolved.Derived);
-            try { Hud.ActorHudCache.MarkDirty(key); } catch { }
+            try { FusionRpg.Bridge.Hud.ActorHudCache.MarkDirty(key); } catch { }
             var final = resolved.AppliedCombat;
             EmitAptitudeTrace("plant", key, ctx, resolved);
 
@@ -222,7 +224,7 @@ public static class EntityApply
                 pvzStatsMods: CheatState.PvzStatsMods);
             var resolvedZ = CheatState.ActorHub.Resolve(ctx);
             InjectorDerivedOverride.Pin(key, resolvedZ.Derived);
-            try { Hud.ActorHudCache.MarkDirty(key); } catch { }
+            try { FusionRpg.Bridge.Hud.ActorHudCache.MarkDirty(key); } catch { }
             var final = resolvedZ.AppliedCombat;
             EmitAptitudeTrace("zombie", key, ctx, resolvedZ);
 

@@ -1,4 +1,6 @@
-namespace FusionRpg.Bridge.Hud;
+using FusionRpg.Bridge.Hud;
+
+namespace FusionRpg.Injector.Hud;
 
 /// <summary>Attach nested <c>actorHud</c> to observe row dictionaries.</summary>
 public static class ActorHudObserve

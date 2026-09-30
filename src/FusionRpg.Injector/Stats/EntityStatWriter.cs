@@ -8,7 +8,7 @@ using HarmonyLib;
 using FusionRpg.Injector.Host;
 using FusionRpg.Core.Time;
 
-namespace FusionRpg.Bridge.Stats;
+namespace FusionRpg.Injector.Stats;
 
 /// <summary>
 /// Sole Unity combat-field mutator. Features must Resolve → Apply; never assign HP/ATK elsewhere.

@@ -1,5 +1,5 @@
 using System.Text.Json;
-using FusionRpg.Bridge.Hud;
+using FusionRpg.Injector.Hud;
 
 namespace FusionRpg.Injector;
 

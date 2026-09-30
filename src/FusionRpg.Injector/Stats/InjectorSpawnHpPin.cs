@@ -1,6 +1,6 @@
 using FusionRpg.Core.Stats;
 
-namespace FusionRpg.Bridge.Stats;
+namespace FusionRpg.Injector.Stats;
 
 /// <summary>
 /// Injector home of the per-ptr debug-spawn max-HP pin — the rules live in Core

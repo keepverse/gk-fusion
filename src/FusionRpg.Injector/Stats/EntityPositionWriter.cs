@@ -4,7 +4,7 @@ using UnityEngine;
 
 using FusionRpg.Injector.Host;
 
-namespace FusionRpg.Bridge.Stats;
+namespace FusionRpg.Injector.Stats;
 
 /// <summary>
 /// Sole Unity position mutator for A-M2 lawn-reposition — exactly the relationship

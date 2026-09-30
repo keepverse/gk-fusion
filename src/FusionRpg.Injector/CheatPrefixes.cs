@@ -1,7 +1,7 @@
 using HarmonyLib;
 using UnityEngine;
 using FusionRpg.Core.Effects.Atoms;
-using FusionRpg.Bridge.Stats;
+using FusionRpg.Injector.Stats;
 
 namespace FusionRpg.Injector;
 

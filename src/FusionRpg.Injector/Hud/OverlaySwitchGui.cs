@@ -1,7 +1,7 @@
 using FusionRpg.Core.Overlay;
 using UnityEngine;
 
-namespace FusionRpg.Bridge.Hud;
+namespace FusionRpg.Injector.Hud;
 
 /// <summary>
 /// The in-match "switch to the web UI" button. One action only — it is not a cheats surface.

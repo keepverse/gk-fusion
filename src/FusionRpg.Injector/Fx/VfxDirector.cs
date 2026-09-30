@@ -2,7 +2,7 @@ using FusionRpg.Contracts;
 using FusionRpg.Core.Match;
 using FusionRpg.Core.Vfx;
 using FusionRpg.Injector.Host;
-using FusionRpg.Bridge.Hud;
+using FusionRpg.Injector.Hud;
 using FusionRpg.Injector.Lawn;
 using FusionRpg.Injector.Match;
 using UnityEngine;

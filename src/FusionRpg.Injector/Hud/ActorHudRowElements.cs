@@ -2,7 +2,7 @@ using FusionRpg.Core.ActorSurface;
 using FusionRpg.Core.Hud;
 using UnityEngine;
 
-namespace FusionRpg.Bridge.Hud;
+namespace FusionRpg.Injector.Hud;
 
 /// <summary>
 /// Compact catalog-driven element glyphs. Species typing arrives as ids on the HUD snapshot; this

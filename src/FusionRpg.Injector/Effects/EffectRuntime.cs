@@ -7,6 +7,8 @@ using FusionRpg.Core.Effects.Plugins;
 using FusionRpg.Core.Status;
 using FusionRpg.Injector.Fx;
 using FusionRpg.Injector.Host;
+using FusionRpg.Injector.Stats;
+using FusionRpg.Bridge.Hud;
 using FusionRpg.Bridge.Stats;
 
 namespace FusionRpg.Injector.Effects;
@@ -332,7 +334,7 @@ public static class EffectRuntime
         // MatchModifyWrites drains on this same path — leaving one set would leak silently into the
         // next match's HUD.
         Hud.ActorHudMeterOverride.Clear();
-        try { Hud.ActorHudCache.Clear(); } catch { }
+        try { FusionRpg.Bridge.Hud.ActorHudCache.Clear(); } catch { }
 
         DebugRuntime.Emit("debug.effect.cleared", new Dictionary<string, object>
         {

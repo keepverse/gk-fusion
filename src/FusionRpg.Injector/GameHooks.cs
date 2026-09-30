@@ -4,7 +4,7 @@ using FusionRpg.Core;
 using FusionRpg.Core.Diagnostics;
 using FusionRpg.Core.Effects;
 using FusionRpg.Core.Stats;
-using FusionRpg.Bridge.Stats;
+using FusionRpg.Injector.Stats;
 using HarmonyLib;
 using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.InteropTypes;
@@ -16,6 +16,7 @@ using FusionRpg.Injector.Host;
 using PlantBambooDragon = Il2Cpp.BambooDragon;
 #else
 using PlantBambooDragon = global::BambooDragon;
+using FusionRpg.Bridge.Hud;
 #endif
 
 namespace FusionRpg.Injector;
@@ -1796,7 +1797,7 @@ public static class GameHooks
         // at this address would inherit the dead one's species element
         // (LawnElementResolver's trigger set, item 3).
         try { Effects.LawnElementResolverHost.Invalidate(ptr.ToString("X")); } catch { }
-        try { Hud.ActorHudCache.Remove(ptr.ToString("X")); } catch { }
+        try { FusionRpg.Bridge.Hud.ActorHudCache.Remove(ptr.ToString("X")); } catch { }
         try { Hud.ActorHudPool.ReleaseOwner(ptr.ToString("X")); } catch { }
         // Same ptr-reuse hazard as LawnElementResolverHost.Invalidate above, same fix shape —
         // see InjectorSpawnHpPin.Remove's own doc comment (confirmed live, not theoretical).

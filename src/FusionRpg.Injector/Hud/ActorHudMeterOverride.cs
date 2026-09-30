@@ -1,12 +1,13 @@
 using FusionRpg.Core.Combat;
 using FusionRpg.Core.Hud;
+using FusionRpg.Bridge.Stats;
 
-namespace FusionRpg.Bridge.Hud;
+namespace FusionRpg.Injector.Hud;
 
 /// <summary>
 /// E41 (spec-ui-attach-point.md §2b/§4): per-ptr atom-authored HUD meters — the store
 /// <see cref="InjectorUiPresentSink"/> writes into and <see cref="ActorHudBuilder"/> reads out of.
-/// Mirrors <see cref="FusionRpg.Injector.Stats.InjectorDerivedOverride"/>'s exact shape (a ptr-keyed
+/// Mirrors <see cref="FusionRpg.Bridge.Stats.InjectorDerivedOverride"/>'s exact shape (a ptr-keyed
 /// Hot cache, no SQL mid-match, cleared on match end) — the same "atom mutates state, HUD reads it"
 /// pattern that class already established for derived-channel overrides.
 ///

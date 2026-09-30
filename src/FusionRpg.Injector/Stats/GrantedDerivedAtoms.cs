@@ -5,7 +5,7 @@ using FusionRpg.Core.Effects;
 using FusionRpg.Core.Stats;
 using FusionRpg.Core.Stats.Derived.Subsystems;
 
-namespace FusionRpg.Bridge.Stats;
+namespace FusionRpg.Injector.Stats;
 
 /// <summary>
 /// The injector half of the lawn `stat.derived` executor (decisions.md "Derived-write lawn executor",

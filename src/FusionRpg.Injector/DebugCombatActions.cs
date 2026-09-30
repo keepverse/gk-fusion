@@ -5,9 +5,10 @@ using FusionRpg.Core.Combat;
 using FusionRpg.Core.Combat.Element;
 using FusionRpg.Core.Stats.Derived;
 using FusionRpg.Injector.Effects;
-using FusionRpg.Bridge.Stats;
+using FusionRpg.Injector.Stats;
 using UnityEngine;
 using UObject = UnityEngine.Object;
+using FusionRpg.Bridge.Stats;
 
 namespace FusionRpg.Injector;
 

@@ -2,8 +2,9 @@ using FusionRpg.Core.Combat;
 using FusionRpg.Core.Match;
 using FusionRpg.Injector.Effects;
 using FusionRpg.Injector.Match;
+using FusionRpg.Bridge.Hud;
 
-namespace FusionRpg.Bridge.Hud;
+namespace FusionRpg.Injector.Hud;
 
 /// <summary>Wires ActorHudCache invalidation to Hot lifecycle and combat events.</summary>
 public static class ActorHudInvalidator

@@ -118,8 +118,8 @@ public static class GameCaptureHooks
                 try
                 {
                     var ptr = GameDumps.Ptr(plant);
-                    Hud.ActorHudUniqueFlags.Mark(ptr);
-                    Hud.ActorHudCache.MarkDirty(ptr);
+                    FusionRpg.Bridge.Hud.ActorHudUniqueFlags.Mark(ptr);
+                    FusionRpg.Bridge.Hud.ActorHudCache.MarkDirty(ptr);
                 }
                 catch { }
             }

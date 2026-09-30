@@ -1,7 +1,7 @@
 using FusionRpg.Core.Power;
 using FusionRpg.Core.Stats;
 
-namespace FusionRpg.Bridge.Stats;
+namespace FusionRpg.Injector.Stats;
 
 /// <summary>
 /// Injector-side Θ index — replaces <c>InjectorProgressionPowerProvider</c> (T1.4). Wraps

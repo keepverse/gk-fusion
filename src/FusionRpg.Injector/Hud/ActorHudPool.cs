@@ -6,8 +6,9 @@ using FusionRpg.Injector.Fx;
 using FusionRpg.Injector.Host;
 using UnityEngine;
 using UnityEngine.UI;
+using FusionRpg.Bridge.Hud;
 
-namespace FusionRpg.Bridge.Hud;
+namespace FusionRpg.Injector.Hud;
 
 /// <summary>
 /// Screen-space Band B HUD. Snapshot gathering remains in <see cref="ActorHudCache"/>; this pool

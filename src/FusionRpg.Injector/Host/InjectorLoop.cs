@@ -123,7 +123,7 @@ public static class InjectorLoop
         // shield scheduler, and `KernelDriveHost.Tick` is also what advances the lawn's effect clock
         // (status expiry reads it), so this call is the whole injector timing surface.
         try { KernelDriveHost.Tick(unscaledDeltaTime * Time.timeScale, unscaledDeltaTime); } catch { }
-        try { Hud.ActorHudCache.ReconcileDirty(); } catch { }
+        try { FusionRpg.Bridge.Hud.ActorHudCache.ReconcileDirty(); } catch { }
         _hb += unscaledDeltaTime;
         if (_hb >= 2f)
         {

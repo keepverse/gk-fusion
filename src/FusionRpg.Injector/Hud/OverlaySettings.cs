@@ -1,7 +1,7 @@
 using System.Text.Json;
 using FusionRpg.Injector.Host;
 
-namespace FusionRpg.Bridge.Hud;
+namespace FusionRpg.Injector.Hud;
 
 /// <summary>
 /// Presentation-only overlay settings (shield bar, hotkeys). Not a cheats SoT —

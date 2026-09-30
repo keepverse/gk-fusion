@@ -1,7 +1,7 @@
 using FusionRpg.Core.Overlay;
 using UnityEngine;
 
-namespace FusionRpg.Bridge.Hud;
+namespace FusionRpg.Injector.Hud;
 
 /// <summary>
 /// Holds the lawn still while the player is in the web UI, so opening the control room mid-wave

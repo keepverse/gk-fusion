@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using FusionRpg.Core.Overlay;
 using FusionRpg.Injector.Host;
 
-namespace FusionRpg.Bridge.Hud;
+namespace FusionRpg.Injector.Hud;
 
 /// <summary>
 /// Sends the in-game button's toggle to whichever process hosts the web overlay window.

@@ -2,7 +2,7 @@ using FusionRpg.Core.Stats;
 using FusionRpg.Core.Stats.Derived;
 using FusionRpg.Core.Stats.Derived.Subsystems;
 using FusionRpg.Injector;
-using FusionRpg.Bridge.Stats;
+using FusionRpg.Injector.Stats;
 using Xunit;
 
 namespace FusionRpg.Injector.Tests;

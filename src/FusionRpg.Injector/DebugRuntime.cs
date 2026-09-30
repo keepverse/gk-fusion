@@ -1,9 +1,11 @@
 using System.Text.Json;
 using FusionRpg.Injector.Host;
 using FusionRpg.Injector.Lawn;
-using FusionRpg.Bridge.Stats;
+using FusionRpg.Injector.Stats;
 using FusionRpg.Core.Commanders;
 using UnityEngine;
+using FusionRpg.Bridge.Hud;
+using FusionRpg.Bridge.Stats;
 
 namespace FusionRpg.Injector;
 /// <summary>Debug session + one-shot arms for controllable effect-pipeline tests.</summary>
@@ -76,7 +78,7 @@ public static class DebugRuntime
         InjectorDerivedOverride.Clear();
         InjectorElementOverride.Clear();
         Hud.ActorHudMeterOverride.Clear(); // E41: per-match state, same reset as the two lines above
-        try { Hud.ActorHudCache.Clear(); } catch { }
+        try { FusionRpg.Bridge.Hud.ActorHudCache.Clear(); } catch { }
         var restored = RestorePreSessionCheats();
         Emit("debug.session.end", new Dictionary<string, object> { ["scenarioId"] = id, ["cheatsRestored"] = restored });
         ScenarioId = "";
