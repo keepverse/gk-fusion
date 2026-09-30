@@ -338,6 +338,29 @@ class Config:
     problems: list[str] = field(default_factory=list)
 
 
+def detect_game_profile(game_dir: Path) -> str:
+    """Which game profile this install carries, read from the install itself.
+
+    ONE implementation, because this decision was written twice and one of the copies was MISSING. The
+    MelonLoader branch detected from `GameAssembly.dll`; the BepInEx branch hardcoded `"pvzrh-3.8.1"`.
+    So pointing the deploy at a 3.9 BepInEx install silently selected the 3.8.1 profile, the injector
+    built against the wrong interop, and the build failed with 682 CS0246/CS0103 errors that name a
+    type and say nothing about a version. `--game-profile`'s own help advertised "(auto-detected)" for a
+    branch that detected nothing at all.
+
+    An absent or unrecognised assembly falls back to 3.8.1, exactly what the hardcoded value did. A
+    wrong guess that is VISIBLE beats a wrong guess that is silent, and that is the whole difference
+    between this line and the one it replaced: the game-profile precondition refused the bad profile by
+    name instead of the deploy proceeding against it. That guard is why this stayed a small defect.
+
+    Measured here, so the fallback is not being taken on faith: the 3.9 install's `GameAssembly.dll` is
+    57,717,248 bytes and the 3.8.1 install's is 47,964,672, and `SIZE_39` is the former.
+    """
+    ga = game_dir / "GameAssembly.dll"
+    return "pvzrh-3.9" if ga.exists() and ga.stat().st_size == SIZE_39 else "pvzrh-3.8.1"
+
+
+
 def resolve_config(args: argparse.Namespace, log: Log) -> Config:
     if args.loader_host == "MelonLoader":
         raw = args.game_dir or os.environ.get("FUSIONRPG_ML_GAMEDIR")
@@ -348,8 +371,7 @@ def resolve_config(args: argparse.Namespace, log: Log) -> Config:
         plugin_dir = game_dir / "Mods"
         profile = args.game_profile or os.environ.get("FUSIONRPG_GAME_PROFILE") or ""
         if not profile:
-            ga = game_dir / "GameAssembly.dll"
-            profile = "pvzrh-3.9" if ga.exists() and ga.stat().st_size == SIZE_39 else "pvzrh-3.8.1"
+            profile = detect_game_profile(game_dir)
         if profile == "pvzrh-3.9":
             injector_proj = REPO_ROOT / "src" / "FusionRpg.Injector.MelonLoader.39" / "FusionRpg.Injector.MelonLoader.39.csproj"
             injector_dll = MELON39_INJECTOR_DLL
@@ -361,7 +383,8 @@ def resolve_config(args: argparse.Namespace, log: Log) -> Config:
         raw = args.game_dir or os.environ.get("FUSIONRPG_GAME_DIR") or str(REPO_ROOT.parent)
         game_dir = Path(raw)
         plugin_dir = game_dir / "BepInEx" / "plugins" / "FusionRpg"
-        profile = args.game_profile or os.environ.get("FUSIONRPG_GAME_PROFILE") or "pvzrh-3.8.1"
+        profile = (args.game_profile or os.environ.get("FUSIONRPG_GAME_PROFILE")
+                   or detect_game_profile(game_dir))
         injector_proj = REPO_ROOT / "src" / "FusionRpg.Injector.BepInEx" / "FusionRpg.Injector.BepInEx.csproj"
         injector_dll = BEPINEX_INJECTOR_DLL
         cfg_path = None  # the BepInEx host reads FUSIONRPG_SERVER_URL, no per-install cfg
