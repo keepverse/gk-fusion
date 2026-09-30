@@ -7,5 +7,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/FusionRpg.Launcher.Tests/FusionRpg.Launcher.Tests.csproj" />
+    <Project Path="tools/LawnCombatObserver.Tests/LawnCombatObserver.Tests.csproj" />
+    <Project Path="tools/ProveLiveProbe.Tests/ProveLiveProbe.Tests.csproj" />
   </Folder>
 </Solution>
