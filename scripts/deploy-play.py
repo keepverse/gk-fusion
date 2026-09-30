@@ -505,8 +505,11 @@ def deploy(config: Config) -> dict:
                            f"ExpectedProfile='{config.game_profile}'}}}}"],
             stage="game_profile",
             py_args=["--only", "game-profile", "--tier", "local",
-                     "--local-arg", f"game-profile:GameDir={config.game_dir}",
-                     "--local-arg", f"game-profile:ExpectedProfile={config.game_profile}"])
+                    # SPELLED THE GUARD'S WAY, not the retired PowerShell way. guard-game-profile.py
+                    # declares --game-dir and --profile; GameDir and ExpectedProfile are the .ps1 flags,
+                    # and a key whose real flag differs from its name cannot be derived from it.
+                    "--local-arg", f"game-profile:game-dir={config.game_dir}",
+                    "--local-arg", f"game-profile:profile={config.game_profile}"])
         log(f"  resolved: {Path(profile_argv[1]).name}")
         run(profile_argv, stage="game_profile", timeout=BUDGETS["game_profile"], log=log)
 
