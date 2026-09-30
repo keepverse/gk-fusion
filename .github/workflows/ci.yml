@@ -1,0 +1,66 @@
+name: CI
+
+# gk-fusion's own continuous integration.
+#
+# WHY THIS FILE IS SMALL AND WHY IT IS HERE AT ALL. CI policy is gk-workflow's, per the workspace
+# ownership rule: shared guards, verification harnesses, path rules and contributor standards have
+# one owner, and a second copy in a sub-repository is the competing copy that rule exists to
+# prevent. This repository therefore holds a THIN ENTRYPOINT, not a policy of its own - it names
+# this repository's own test projects and nothing else. The one place it earns its keep is that
+# release.yml calls it as a reusable workflow, which means the file has to exist here for a tag to
+# publish at all. It did not: release.yml referenced ./.github/workflows/ci.yml, so the
+# ci-superset job failed on a missing file before any test ran.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # Called by release.yml as a reusable workflow at the tag's exact checked-out commit. A release
+  # is meant to be a declared superset of CI, not a second hand-maintained partial test list -
+  # which is why release.yml delegates here instead of repeating these commands.
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    name: Native tests (Launcher)
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            6.0.x
+
+      # FusionRpg.Launcher.Tests is the whole of this repository's publicly runnable test surface,
+      # and saying so is better than shipping a matrix that looks like coverage. Measured locally
+      # at the commit that added this file: 166 tests, 0 failed, and it builds with no game install
+      # and no interop assemblies.
+      #
+      # FusionRpg.Injector.Tests is ABSENT BY NECESSITY, not by oversight. It compiles against the
+      # BepInEx and MelonLoader interop assemblies of a real game install and does not build without
+      # them. A public runner has no legal game install, so listing it would produce a CI that
+      # fails on every run for a reason no one reading the file could diagnose.
+      #
+      # Each call checks its OWN exit code. Before 2026-09-19 four `dotnet test` lines ran with no
+      # check between them, so only the last one decided the step and an earlier failure still let
+      # the step - and the release - pass. That masking is why the check is on the line, not on the
+      # step's exit status.
+      #
+      # --blame-hang-timeout matches test.runsettings' TestTimeout; the release gate depends on
+      # the same value, so a change to one has to change the other.
+      - name: Launcher tests
+        shell: pwsh
+        run: |
+          dotnet test tests/FusionRpg.Launcher.Tests/FusionRpg.Launcher.Tests.csproj --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Launcher.Tests failed" }
