@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using FusionRpg.Core.Workspace;
 
 /// <summary>
 /// The host tunings this assembly's classes need, configured ONCE before any test runs.
@@ -37,14 +38,34 @@ internal static class InjectorTestTuningBootstrap
     }
 
     static string Read(string file) =>
-        File.ReadAllText(Path.Combine(FindRepoRoot(), "data", "tuning", file));
+        File.ReadAllText(Path.Combine(CoreRoot(), "data", "tuning", file));
+
+    // ── workspace roots ───────────────────────────────────────────────────────────────────────────
+    // The split moved gk-data/packs/fusion/data/seed and gk-data/packs/fusion/data/generated into a gk-data pack and left gk-core/data/tuning in
+    // gk-core, so ONE repo root no longer answers for both. Before the split FindRepoRoot() was
+    // correct for every read above; after it, the gk-data/packs/fusion/data/seed reads pointed into gk-core and threw.
+    // That is not a cosmetic path problem. This is a [ModuleInitializer]: it runs at ASSEMBLY LOAD,
+    // so one unresolvable file failed every test in every assembly that links this file.
+    // FusionRpg.Core.ClassSystem.Tests measured 238 of 238 red in the workspace with gk-data
+    // PRESENT - a green-looking repository that could not run a single test.
+    // KeepverseRoots is the one resolver; these two helpers are the only place the roots are named,
+    // and each is resolved once because five reads share it.
+    private static string? _contentRoot;
+    private static string? _coreRoot;
+
+    /// <summary>Root the authored content registries resolve from: a gk-data pack after the split,
+    /// the repository root before it.</summary>
+    private static string ContentRoot() => _contentRoot ??= KeepverseRoots.Content();
+
+    /// <summary>Root the authored tuning files resolve from: gk-core after the split.</summary>
+    private static string CoreRoot() => _coreRoot ??= KeepverseRoots.Core();
 
     static string FindRepoRoot()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         while (dir is not null)
         {
-            if (Directory.Exists(Path.Combine(dir.FullName, "src", "FusionRpg.Injector"))) return dir.FullName;
+            if (Directory.Exists(Path.Combine(dir.FullName, "src", "FusionRpg.Core"))) return dir.FullName;
             dir = dir.Parent;
         }
 
