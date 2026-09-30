@@ -50,7 +50,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
-from keepverse_roots import core_root  # noqa: E402
+from keepverse_roots import core_root, owning_base  # noqa: E402
 # cscan is gk-core's shared C# lexer and there is no copy of it in this repository. In the monorepo
 # every tool shared one scripts/ directory, so "the sibling module" was literally true; the split
 # moved the lexer a repository away and both of these guards have died with ModuleNotFoundError on
@@ -183,10 +183,27 @@ _CROSS_REPO_SCOPE = ("src/FusionRpg.Core",)
 
 
 def owning_root(root: Path, scope: str) -> Path:
-    """The root that OWNS `scope`, which is not always this repository."""
+    """The root that OWNS `scope`, which is not always this repository.
+
+    `owning_base`, not `core_root`, and the difference is the whole reason this suite could not run.
+    This function is asked with a PLANTED FIXTURE root by the guard's own contract tests, because a
+    planted violation is the only mechanism by which the rule is proven to fire - and `core_root()`
+    raises RootNotFound for a temporary directory, since no legacy repo and no workspace is above it.
+    So the guard refused before inspecting a single file and 21 tests reported a missing contract
+    instead of the rule they were written to prove.
+
+    `owning_base` asks exactly the right question and asks it in the right order: does the root handed
+    in CARRY the scope? If yes, that root is demonstrably its owner - and a fixture that plants
+    `src/FusionRpg.Core` is its own owner. Only if it does not, are the workspace siblings consulted,
+    which is what resolves the real tree to gk-core.
+
+    Falling back to `root` rather than raising keeps the refusal where the caller expects it:
+    `source_files` raises `MISSING_SCOPE` naming the scope, which is the honest verdict for a root that
+    does not have it.
+    """
     norm = scope.replace("\\", "/").rstrip("/")
     if any(norm == s or norm.startswith(s + "/") for s in _CROSS_REPO_SCOPE):
-        return core_root(root)
+        return owning_base(norm, root) or root
     return root
 
 
@@ -211,8 +228,11 @@ def relative(root: Path, path: Path) -> str:
         # A finding in gk-core, reported from this guard. It names the repository rather than
         # falling back to an absolute path: a finding has to be locatable from a clean checkout,
         # and an absolute path locates it only on the machine that produced it.
+        # Same reason as owning_root: a planted fixture is its own owner, so resolving through
+        # core_root() here raised RootNotFound instead of the ValueError this already handles.
         try:
-            return f"gk-core/{path.relative_to(core_root(root)).as_posix()}"
+            base = owning_base("src/FusionRpg.Core", root) or root
+            return f"gk-core/{path.relative_to(base).as_posix()}"
         except ValueError:
             return path.name
 
