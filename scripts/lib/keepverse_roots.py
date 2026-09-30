@@ -197,3 +197,34 @@ def fusion_root_or_owner(start: Path | None = None) -> Path:
             if (parent / "src" / "FusionRpg.Injector").is_dir():
                 return parent
         raise
+
+
+def root_carrying(start: Path | None, relative: str) -> Path | None:
+    """The nearest root - `start` included - that actually CARRIES `relative`, or None.
+
+    <para><b>What this is for.</b> A guard that reads a document the workspace owns - the power
+    inventory at `docs/architecture/power/inventory.json` is gk-workflow's and gk-core has no such
+    file at all - resolves that document's root with `workspace_root()`. Correct in the workspace, and
+    unanswerable in a planted fixture, because a temporary directory has no qualifying ancestor. So the
+    guard refused `WORKSPACE-ROOT-MISSING` before reading anything, and four tests read that as a broken
+    contract.
+
+    <para><b>Why the marker is a path rather than a name.</b> The fallback asks whether a root carries
+    the SUBJECT the caller cares about. That is the same evidence `workspace_root` would have used one
+    level up, so a root that has it is demonstrably the owner of that document - not a directory that
+    merely happens to exist. Return None rather than `start` when nothing matches, so a caller that
+    forgets to check cannot accidentally treat "no evidence" as "this is the owner".
+
+    <para>This is the general form of what `fusion_root_or_owner` does for the engine sources, and it
+    lives here for the same reason: the three copies of this contract are held byte-identical by
+    `ResolverCopyParityTests`, so a rule written per caller is a rule that will drift.
+    </para>
+    """
+    here = Path(start or Path.cwd()).resolve()
+    rel = str(relative).replace("\\", "/").strip("/")
+    if not rel:
+        return None
+    for parent in (here, *here.parents):
+        if (parent / rel).exists():
+            return parent
+    return None
