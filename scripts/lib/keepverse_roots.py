@@ -48,13 +48,43 @@ class RootNotFound(RuntimeError):
 
 
 def _layout(start: Path) -> tuple[str, Path]:
+    """The layout that governs `start`, and the directory it is anchored at.
+
+    THE NEAREST MATCH WINS, WHICHER KIND IT IS, and the legacy probe requires BOTH `data/seed` AND
+    `data/tuning`.
+
+    Measured, one of those two conditions was wrong in the direction that matters. The probe used to be
+    "a `FusionRpg.slnx` next to a `data/seed` directory", and gk-forge satisfies that BY ITSELF: it owns
+    its own solution file and its own `data/seed/creatures/{_generated,_registry}`, because the split
+    left a repository's generator inputs where the generator is. So a walk upward from
+    `gk-forge/tools/seedsmith/seedsmith` matched "legacy" AT gk-forge and stopped one directory short of
+    the workspace root. From that module `content_root()` returned gk-forge rather than
+    `gk-data/packs/fusion`, `core_root()` returned gk-forge rather than gk-core, and `workspace_root()` -
+    the accessor whose whole job is the directory holding `docs/` and `tasks/` - returned gk-forge,
+    which holds neither.
+
+    Adding `data/tuning` to the probe is what separates them, and it is evidence rather than a guess:
+    the pre-split monorepo carried `data/seed` AND `data/tuning` side by side, and after the split
+    tuning lives in gk-core. Measured across the split repositories - gk-forge has `FusionRpg.slnx` and
+    `data/seed` but NO `data/tuning` and no `src/`; gk-core has `data/tuning` but no `data/seed`;
+    gk-fusion has neither. So no split repository satisfies the two-marker legacy probe.
+
+    NEAREST WINS IS NOT NEGOTIABLE, and an earlier attempt to make the OUTERMOST match win was reverted.
+    The contract it would have broken is real: a legacy clone nested inside the workspace must resolve
+    against itself, because returning the outer workspace resolves content into a pack the caller never
+    asked for. That test found its discriminating shape by falsification - a workspace nested inside a
+    legacy repo cannot break a walk-order mutant, because the nearest is the workspace either way. The
+    fix belongs in the probe's PRECISION, not in the walk's order.
+    """
     here = start.resolve()
     for d in (here, *here.parents):
-        if (d / "FusionRpg.slnx").is_file() and (d / "data" / "seed").is_dir():
+        if (d / "FusionRpg.slnx").is_file() and (d / "data" / "seed").is_dir() \
+                and (d / "data" / "tuning").is_dir():
             return "legacy", d
         if (d / "gk-core").is_dir() and (d / "gk-data").is_dir():
             return "workspace", d
     raise RootNotFound(f"no legacy repo or Keepverse workspace above {here}")
+    return found
 
 
 def _start(start: Path | None) -> Path:
@@ -290,3 +320,5 @@ def owning_base(rel: str, start: Path | None = None, accessors=None) -> Path | N
         if (base / rel).exists():
             return base
     return None
+
+
