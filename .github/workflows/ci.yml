@@ -69,5 +69,7 @@ jobs:
         run: dotnet build FusionRpg.slnx -v minimal --nologo
 
       - name: Run the tests
-        run: dotnet test FusionRpg.slnx --no-build --verbosity minimal --blame-hang --blame-hang-timeout 10min
-          if ($LASTEXITCODE -ne 0) { throw "FusionRpg.Launcher.Tests failed" }
+        shell: pwsh
+        run: |
+          dotnet test FusionRpg.slnx --no-build --verbosity minimal --blame-hang --blame-hang-timeout 10min
+          if ($LASTEXITCODE -ne 0) { throw "the gk-fusion test run failed" }
