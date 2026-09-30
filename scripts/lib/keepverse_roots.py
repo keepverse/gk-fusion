@@ -233,3 +233,60 @@ def root_carrying(start: Path | None, relative: str) -> Path | None:
         if (parent / rel).exists():
             return parent
     return None
+
+
+def repo_bases(start: Path | None = None, accessors=None) -> tuple[Path, ...]:
+    """Every repository that could own a repo-relative path, `start` ITSELF FIRST.
+
+    WHY THIS IS HERE. The nine-repository split turned "resolve a repo-relative path" into "ask which
+    repository owns it", and the answer needs SIBLINGS, not ancestors: a path in gk-fusion is not
+    reachable by walking up from gk-core. The first implementation of that question lived inside
+    guard-verification-boundaries.py, which meant only that one guard could ask it, and every other
+    caller re-derived it - `root_carrying` above walks ancestors and so cannot answer for a sibling at
+    all. Two questions, one workspace, and a rule written per caller is a rule that will drift.
+
+    ORDER IS THE CONTRACT: `start` answers first, so a repository's own path is always its own, and a
+    sibling's is only reached when the local root does not have it.
+
+    `accessors` exists so a caller whose accessors are not this module's can still use the algorithm.
+    guard-verification-boundaries.py imports the resolver OPTIONALLY - a copied fixture has no `lib/`
+    beside it and every accessor degrades to a stub returning None - so it passes its own accessor
+    tuple. Without that parameter the guard could not share this without a fixture resolving against
+    the real workspace, which is the exact blindness it was fixed for. Each accessor is wrapped
+    because several of them RAISE when their subject is absent - `content_root` refuses when the pack
+    is not there - and a guard must report its own findings rather than die on a sibling's absence.
+    """
+    here = _start(start).resolve()
+    if accessors is None:
+        accessors = (core_root, forge_root, fusion_root, web_root, workspace_root,
+                     content_root, authored_content_root)
+    bases: list[Path] = [here]
+    for accessor in accessors:
+        try:
+            base = accessor(here)
+        except Exception:
+            continue
+        if base is None:
+            continue
+        base = Path(base)
+        if base not in bases and base.is_dir():
+            bases.append(base)
+    return tuple(bases)
+
+
+def owning_base(rel: str, start: Path | None = None, accessors=None) -> Path | None:
+    """The repository holding `rel`, or None when no repository does.
+
+    None is the fail-closed answer and every caller keeps its original behaviour on it: a path that
+    exists nowhere is still reported. This is NOT a fallback that makes a check weaker - the check
+    still has to be satisfied, by a real file in the repository that owns it, and the set of
+    repositories consulted is the fixed set the split produced rather than a search upward until
+    something is found.
+    """
+    rel = str(rel).replace("\\", "/").strip()
+    if not rel:
+        return None
+    for base in repo_bases(start, accessors):
+        if (base / rel).exists():
+            return base
+    return None
