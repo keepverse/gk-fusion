@@ -12,6 +12,7 @@ span makes the route game-injector-debug-shaped, while a persisted/domain
 write with no relay makes it rpg-server-debug-shaped.
 """
 import re
+import sys
 from pathlib import Path
 
 SCOPES = ("game-injector-debug", "rpg-server-debug")
@@ -37,12 +38,47 @@ def check_mapped(tools):
 
 
 def find_repo_root(start=None):
-    """Nearest ancestor containing gk-core/src/FusionRpg.Server/DebugEndpoints.cs."""
+    r"""The repository that owns `src/FusionRpg.Server`, which is gk-core's and not this one's.
+
+    This walked upward for `src/FusionRpg.Server/DebugEndpoints.cs` and had one repository to walk to.
+    It now walks out of the repository it lives in: `src/FusionRpg.Server` is gk-core's, this adapter is
+    gk-fusion's, and no ancestor of gk-fusion has ever had it. Measured, every starting point that a
+    caller actually uses:
+
+        gk-fusion                      -> FileNotFoundError
+        gk-fusion/tools/debug-mcp      -> FileNotFoundError
+        Keepverse (the workspace root) -> FileNotFoundError
+        gk-core                        -> D:\Works\source\Keepverse\gk-core
+
+    so `load_allowlist()` raised for every caller except one, and the failure reached a user as
+    `debug_call` returning `{"ok": false, "error": "FileNotFoundError: repo root not found...",
+    "scope": null}` - the adapter that invokes debug routes, unable to work from the directory it ships
+    in. A `"scope": null` alongside an error is also the exact shape the live-probe standard forbids,
+    because a response with no scope cannot be read as evidence about either scope.
+
+    The workspace resolver answers the question directly, so it is asked first. The upward walk is kept
+    ONLY as a fallback for a standalone clone where the resolver is not beside this file - it is an
+    availability fallback, not a widening one: it still demands the same marker file, so it cannot
+    return a directory that is not the owner.
+    """
     here = Path(start or Path.cwd()).resolve()
+    lib = Path(__file__).resolve().parents[2] / "scripts" / "lib"
+    if lib.is_dir() and str(lib) not in sys.path:
+        sys.path.insert(0, str(lib))
+    try:
+        import keepverse_roots                                   # noqa: PLC0415 - path depends on __file__
+        core = Path(keepverse_roots.core_root(here))
+    except Exception:
+        core = None          # the resolver is absent or cannot answer; the walk below still can
+    if core is not None and (core / "src" / "FusionRpg.Server" / "DebugEndpoints.cs").is_file():
+        return core
+
     for parent in (here, *here.parents):
         if (parent / "src" / "FusionRpg.Server" / "DebugEndpoints.cs").is_file():
             return parent
-    raise FileNotFoundError("repo root not found (no src/FusionRpg.Server above cwd)")
+    raise FileNotFoundError(
+        "gk-core not found: neither the workspace resolver nor any ancestor carries "
+        f"src/FusionRpg.Server/DebugEndpoints.cs (searched from {here})")
 
 
 def _handler_span(text, match_start):
