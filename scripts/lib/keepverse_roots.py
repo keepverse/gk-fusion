@@ -163,3 +163,37 @@ def workspace_root(start: Path | None = None) -> Path:
     if (p := _env("KEEPVERSE_WORKSPACE_ROOT")) is not None:
         return p
     return _layout(_start(start))[1]
+
+
+def fusion_root_or_owner(start: Path | None = None) -> Path:
+    """`fusion_root`, or the nearest root that demonstrably OWNS the engine sources.
+
+    <para><b>Why this exists.</b> `fusion_root` names the engine repository by looking for a legacy repo
+    or a Keepverse workspace ABOVE the given start - which is right in the workspace and unanswerable
+    inside a planted test fixture, because a temporary directory has no ancestor that qualifies. A guard
+    test that plants `src/FusionRpg.Injector/...` in a temp root and then runs the guard against it
+    therefore got `RootNotFound` and the guard refused with `FUSION-ROOT-MISSING` before inspecting a
+    single file: 26 failures in `test_guard_actor_hub.py` and 18 in `test_guard_clock_seam.py`, none of
+    which visible while a collection error was aborting the pytest run.
+
+    <para><b>Why the fallback is evidence, not a guess.</b> A root that itself carries
+    `src/FusionRpg.Injector` is not being assumed to own anything - that directory IS the evidence, and
+    it is the very marker `fusion_root` would have used one level up. So the walk stops at the first
+    root that carries it, and if NO root does, the original `RootNotFound` is re-raised unchanged. A
+    blanket "assume the start directory" would have let a guard report a clean verdict about a
+    repository that does not exist, which is the failure a guard exists to prevent.
+
+    <para>The `OR_OWNER` suffix is the contract: the resolver is still asked first, so a real workspace
+    is always resolved by the shared rule, and only a root that cannot be placed in a workspace falls
+    back. This lives here rather than in each guard because the three copies of this contract are held
+    byte-identical by `ResolverCopyParityTests` - a rule duplicated per caller is a rule that will drift.
+    </para>
+    """
+    try:
+        return fusion_root(start)
+    except RootNotFound:
+        here = Path(start or Path.cwd()).resolve()
+        for parent in (here, *here.parents):
+            if (parent / "src" / "FusionRpg.Injector").is_dir():
+                return parent
+        raise
