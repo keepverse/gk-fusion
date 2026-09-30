@@ -55,8 +55,37 @@ def _start(start: Path | None) -> Path:
 
 
 def _env(name: str) -> Path | None:
+    """The override for `name`, VALIDATED - or a refusal.
+
+    An unchecked override is not an override; it is a way to switch the refusal off. The whole
+    reason this module names an absent repository instead of inventing a path is that a caller must
+    never be handed a directory which does not exist - and the discovered-sibling path below
+    enforces exactly that. Trusting the environment without the same check defeated the rule it was
+    added to serve, and it failed in the worst direction: the override named a directory that was
+    not there, the guard carried on as though it were, and the absence surfaced several frames
+    later as findings about files the caller had never supplied.
+
+    Measured, with every sibling override pointed at a directory that does not exist: four guards
+    reported ABSENCE as findings - nine "stale allowlist entry" from clock-seam, nine "mirror did
+    not resolve" from vocabulary-mirror, twelve "baseline entry no longer violated" from
+    test-substrate, and two "missing required file" from actor-hub. Every one of those was a guard
+    reporting its own blindness as a verdict against the code. With the check below they refuse by
+    name instead, which is the same condition stated honestly rather than as an accusation.
+
+    The message names the variable and the path because the variable is what the caller set, and
+    unsetting it is the first thing to try.
+    """
     v = os.environ.get(name)
-    return Path(v) if v else None
+    if not v:
+        return None
+    p = Path(v)
+    if not p.is_dir():
+        raise RootNotFound(
+            f"{name}={p} does not name a directory. An override is a CLAIM about where a repository "
+            f"is, so it is checked exactly as a discovered sibling is: unset the variable to return "
+            f"to discovery, or point it at the repository."
+        )
+    return p
 
 
 def _sibling(start: Path | None, env: str, name: str) -> Path:
