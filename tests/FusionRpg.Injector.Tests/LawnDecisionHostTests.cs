@@ -4,6 +4,7 @@ using FusionRpg.Core.Combat;
 using FusionRpg.Injector;
 using FusionRpg.Injector.Effects;
 using Xunit;
+using FusionRpg.Core.Workspace;
 
 namespace FusionRpg.Injector.Tests;
 
@@ -223,8 +224,7 @@ public class LawnDecisionHostTests
 
     static string RepoRoot([System.Runtime.CompilerServices.CallerFilePath] string here = "")
     {
-        var testsDir = System.IO.Path.GetDirectoryName(here)!;
-        return System.IO.Path.GetFullPath(System.IO.Path.Combine(testsDir, "..", ".."));
+        return KeepverseRoots.Core();
     }
 
     /// <summary>Every CODE line of <paramref name="relativePath"/>, comments stripped — a file's own

@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Xunit;
+using FusionRpg.Core.Workspace;
 
 namespace FusionRpg.Injector.Tests;
 
@@ -123,7 +124,6 @@ public class LawnDecisionDumpTests
 
     static string RepoRoot([System.Runtime.CompilerServices.CallerFilePath] string here = "")
     {
-        var testsDir = Path.GetDirectoryName(here)!;
-        return Path.GetFullPath(Path.Combine(testsDir, "..", ".."));
+        return KeepverseRoots.Core();
     }
 }

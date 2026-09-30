@@ -6,6 +6,7 @@ using FusionRpg.Core.Actions.Ai;
 using FusionRpg.Injector;
 using FusionRpg.Injector.Effects;
 using Xunit;
+using FusionRpg.Core.Workspace;
 
 namespace FusionRpg.Injector.Tests;
 
@@ -139,7 +140,6 @@ public class AiDecisionDumpTests
 
     static string RepoRoot([System.Runtime.CompilerServices.CallerFilePath] string here = "")
     {
-        var testsDir = Path.GetDirectoryName(here)!;
-        return Path.GetFullPath(Path.Combine(testsDir, "..", ".."));
+        return KeepverseRoots.Core();
     }
 }
