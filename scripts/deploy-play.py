@@ -86,6 +86,35 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = REPO_ROOT / "scripts"
 
+# WHICH REPOSITORY OWNS EACH ARTEFACT. The monorepo had one root, so `REPO_ROOT / "src" / ...` and
+# `REPO_ROOT / "web" / ...` were correct expressions for the server, the web app, the engine projects
+# and the seed importer alike. The split gave each of those a different owner, and this tool went on
+# addressing all of them from gk-fusion - so its plan named gk-fusion/dist/FusionRpg.Server,
+# gk-fusion/web/fusion-rpg-web and gk-fusion/tools/AtomImporter, none of which exists. A `--dry-run`
+# reported a twelve-stage plan that could not have completed at stage 4, and no CI or test covers the
+# plan because a deploy is a deploy and not a gate.
+#
+# The injector host projects are the only ones that are genuinely gk-fusion's, and they are the ones
+# still addressed from REPO_ROOT below. Everything else names its owner, which is the whole lesson
+# of the split stated as a line of code: a repository boundary is a question every path has to ask.
+sys.path.insert(0, str(SCRIPTS / "lib"))
+from keepverse_roots import core_root, forge_root, web_root, workspace_root  # noqa: E402
+
+CORE_ROOT = core_root(REPO_ROOT)
+WEB_ROOT = web_root(REPO_ROOT)
+FORGE_ROOT = forge_root(REPO_ROOT)
+WORKSPACE_ROOT = workspace_root(REPO_ROOT)
+
+# WHERE A TOOL IS LOOKED FOR, in order. gk-fusion's own scripts/ first, because that is where the
+# tools it owns live and the local answer should win; then the repositories that own the rest. The
+# guard RUNNER and the session LOCK are gk-core's, and the split left this resolver asking gk-fusion
+# for them, so every deploy died at a precondition naming a tool that exists.
+#
+# That failure is the fail-closed design working - a skipped precondition would have reported a
+# deploy nobody had actually guarded - and it is the same class as the path problem above, one level
+# up: not a path built from the wrong root, but a NAME resolved against the wrong root.
+TOOL_SEARCH_ROOTS = (SCRIPTS, CORE_ROOT / "scripts", WORKSPACE_ROOT / "scripts")
+
 #: The owner's server, as DOCUMENTED (gk-core/src/FusionRpg.Server/Program.cs:15-16). It is a default, not a
 #: fact: the launcher picks the real port and records it in %AppData%\FusionRpg\launcher.json, so this
 #: value is only used for the pool guard's "is this the owner's url?" comparison and as a CLI default.
@@ -131,6 +160,7 @@ class Refusal(Exception):
 TOOL_FILE_STEMS = {
     "run-guards": "run_guards",
     "test-fast": "test_fast",
+    "game-lock": "game_lock",
 }
 
 
@@ -157,21 +187,30 @@ def tool_argv(stem: str, tool_args: list[str], *, stage: str,
     interpreter switch that happens quietly is indistinguishable from a tool that changed behaviour.
     """
     file_stem = TOOL_FILE_STEMS.get(stem, stem)
-    py = SCRIPTS / f"{file_stem}.py"
-    if py.is_file():
-        python = shutil.which("python")
-        if not python:
-            raise Refusal(stage, "TOOL-PYTHON-MISSING",
-                          f"{py.name} exists but python is not on PATH; install python or restore the "
-                          f".ps1 so this stage can run")
-        return [python, str(py), *(py_args if py_args is not None else tool_args)]
-    ps1 = SCRIPTS / f"{file_stem}.ps1"
-    if ps1.is_file():
-        return ["pwsh", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
-                "-File", str(ps1), *tool_args]
+    searched: list[str] = []
+    for root in TOOL_SEARCH_ROOTS:
+        for ext, dialect in ((".py", py_args), (".ps1", tool_args)):
+            candidate = root / f"{file_stem}{ext}"
+            searched.append(str(candidate))
+            if not candidate.is_file():
+                continue
+            if ext == ".ps1":
+                return ["pwsh", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+                        "-File", str(candidate), *tool_args]
+            python = shutil.which("python")
+            if not python:
+                raise Refusal(stage, "TOOL-PYTHON-MISSING",
+                              f"{candidate.name} exists but python is not on PATH; install python "
+                              "or restore the .ps1 so this stage can run")
+            return [python, str(candidate), *(dialect if dialect is not None else tool_args)]
+    # The refusal names EVERY path it looked at. A message naming one directory sends the reader to
+    # add a file to a directory the tool was never going to be in - which is exactly what happened
+    # here: TOOL-MISSING said "neither scripts/run_guards.py nor scripts/run_guards.ps1 exists",
+    # true of gk-fusion and false of the workspace, and the obvious response was to write a new tool
+    # in the directory it named rather than to look for the one that already existed in gk-core.
     raise Refusal(stage, "TOOL-MISSING",
-                  f"neither scripts/{file_stem}.py nor scripts/{file_stem}.ps1 exists, so this stage "
-                  f"cannot run (logical name '{stem}')")
+                  f"no {file_stem}.py or {file_stem}.ps1 exists in any repository that owns one "
+                  f"(logical name '{stem}'); searched: " + ", ".join(searched))
 
 
 class Log:
@@ -378,9 +417,9 @@ def deploy(config: Config) -> dict:
     log = config.log
     verdict: dict = {"stages": [], "stageSeconds": {}, "refusals": [], "dryRun": config.dry_run}
     started = time.monotonic()
-    wwwroot_src = REPO_ROOT / "src" / "FusionRpg.Server" / "wwwroot"
-    wwwroot_dist = REPO_ROOT / "dist" / "FusionRpg.Server" / "wwwroot"
-    server_out = REPO_ROOT / "dist" / "FusionRpg.Server"
+    wwwroot_src = CORE_ROOT / "src" / "FusionRpg.Server" / "wwwroot"
+    wwwroot_dist = CORE_ROOT / "dist" / "FusionRpg.Server" / "wwwroot"
+    server_out = CORE_ROOT / "dist" / "FusionRpg.Server"
     server_exe = server_out / "FusionRpg.Server.exe"
     health = config.server_url + "/health"
 
@@ -475,7 +514,7 @@ def deploy(config: Config) -> dict:
         if config.no_rebuild_ui:
             log("  skipped (--no-rebuild-ui): syncing whatever is already in src wwwroot")
         else:
-            web = REPO_ROOT / "web" / "fusion-rpg-web"
+            web = WEB_ROOT / "web" / "fusion-rpg-web"
             npm = _npm()
             if not (web / "node_modules").exists():
                 run([npm, "install"], stage="web_build", timeout=BUDGETS["web_build"], log=log, cwd=web)
@@ -513,7 +552,7 @@ def deploy(config: Config) -> dict:
             injector_roots = [REPO_ROOT / "src" / n for n in
                               ("FusionRpg.Injector", "FusionRpg.Contracts", "FusionRpg.Core",
                                "FusionRpg.CheatCore")] + [host_root]
-            core_roots = [REPO_ROOT / "src" / n for n in ("FusionRpg.Core", "FusionRpg.Contracts")]
+            core_roots = [CORE_ROOT / "src" / n for n in ("FusionRpg.Core", "FusionRpg.Contracts")]
             for dll, roots in ((config.injector_dll, injector_roots), ("FusionRpg.Core.dll", core_roots)):
                 newest = newest_source(roots)
                 if newest is None:
@@ -544,7 +583,7 @@ def deploy(config: Config) -> dict:
             log(f"  --reuse-build: keeping the published server at {server_exe}")
         else:
             run(["dotnet", "publish",
-                 str(REPO_ROOT / "src" / "FusionRpg.Server" / "FusionRpg.Server.csproj"),
+                 str(CORE_ROOT / "src" / "FusionRpg.Server" / "FusionRpg.Server.csproj"),
                  "-c", "Release", "-o", str(server_out), "--nologo", "-v", "q"],
                 stage="server_publish", timeout=BUDGETS["server_publish"], log=log)
             if not server_exe.exists():
@@ -557,7 +596,7 @@ def deploy(config: Config) -> dict:
             log("  --reuse-build: data already imported, skipping AtomImporter")
         else:
             run(["dotnet", "run", "--project",
-                 str(REPO_ROOT / "tools" / "AtomImporter" / "AtomImporter.csproj"),
+                 str(FORGE_ROOT / "tools" / "AtomImporter" / "AtomImporter.csproj"),
                  "-c", "Release", "--", "--db", str(server_out / "data")],
                 stage="seed_import", timeout=BUDGETS["seed_import"], log=log)
 
