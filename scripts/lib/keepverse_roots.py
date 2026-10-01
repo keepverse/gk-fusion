@@ -336,15 +336,25 @@ def owned_path(rel: str, start: Path | None = None) -> Path:
     not have it, and the file is reported missing while sitting present two directories away. That is 294 of
     the paths seedsmith's own failures cite, across 28 distinct files.
 
-    RESOLVE PER FILE, NEVER PER DIRECTORY. `owning_base` asks `(base / rel).exists()`, so a DIRECTORY answers
-    unreliably - gk-forge holds an untracked `data/seed/creatures/` of three files totalling 80 bytes, and that
-    alone makes it answer "gk-forge carries data/seed":
+    RESOLVE PER FILE, NEVER PER DIRECTORY. `owning_base` asks `(base / rel).exists()`, so a DIRECTORY is
+    answered by whichever repository happens to hold it - and `repo_bases` consults gk-forge FIRST, ahead of the
+    pack that actually owns `data/seed`. Measured 2026-10-02, after three untracked shadow files were removed
+    from gk-forge (`data/seed/creatures/_generated/family-assignments.json`, the sibling `family-candidates.json`,
+    and `data/seed/creatures/_registry/families.v1.json` - 4+4+72 bytes, stray output of
+    `adapters/creatures/generate_families.py` run against the wrong repository):
 
-        owning_base("data/seed")                                 -> gk-forge   wrong
-        owning_base("data/seed/passive-tree/plan/might.v1.json")   -> gk-data    right
-        owning_base("data/tuning/creature-threat.v2.json")         -> gk-core     right
+        owning_base("data/seed")                                 -> gk-data/packs/fusion   right
+        owning_base("data/seed/creatures/_registry/families.v1.json")
+                                                                   -> gk-data/packs/fusion   right
+        owning_base("data/seed/passive-tree/plan/might.v1.json")   -> gk-data/packs/fusion   right
+        owning_base("data/tuning/creature-threat.v2.json")         -> gk-core                 right
 
-    This function cannot repair that, because the resolver decides it. Pass a complete file path.
+    Those 80 bytes were not cosmetic. While they existed, `owning_base("data/seed")` answered **gk-forge**, and
+    every caller of this function silently resolved a path against gk-forge instead of against the pack that owns
+    it. The hazard is structural and it RECURS: running `generate_families.py` against gk-forge recreates the same
+    `data/seed/creatures/` and restores the misresolution, which is why the guidance is per-FILE rather than a
+    claim that the directories now happen to resolve correctly. This function cannot repair any of that, because
+    the resolver decides it. Pass a complete file path.
     """
     here = Path(start or Path.cwd()).resolve()
     return (owning_base(rel, here) or here) / rel
