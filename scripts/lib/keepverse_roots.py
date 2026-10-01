@@ -351,3 +351,32 @@ def owned_path(rel: str, start: Path | None = None) -> Path:
     return (owning_base(rel, here) or here) / rel
 
 
+def seed_root(start: Path | None = None) -> Path:
+    """`data/seed` inside the content pack, or a path that does not exist when the pack is absent.
+
+    `data/seed` LIVES inside the pack - `content_root()` is `<workspace>/gk-data/packs/fusion` and `data/seed`
+    is beneath it - so the pack root answers the directory question by construction, with no proxy file and no
+    index scan.
+
+    This exists because a DIRECTORY cannot be resolved through `owning_base`, which answers by testing
+    `(base / rel).exists()` and therefore needs a specific file. Measured, the directories in question contain
+    no stable member to stand in for one:
+
+        data/seed/items/base-types     62 files, every one role-suffixed
+        data/seed/items/gems            3 files: g1.json, g2.json, g3.json
+        data/seed/passive-tree/plan    42 files, one per tree id, no manifest
+
+    Naming one of those as a proxy would be a guess dressed as a fix - rename it and the directory silently
+    resolves to the fallback again with nothing failing. A directory is not a file and needs a different
+    question.
+
+    An ABSENT pack returns `<start>/data/seed`, which does not exist, rather than raising. A module-level
+    constant must not make importing the module raise, or a standalone clone cannot import it at all
+    (ADDITION 9(a)); and every caller of this one already handles a missing directory - it returns an empty
+    mapping, an early return, or a guarded glob. So absence stays fail-closed: the caller reports MISSING
+    rather than reading somewhere else.
+    """
+    try:
+        return content_root(start) / "data" / "seed"
+    except RootNotFound:
+        return Path(start or Path.cwd()) / "data" / "seed"
