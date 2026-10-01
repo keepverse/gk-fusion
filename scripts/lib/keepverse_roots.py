@@ -322,3 +322,32 @@ def owning_base(rel: str, start: Path | None = None, accessors=None) -> Path | N
     return None
 
 
+def owned_path(rel: str, start: Path | None = None) -> Path:
+    """`rel` resolved against the repository that carries it, or against `start` when none does.
+
+    The composition `owning_base(rel, start) or start`, joined to `rel`, promoted out of the private copies
+    that three modules in gk-forge's trees adapters each carry. The fallback is the fail-closed answer
+    `owning_base` documents: a path no repository carries comes back as the caller spelled it, so the caller
+    reports the MISSING FILE rather than silently reading somewhere else. Resolving through `content_root()`
+    instead would RAISE `RootNotFound` when the pack is absent and break a standalone clone at import time,
+    which is why this falls back rather than refuses.
+
+    Measured why the join this replaces is wrong. `data/seed/**` is gk-data's pack and `data/tuning/**` is
+    gk-core's; gk-forge carries neither. So `REPO_ROOT / "data" / ...` names a path in a repository that does
+    not have it, and the file is reported missing while sitting present two directories away. That is 294 of
+    the paths seedsmith's own failures cite, across 28 distinct files.
+
+    RESOLVE PER FILE, NEVER PER DIRECTORY. `owning_base` asks `(base / rel).exists()`, so a DIRECTORY answers
+    unreliably - gk-forge holds an untracked `data/seed/creatures/` of three files totalling 80 bytes, and that
+    alone makes it answer "gk-forge carries data/seed":
+
+        owning_base("data/seed")                                 -> gk-forge   wrong
+        owning_base("data/seed/passive-tree/plan/might.v1.json")   -> gk-data    right
+        owning_base("data/tuning/creature-threat.v2.json")         -> gk-core     right
+
+    This function cannot repair that, because the resolver decides it. Pass a complete file path.
+    """
+    here = Path(start or Path.cwd()).resolve()
+    return (owning_base(rel, here) or here) / rel
+
+
