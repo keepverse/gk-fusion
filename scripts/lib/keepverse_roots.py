@@ -84,7 +84,6 @@ def _layout(start: Path) -> tuple[str, Path]:
         if (d / "gk-core").is_dir() and (d / "gk-data").is_dir():
             return "workspace", d
     raise RootNotFound(f"no legacy repo or Keepverse workspace above {here}")
-    return found
 
 
 def _start(start: Path | None) -> Path:
