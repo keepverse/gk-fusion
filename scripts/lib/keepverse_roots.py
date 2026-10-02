@@ -170,11 +170,42 @@ def authored_content_root(start: Path | None = None) -> Path:
     return _sibling(start, "KEEPVERSE_AUTHORED_CONTENT_ROOT", "gk-content")
 
 
+def _is_core_root(d: Path) -> bool:
+    """A directory that IS the engine repository, as opposed to one merely containing it.
+
+    `data/tuning` + `src/` + `scripts/`. Measured across the split repositories: gk-forge has
+    `FusionRpg.slnx` and `data/seed` but no `data/tuning` and no `src/`; gk-core has `data/tuning`;
+    gk-fusion has neither. So this cannot match gk-forge -- the one repository a walk upward has
+    already been fooled by, per _layout's own docstring.
+    """
+    return ((d / "data" / "tuning").is_dir() and (d / "src").is_dir()
+            and (d / "scripts").is_dir())
+
+
 def core_root(start: Path | None = None) -> Path:
-    """Root of the engine repo: src/, tests/, gk-core/data/tuning/."""
+    """Root of the engine repo: src/, tests/, gk-core/data/tuning/.
+
+    A STANDALONE clone of gk-core resolves to itself. It carries `data/tuning`, `src/` and
+    `scripts/` but no `data/seed`, so it satisfies neither _layout probe -- legacy needs seed AND
+    tuning, workspace needs a `gk-core/` and `gk-data/` side by side -- and every accessor used to
+    refuse, including this one, on the repository that IS gk-core. That took the whole guard and
+    verification harness down in a fresh clone, which is the opposite of what a clone is for.
+
+    The self-probe is a fallback reached only after _layout has raised, so it cannot change any
+    answer that already resolves. It is deliberately NOT a kind inside _layout: _layout's result is
+    what workspace_root() returns verbatim, so a "core" kind there would make workspace_root answer
+    with gk-core instead of the root holding docs/.
+    """
     if (p := _env("KEEPVERSE_CORE_ROOT")) is not None:
         return p
-    kind, d = _layout(_start(start))
+    here = _start(start).resolve()
+    try:
+        kind, d = _layout(here)
+    except RootNotFound:
+        for candidate in (here, *here.parents):
+            if _is_core_root(candidate):
+                return candidate
+        raise
     return d if kind == "legacy" else d / "gk-core"
 
 
