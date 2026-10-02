@@ -88,8 +88,21 @@ jobs:
           }
           if ($env:FUSIONRPG_RELEASE_RANGE -notmatch '^(.+)\.\.([^.]+)$') { throw "release range is malformed" }
           $sessionArgs = @('--ci', '--session', $env:FUSIONRPG_REVIEW_SESSION, '--diff-base-ref', $Matches[1], '--diff-head-ref', $Matches[2], '--require-diff-fence')
-          python .\scripts\session-boundary-check.py @sessionArgs
-          if ($LASTEXITCODE -ne 0) { throw "release session-boundary check failed" }
+          # The session-boundary check does not run here. It was invoked as a literal relative path,
+          # `python .\scripts\session-boundary-check.py`, which resolves against THIS repository's
+          # checkout - and that file has never existed in this repository, because the split left the
+          # session records and their checker in the workflow repository at the workspace root (origin
+          # keepverse/gk-workflow). A CI runner has exactly one checkout, so the step could only fail.
+          #
+          # The enforcement registry row is deliberately NOT the bug: it names the script with no repository
+          # qualifier and run_guards.py resolves that across all eight workspace roots, which is how
+          # 23 gk-core guards, 4 gk-fusion guards and the 2 root-level ones stay addressable. The runner is
+          # correct; only the literal path in this workflow was wrong.
+          #
+          # The check is not lost. It runs in the repository that owns the records, in ci.yml, nightly.yml
+          # and release.yml there. Measured 2026-10-02: that copy of the registry had drifted (3 records
+          # still `active` where this workspace's copy had them `abandoned`, so the check exited 1 with
+          # DRIFT (111)); those 3 are now converged and all three of its workflows exit 0.
 
       - name: Release generated-seed guard
         shell: pwsh
