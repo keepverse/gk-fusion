@@ -34,6 +34,12 @@ jobs:
           # Release and the reusable CI job inspect the complete tag range, not a shallow tip.
           fetch-depth: 0
 
+      - name: Checkout gk-web (the web gates)
+        uses: actions/checkout@v4
+        with:
+          repository: keepverse/gk-web
+          path: gk-web
+
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
@@ -46,7 +52,12 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-          cache-dependency-path: web/fusion-rpg-web/package-lock.json
+          # The web app is its own repository since the split, and this job checks out THIS repository
+          # only - so `web/fusion-rpg-web` does not exist here. `web/` is absent from every commit on
+          # every ref, so this path named a tree this repository has never had, and setup-node with
+          # `cache: npm` fails the release on an unresolvable cache-dependency-path before any test
+          # runs. The sibling is checked out above; every later reference points at it.
+          cache-dependency-path: gk-web/web/fusion-rpg-web/package-lock.json
 
       - name: Resolve complete release verification range
         id: release-range
@@ -117,7 +128,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "release run_guards.py --tier ci failed" }
 
       - name: Release web dependency lock
-        working-directory: web/fusion-rpg-web
+        working-directory: gk-web/web/fusion-rpg-web
         shell: pwsh
         run: |
           if (-not (Test-Path package-lock.json)) { throw "web package-lock.json is required for release" }
