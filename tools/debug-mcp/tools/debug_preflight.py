@@ -189,11 +189,31 @@ def _data_dir(root, env):
 
 
 def _node_modules(root, env):
-    node = Path(root) / "web" / "fusion-rpg-web" / "node_modules"
-    if node.is_dir():
-        return _pass("node-modules", str(node))
-    return _fail("node-modules", "no node_modules (FE build would fail)",
-                 "cd web/fusion-rpg-web; npm ci")
+    """Resolve the web app's node_modules as CONFIGURATION, not as a hardcoded layout.
+
+    This check used to look only at `<root>/web/fusion-rpg-web`, which is correct only when the
+    frontend is vendored inside the same repository. The frontend now lives in its own repository
+    one level up, so from a standalone clone of the repository that owns this tool the path never
+    resolves and the check reports a false FAIL - the preflight becomes unusable exactly where it
+    is supposed to be dependable. Candidates are tried in order and the first hit wins:
+    FUSIONRPG_WEB_ROOT (explicit), the vendored layout (unchanged), then the sibling repository.
+    """
+    root = Path(root)
+    configured = env.get("FUSIONRPG_WEB_ROOT", "").strip()
+    candidates = []
+    if configured:
+        candidates.append((Path(configured), f"FUSIONRPG_WEB_ROOT={configured}"))
+    candidates.append((root / "web" / "fusion-rpg-web", "vendored at <root>/web/fusion-rpg-web"))
+    for sibling in sorted(p.name for p in root.parent.glob("*") if p.is_dir()):
+        candidates.append((root.parent / sibling / "web" / "fusion-rpg-web",
+                           f"sibling repo {sibling}/web/fusion-rpg-web"))
+    for base, origin in candidates:
+        node = base / "node_modules"
+        if node.is_dir():
+            return _pass("node-modules", f"{node} ({origin})")
+    return _fail("node-modules",
+                 f"no node_modules (FE build would fail); tried {len(candidates)} location(s)",
+                 "set $env:FUSIONRPG_WEB_ROOT = \"<path to fusion-rpg-web>\", or npm ci in it")
 
 
 def _mcp_deps(root, env):

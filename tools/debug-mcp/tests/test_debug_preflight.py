@@ -89,6 +89,63 @@ def test_audit_is_deterministic(tmp_path):
     assert json.dumps(first, sort_keys=True) == json.dumps(second, sort_keys=True)
 
 
+# --- node_modules resolution -------------------------------------------------------------------
+# The check used to look only at <root>/web/fusion-rpg-web. The frontend now lives in its own
+# repository one level up, so from a standalone clone of THIS repository that path never resolves
+# and the preflight reports a false FAIL. Measured live 2026-10-03 against
+# <workspace>/gk-fusion/tools/debug-mcp: node-modules FAIL while the real web app had
+# node_modules present at <workspace>/gk-web/web/fusion-rpg-web.
+#
+# Every test below roots its tree at <tmp>/<sibling-parent>/<repo> so the sibling scan can only
+# ever see directories this test created. Using tmp_path directly would let any other test's
+# leftovers in pytest's tmp base satisfy the scan, which is a false PASS, not a hermetic failure.
+
+
+def _workspace(tmp_path, repo="gk-fusion", sibling=None):
+    """Build an isolated <parent>/<repo> (+ optional sibling repo) and return (repo_root, parent)."""
+    parent = tmp_path / "workspace"
+    root = parent / repo
+    root.mkdir(parents=True)
+    if sibling:
+        (parent / sibling / "web" / "fusion-rpg-web" / "node_modules").mkdir(parents=True)
+    return root, parent
+
+
+def test_node_modules_found_in_the_sibling_repository(tmp_path):
+    """The regression this fixes: the frontend in its own repository, resolved without config."""
+    root, _ = _workspace(tmp_path, sibling="gk-web")
+    result = preflight._node_modules(str(root), _env())
+    assert result["verdict"] == "PASS", result
+    assert "gk-web" in result["evidence"], result
+
+
+def test_node_modules_still_found_when_vendored_under_root(tmp_path):
+    """The pre-split layout keeps working - this is additive, not a replacement."""
+    root, _ = _workspace(tmp_path)
+    (root / "web" / "fusion-rpg-web" / "node_modules").mkdir(parents=True)
+    result = preflight._node_modules(str(root), _env())
+    assert result["verdict"] == "PASS", result
+    assert "vendored" in result["evidence"], result
+
+
+def test_node_modules_env_var_is_configuration_and_wins(tmp_path):
+    root, _ = _workspace(tmp_path)
+    elsewhere = tmp_path / "elsewhere" / "app"
+    (elsewhere / "node_modules").mkdir(parents=True)
+    result = preflight._node_modules(str(root), _env(FUSIONRPG_WEB_ROOT=str(elsewhere)))
+    assert result["verdict"] == "PASS", result
+    assert "FUSIONRPG_WEB_ROOT" in result["evidence"], result
+
+
+def test_node_modules_absent_everywhere_fails_naming_the_env_var(tmp_path):
+    """The negative half: a genuine miss still FAILs, and the fix names the configuration to set."""
+    root, _ = _workspace(tmp_path)  # no sibling, no vendored copy, no env var
+    result = preflight._node_modules(str(root), _env())
+    assert result["verdict"] == "FAIL", result
+    assert "FUSIONRPG_WEB_ROOT" in result["fix"], result
+    assert result["fix"].startswith("set $env:FUSIONRPG_WEB_ROOT"), result
+
+
 def test_server_port_branches():
     up = preflight._port_state(probe=lambda: (False, True))
     assert up["verdict"] == "PASS"
