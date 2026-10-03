@@ -6,6 +6,7 @@ are byte-identical (no timestamps in output).
 """
 import json
 import os
+from unittest import mock
 
 from tools import debug_preflight as preflight
 
@@ -139,15 +140,35 @@ def test_node_modules_resolves_through_the_canonical_sibling(tmp_path):
 
 
 def test_node_modules_the_override_wins_over_a_discovered_sibling(tmp_path):
-    """Pins PRECEDENCE. The override is the only place node_modules exists, so a resolver that
-    consulted the discovered sibling first - or ignored the override - could not pass."""
+    """Pins that the override is CONSULTED - not, on its own, that it is consulted FIRST.
+
+    An audit showed the precedence claim in this test's name was not what the fixture can see: the
+    override is the only place node_modules exists, so a resolver that tried the discovered sibling
+    first and fell back to the override would also pass. What pins actual PRECEDENCE is
+    `test_an_override_naming_a_missing_directory_is_refused_not_ignored` below: there the sibling is
+    complete, so preferring it would produce a PASS about the wrong tree, and only consulting the
+    override first refuses. The docstring said otherwise, and a docstring overstating what a test
+    pins is the same defect as a test asserting a route which no longer exists."""
     root, ws = _workspace(tmp_path, web_node_modules=False)
     elsewhere = tmp_path / "elsewhere"
     (elsewhere / "web" / "fusion-rpg-web" / "node_modules").mkdir(parents=True)
     result = preflight._node_modules(
         str(root), {"KEEPVERSE_WEB_ROOT": str(elsewhere)})
     assert result["verdict"] == "PASS", result
-    assert result["evidence"].startswith(str(elsewhere)), result
+    assert result["evidence"] == str(elsewhere / "web" / "fusion-rpg-web" / "node_modules"), result
+
+
+def test_node_modules_ignores_the_process_environment(tmp_path):
+    """Hermeticity, and the regression an audit measured: with KEEPVERSE_WEB_ROOT set in the
+    PROCESS environment, an env={} caller used to inherit it, because the overlay only added keys and
+    never removed one, and three of the node_modules tests went red under a legitimate process
+    configuration. The injected mapping is the whole story: absent means absent, not 'ask the
+    process'."""
+    root, ws = _workspace(tmp_path, web=False)  # no sibling either
+    with mock.patch.dict(os.environ, {"KEEPVERSE_WEB_ROOT": str(tmp_path)}, clear=False):
+        result = preflight._node_modules(str(root), {})
+    assert result["verdict"] == "FAIL", result
+    assert "gk-web" in result["evidence"], result
 
 
 def test_an_override_naming_a_missing_directory_is_refused_not_ignored(tmp_path):
@@ -173,4 +194,9 @@ def test_a_present_web_repo_without_installed_packages_still_fails(tmp_path):
     root, ws = _workspace(tmp_path, web_node_modules=False)
     result = preflight._node_modules(str(root), {})
     assert result["verdict"] == "FAIL", result
-    assert "node_modules" in result["evidence"], result
+    # EXACT, not a substring. An override-derived failure naming a directory that merely CONTAINS
+    # "node_modules" would satisfy a substring check, which is the weakness an audit found here: the
+    # assertion passed for a path the check never resolved.
+    assert result["evidence"] == (
+        f"{ws / 'gk-web' / 'web' / 'fusion-rpg-web' / 'node_modules'} is absent "
+        f"(FE build would fail)"), result

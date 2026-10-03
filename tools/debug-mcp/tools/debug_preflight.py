@@ -224,10 +224,18 @@ def _node_modules(root, env):
     validator still runs and still refuses an override naming a directory that is not there. Nothing
     here re-implements the validation.
     """
-    overlay = {}
-    if (env or {}).get("KEEPVERSE_WEB_ROOT"):
-        overlay["KEEPVERSE_WEB_ROOT"] = env["KEEPVERSE_WEB_ROOT"]
-    with mock.patch.dict(os.environ, overlay):
+    # The injected mapping is the WHOLE story, not an overlay on top of the process.
+    # `mock.patch.dict` can add keys but never removes one, so an env that omits the variable
+    # would silently inherit it from the process - which made audit(root, env={})
+    # non-hermetic for this check alone, while every other check here reads the injected mapping
+    # and nothing else. An audit measured 3 of 5 node_modules tests going red under a legitimate
+    # process configuration; this is what fixes that.
+    injected = (env or {}).get("KEEPVERSE_WEB_ROOT")
+    with mock.patch.dict(os.environ):
+        if injected:
+            os.environ["KEEPVERSE_WEB_ROOT"] = injected
+        else:
+            os.environ.pop("KEEPVERSE_WEB_ROOT", None)
         try:
             web = web_root(Path(root))
         except RootNotFound as exc:
