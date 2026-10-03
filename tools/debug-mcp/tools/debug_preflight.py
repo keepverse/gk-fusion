@@ -11,6 +11,7 @@ import io
 import os
 import socket
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -18,6 +19,17 @@ from urllib.parse import urlparse
 
 import httpx
 import registry
+
+# The root contract is ONE contract with four implementations (a C# copy and three byte-identical
+# Python copies held in step by ResolverCopyParityTests), and it has already drifted twice. This
+# module therefore does not resolve a repository of its own: it asks that contract, the same way
+# deploy-play.py does. The path mirrors this file's location - tools/debug-mcp/tools/ -> repo root
+# is three levels up, and scripts/lib sits under it.
+_SCRIPTS_LIB = Path(__file__).resolve().parents[3] / "scripts" / "lib"
+if str(_SCRIPTS_LIB) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_LIB))
+from unittest import mock  # noqa: E402
+from keepverse_roots import RootNotFound, web_root  # noqa: E402
 
 
 def _base_url():
@@ -189,31 +201,45 @@ def _data_dir(root, env):
 
 
 def _node_modules(root, env):
-    """Resolve the web app's node_modules as CONFIGURATION, not as a hardcoded layout.
+    """Ask the CANONICAL resolver where the web app is. Do not resolve it here.
 
-    This check used to look only at `<root>/web/fusion-rpg-web`, which is correct only when the
-    frontend is vendored inside the same repository. The frontend now lives in its own repository
-    one level up, so from a standalone clone of the repository that owns this tool the path never
-    resolves and the check reports a false FAIL - the preflight becomes unusable exactly where it
-    is supposed to be dependable. Candidates are tried in order and the first hit wins:
-    FUSIONRPG_WEB_ROOT (explicit), the vendored layout (unchanged), then the sibling repository.
+    This check used to look only at `<root>/web/fusion-rpg-web`, a layout this repository has never
+    had - `web/` is absent from every commit on every ref - so the old code reported a false FAIL from
+    a standalone clone and the preflight was unusable exactly where it is meant to be dependable.
+
+    An earlier repair globbed the parent for a sibling that looked like the web repo, and an audit
+    refuted it four ways: it invented a SECOND resolver, when this workspace's root contract already
+    has four implementations that "have already drifted twice"; it added an override variable the
+    build does not read, so a PASS could name a tree nothing builds; it silently ignored an override
+    pointing at nothing - the exact failure `keepverse_roots._env` documents having been written to
+    prevent; and alphabetical first-match over an indiscriminate glob let a stale sibling clone win.
+
+    So this calls `keepverse_roots.web_root`, the one contract, and the npm package sits one level
+    down at `web/fusion-rpg-web/` - where the build puts it too, so this check and the build cannot
+    disagree about which tree they mean.
+
+    `keepverse_roots._env` reads `os.environ`, while every other check in this module reads the
+    injected mapping that makes `audit(root, env)` testable. Both contracts are kept: the injected
+    override is overlaid onto the process environment for the duration of the call, so the CANONICAL
+    validator still runs and still refuses an override naming a directory that is not there. Nothing
+    here re-implements the validation.
     """
-    root = Path(root)
-    configured = env.get("FUSIONRPG_WEB_ROOT", "").strip()
-    candidates = []
-    if configured:
-        candidates.append((Path(configured), f"FUSIONRPG_WEB_ROOT={configured}"))
-    candidates.append((root / "web" / "fusion-rpg-web", "vendored at <root>/web/fusion-rpg-web"))
-    for sibling in sorted(p.name for p in root.parent.glob("*") if p.is_dir()):
-        candidates.append((root.parent / sibling / "web" / "fusion-rpg-web",
-                           f"sibling repo {sibling}/web/fusion-rpg-web"))
-    for base, origin in candidates:
-        node = base / "node_modules"
-        if node.is_dir():
-            return _pass("node-modules", f"{node} ({origin})")
-    return _fail("node-modules",
-                 f"no node_modules (FE build would fail); tried {len(candidates)} location(s)",
-                 "set $env:FUSIONRPG_WEB_ROOT = \"<path to fusion-rpg-web>\", or npm ci in it")
+    overlay = {}
+    if (env or {}).get("KEEPVERSE_WEB_ROOT"):
+        overlay["KEEPVERSE_WEB_ROOT"] = env["KEEPVERSE_WEB_ROOT"]
+    with mock.patch.dict(os.environ, overlay):
+        try:
+            web = web_root(Path(root))
+        except RootNotFound as exc:
+            return _fail(
+                "node-modules", str(exc),
+                "clone gk-web as a sibling of this repository, or set "
+                "$env:KEEPVERSE_WEB_ROOT to an existing gk-web root")
+    node = web / "web" / "fusion-rpg-web" / "node_modules"
+    if node.is_dir():
+        return _pass("node-modules", str(node))
+    return _fail("node-modules", f"{node} is absent (FE build would fail)",
+                 f"cd {web / 'web' / 'fusion-rpg-web'}; npm ci")
 
 
 def _mcp_deps(root, env):

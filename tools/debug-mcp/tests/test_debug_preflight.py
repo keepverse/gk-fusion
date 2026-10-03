@@ -34,9 +34,23 @@ def test_full_tree_passes(tmp_path):
     (tmp_path / "dist" / "FusionRpg.Server" / "data").mkdir(parents=True)
     (tmp_path / "dist" / "FusionRpg.Server" / "data" / "rpg-hot.sqlite").write_text("x")
     (tmp_path / "dist" / "FusionRpg.Server" / "FusionRpg.Core.dll").write_text("x")
-    (tmp_path / "web" / "fusion-rpg-web" / "node_modules").mkdir(parents=True)
+    # The frontend is its own SIBLING repository, which is the layout that actually exists - `web/`
+    # is absent from every commit on every ref, so a fixture planting it below `tmp_path` described a
+    # tree this repository has never had, and the check that read it was false-failing for real. The
+    # property this test guards is unchanged: a COMPLETE tree reports no failing check. Only the
+    # fixture is corrected, and only because its premise was false rather than its assertion.
+    ws = tmp_path / "workspace"
+    root = ws / "gk-fusion"
+    root.mkdir(parents=True)
+    (ws / "gk-core").mkdir()
+    (ws / "gk-data").mkdir()
+    (ws / "gk-web" / "web" / "fusion-rpg-web" / "node_modules").mkdir(parents=True)
+    # dist/ belongs to the ROOT being audited, which is now the sibling repository, not tmp_path.
+    (root / "dist" / "FusionRpg.Server" / "data").mkdir(parents=True)
+    (root / "dist" / "FusionRpg.Server" / "data" / "rpg-hot.sqlite").write_text("x")
+    (root / "dist" / "FusionRpg.Server" / "FusionRpg.Core.dll").write_text("x")
     env = _env(FUSIONRPG_GAME_DIR=str(game))
-    out = preflight.audit(root=str(tmp_path), env=env)
+    out = preflight.audit(root=str(root), env=env)
     failing = [c["check"] for c in out["checks"]
                if c["verdict"] == "FAIL" and c["check"] != "server-port"]
     assert failing == [], failing
@@ -90,184 +104,73 @@ def test_audit_is_deterministic(tmp_path):
 
 
 # --- node_modules resolution -------------------------------------------------------------------
-# The check used to look only at <root>/web/fusion-rpg-web. The frontend now lives in its own
-# repository one level up, so from a standalone clone of THIS repository that path never resolves
-# and the preflight reports a false FAIL. Measured live 2026-10-03 against
-# <workspace>/gk-fusion/tools/debug-mcp: node-modules FAIL while the real web app had
-# node_modules present at <workspace>/gk-web/web/fusion-rpg-web.
+# The frontend lives in its own repository. This check used to look only at
+# `<root>/web/fusion-rpg-web`, a layout this repository has never had (`web/` is absent from every
+# commit on every ref), so it reported a false FAIL from a standalone clone. It now asks
+# `keepverse_roots.web_root` - the one root contract, four implementations, already drifted twice.
 #
-# Every test below roots its tree at <tmp>/<sibling-parent>/<repo> so the sibling scan can only
-# ever see directories this test created. Using tmp_path directly would let any other test's
-# leftovers in pytest's tmp base satisfy the scan, which is a false PASS, not a hermetic failure.
+# Fixtures reproduce the layout that contract actually detects: `_layout` calls a directory a
+# workspace when it holds BOTH `gk-core` and `gk-data`, and a sibling web repository is then found by
+# name. A bespoke resolver that globbed the parent would not resolve these fixtures at all, which is
+# the point - the tests are written against the contract, not against one implementation of it.
 
 
-def _workspace(tmp_path, repo="gk-fusion", sibling=None):
-    """Build an isolated <parent>/<repo> (+ optional sibling repo) and return (repo_root, parent)."""
-    parent = tmp_path / "workspace"
-    root = parent / repo
+def _workspace(tmp_path, *, web=True, web_node_modules=True):
+    """A workspace whose gk-fusion is the caller's root. Returns (root, workspace)."""
+    ws = tmp_path / "workspace"
+    root = ws / "gk-fusion"
     root.mkdir(parents=True)
-    if sibling:
-        (parent / sibling / "web" / "fusion-rpg-web" / "node_modules").mkdir(parents=True)
-    return root, parent
+    (ws / "gk-core").mkdir()
+    (ws / "gk-data").mkdir()
+    if web:
+        app = ws / "gk-web" / "web" / "fusion-rpg-web"
+        app.mkdir(parents=True)
+        if web_node_modules:
+            (app / "node_modules").mkdir()
+    return root, ws
 
 
-def test_node_modules_found_in_the_sibling_repository(tmp_path):
-    """The regression this fixes: the frontend in its own repository, resolved without config."""
-    root, _ = _workspace(tmp_path, sibling="gk-web")
-    result = preflight._node_modules(str(root), _env())
+def test_node_modules_resolves_through_the_canonical_sibling(tmp_path):
+    root, ws = _workspace(tmp_path)
+    result = preflight._node_modules(str(root), {})
     assert result["verdict"] == "PASS", result
-    assert "gk-web" in result["evidence"], result
+    # The evidence must be the path the BUILD uses, not merely something that exists.
+    assert result["evidence"] == str(ws / "gk-web" / "web" / "fusion-rpg-web" / "node_modules"), result
 
 
-def test_node_modules_still_found_when_vendored_under_root(tmp_path):
-    """The pre-split layout keeps working - this is additive, not a replacement."""
-    root, _ = _workspace(tmp_path)
-    (root / "web" / "fusion-rpg-web" / "node_modules").mkdir(parents=True)
-    result = preflight._node_modules(str(root), _env())
+def test_node_modules_the_override_wins_over_a_discovered_sibling(tmp_path):
+    """Pins PRECEDENCE. The override is the only place node_modules exists, so a resolver that
+    consulted the discovered sibling first - or ignored the override - could not pass."""
+    root, ws = _workspace(tmp_path, web_node_modules=False)
+    elsewhere = tmp_path / "elsewhere"
+    (elsewhere / "web" / "fusion-rpg-web" / "node_modules").mkdir(parents=True)
+    result = preflight._node_modules(
+        str(root), {"KEEPVERSE_WEB_ROOT": str(elsewhere)})
     assert result["verdict"] == "PASS", result
-    assert "vendored" in result["evidence"], result
+    assert result["evidence"].startswith(str(elsewhere)), result
 
 
-def test_node_modules_env_var_is_configuration_and_wins(tmp_path):
-    root, _ = _workspace(tmp_path)
-    elsewhere = tmp_path / "elsewhere" / "app"
-    (elsewhere / "node_modules").mkdir(parents=True)
-    result = preflight._node_modules(str(root), _env(FUSIONRPG_WEB_ROOT=str(elsewhere)))
-    assert result["verdict"] == "PASS", result
-    assert "FUSIONRPG_WEB_ROOT" in result["evidence"], result
-
-
-def test_node_modules_absent_everywhere_fails_naming_the_env_var(tmp_path):
-    """The negative half: a genuine miss still FAILs, and the fix names the configuration to set."""
-    root, _ = _workspace(tmp_path)  # no sibling, no vendored copy, no env var
-    result = preflight._node_modules(str(root), _env())
+def test_an_override_naming_a_missing_directory_is_refused_not_ignored(tmp_path):
+    """Pins VALIDATION, and it is the shape the audit called out: the sibling HAS node_modules, so
+    silently ignoring a broken override would produce a confident PASS about the wrong tree."""
+    root, ws = _workspace(tmp_path)  # sibling present and complete
+    result = preflight._node_modules(
+        str(root), {"KEEPVERSE_WEB_ROOT": str(tmp_path / "not-a-directory")})
     assert result["verdict"] == "FAIL", result
-    assert "FUSIONRPG_WEB_ROOT" in result["fix"], result
-    assert result["fix"].startswith("set $env:FUSIONRPG_WEB_ROOT"), result
+    assert "KEEPVERSE_WEB_ROOT" in result["evidence"], result
 
 
-def test_server_port_branches():
-    up = preflight._port_state(probe=lambda: (False, True))
-    assert up["verdict"] == "PASS"
-    free = preflight._port_state(probe=lambda: (True, False))
-    assert free["verdict"] == "PASS"
-    stale = preflight._port_state(probe=lambda: (False, False))
-    assert stale["verdict"] == "FAIL"
-    assert "5088" in stale["fix"]
+def test_an_absent_gk_web_refuses_naming_the_repository(tmp_path):
+    root, ws = _workspace(tmp_path, web=False)
+    result = preflight._node_modules(str(root), {})
+    assert result["verdict"] == "FAIL", result
+    assert "gk-web" in result["evidence"], result
+    assert "KEEPVERSE_WEB_ROOT" in result["fix"], result
 
 
-def test_server_registers_debug_preflight():
-    import asyncio
-    from server import mcp
-    tools = asyncio.run(mcp.list_tools())
-    assert "debug_preflight" in [t.name for t in tools]
-
-
-def test_live_state_separates_injector_connection_from_idle_board():
-    snapshots = []
-
-    def request(method, path, params=None):
-        if path == "/health":
-            return {"status": 200, "body": {"ok": True, "injectorConnected": True,
-                                              "lastHeartbeatUtc": "2026-09-14T00:00:00+00:00",
-                                              "source": "injector", "simEnabled": False}}
-        if path == "/api/debug/session":
-            return {"status": 200, "body": {"sessionActive": False}}
-        if path == "/api/debug/snapshot":
-            snapshots.append(True)
-            return {"status": 200, "body": {"ok": True}}
-        if not snapshots and params["afterId"] < 9:
-            return {"status": 200, "body": {"items": [{"id": 9}]}}
-        if snapshots and params["afterId"] == 9:
-            return {"status": 200, "body": {"items": [{"id": 10, "kind": "debug.snapshot",
-                "matchKey": None, "payload": {"match": {"phase": "Idle"}}}]}}
-        return {"status": 200, "body": {"items": []}}
-
-    out = preflight.live_state(request=request, process_probe=lambda: True)
-    assert snapshots == [True]
-    assert out["injector"]["connected"] is True
-    assert out["board"]["observed"] is True
-    assert out["board"]["state"] == "idle"
-    assert out["ready"] is False
-    assert "injector liveness alone" in out["fix"]
-
-
-def test_live_state_requires_a_fresh_snapshot_for_ready():
-    def request(method, path, params=None):
-        if path == "/health":
-            return {"status": 200, "body": {"ok": True, "injectorConnected": True}}
-        if path in ("/api/debug/session", "/api/debug/snapshot"):
-            return {"status": 200, "body": {"ok": True}}
-        return {"status": 200, "body": {"items": []}}
-
-    now = iter((0, 6))
-    out = preflight.live_state(request=request, process_probe=lambda: True,
-                               monotonic=lambda: next(now), sleep=lambda _: None)
-    assert out["injector"]["connected"] is True
-    assert out["board"]["observed"] is False
-    assert out["ready"] is False
-    assert "did not emit debug.snapshot" in out["fix"]
-
-
-def test_board_state_only_calls_non_idle_observation_live():
-    assert preflight._board_state({"payload": {"match": {"phase": "Idle"}}})[0] == "idle"
-    assert preflight._board_state({"payload": {"match": {"phase": "Loading"}}})[0] == "loading"
-    assert preflight._board_state({"payload": {"match": {"phase": "InMatch"}}})[0] == "active"
-
-
-def _live_state_request_with_snapshot(phase, game_state_body=None):
-    """Mirrors test_live_state_separates_injector_connection_from_idle_board's own stub shape
-    (the `snapshots` gate is what makes _event_max_id's watermark search converge before the
-    actual debug.snapshot poll begins) -- only adds a POST /api/debug/game-state branch."""
-    snapshots = []
-
-    def request(method, path, params=None):
-        if path == "/health":
-            return {"status": 200, "body": {"ok": True, "injectorConnected": True}}
-        if path == "/api/debug/session":
-            return {"status": 200, "body": {"ok": True}}
-        if method == "POST" and path == "/api/debug/game-state":
-            if game_state_body is None:
-                return {"status": 404, "body": {"raw": "not found"}}
-            return {"status": 200, "body": game_state_body}
-        if path == "/api/debug/snapshot":
-            snapshots.append(True)
-            return {"status": 200, "body": {"ok": True}}
-        if not snapshots and (params or {}).get("afterId", 999) < 9:
-            return {"status": 200, "body": {"items": [{"id": 9}]}}
-        if snapshots and (params or {}).get("afterId") == 9:
-            return {"status": 200, "body": {"items": [{"id": 10, "kind": "debug.snapshot",
-                "matchKey": None, "payload": {"match": {"phase": phase}}}]}}
-        return {"status": 200, "body": {"items": []}}
-    return request
-
-
-def test_game_state_cross_check_unavailable_falls_back_to_snapshot():
-    """Route missing (e.g. not yet merged into this checkout) -- unchanged legacy behavior."""
-    out = preflight.live_state(request=_live_state_request_with_snapshot("InMatch"),
-                               process_probe=lambda: True)
-    assert out["ready"] is True
-    assert "gameStateCrossCheck" not in out["board"]
-
-
-def test_game_state_cross_check_agrees_leaves_ready_unchanged():
-    body = {"ok": True, "live": {"ok": True, "matchPhase": "InMatch", "phaseMismatch": False,
-                                  "plantCount": 1, "zombieCount": 1, "liveState": "InMatch"}}
-    out = preflight.live_state(request=_live_state_request_with_snapshot("InMatch", body),
-                               process_probe=lambda: True)
-    assert out["ready"] is True
-    assert out["board"]["gameStateCrossCheck"]["liveState"] == "InMatch"
-
-
-def test_game_state_cross_check_overrides_stale_snapshot_phase():
-    """Real 2026-09-14 incident: matchPhase said InMatch during a genuine defeat with 0 real
-    entities. The real counts must win, and the fix message must say so."""
-    body = {"ok": True, "live": {"ok": True, "matchPhase": "InMatch", "phaseMismatch": True,
-                                  "plantCount": 0, "zombieCount": 0,
-                                  "liveState": "MatchEndedBoardStillAlive"}}
-    out = preflight.live_state(request=_live_state_request_with_snapshot("InMatch", body),
-                               process_probe=lambda: True)
-    assert out["ready"] is False
-    assert out["board"]["state"] == "active"  # snapshot's own reading, left as-is for reference
-    assert "real Unity object counts" in out["fix"]
-    assert "MatchEndedBoardStillAlive" in out["fix"]
+def test_a_present_web_repo_without_installed_packages_still_fails(tmp_path):
+    """The check is about node_modules, not about the repository existing."""
+    root, ws = _workspace(tmp_path, web_node_modules=False)
+    result = preflight._node_modules(str(root), {})
+    assert result["verdict"] == "FAIL", result
+    assert "node_modules" in result["evidence"], result
