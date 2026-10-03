@@ -24,10 +24,30 @@ def test_relay_route_labels_injector():
 
 
 def test_store_route_labels_server():
-    # /reforge-world touches store.* with no relay — verified lines 457+.
+    # The classifier's rule is about the HANDLER SPAN, not about one route: a route touching
+    # store.* with no injector relay is rpg-server-debug-shaped, and the SAME touch with a relay is
+    # not. The previous version of this test asserted /reforge-world, which is registered nowhere -
+    # the string exists in this file and nowhere else, at HEAD and before it - so it asserted a fact
+    # about a route this repository stopped having and kept failing for that reason alone.
+    #
+    # /api/aptitudes/{playerId:long} (AptitudeEndpoints.cs) touches store.* and carries no
+    # Send(hub/inbox, ...), and is labelled rpg-server-debug. Both halves are asserted: the route
+    # exists, AND the label follows from the span. A rename that preserves the property will fail
+    # this test loudly, which is the point - the old literal failed silently for however long
+    # because nothing re-derived it.
     routes = _routes()
-    assert "/reforge-world" in routes
-    assert registry.scope_for("/reforge-world", routes) == "rpg-server-debug"
+    assert "/api/aptitudes/{playerId:long}" in routes
+    assert registry.scope_for("/api/aptitudes/{playerId:long}", routes) == "rpg-server-debug"
+
+
+def test_a_store_touching_route_WITH_a_relay_is_not_server_scope():
+    # The contrast that makes the test above mean something: the store touch alone does not decide
+    # it. /api/debug/screenshot (DebugEndpoints.cs) touches store.* AND relays via
+    # Send(hub/inbox, ...), so it must classify as game-injector-debug. Without this pair the first
+    # test would also pass if the classifier simply labelled everything rpg-server-debug.
+    routes = _routes()
+    assert "/api/debug/screenshot" in routes
+    assert registry.scope_for("/api/debug/screenshot", routes) == "game-injector-debug"
 
 
 def test_non_allowlisted_route_refused_without_touching_transport():
