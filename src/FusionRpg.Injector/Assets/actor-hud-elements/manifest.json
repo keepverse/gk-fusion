@@ -1,6 +1,19 @@
 {
   "schemaVersion": 1,
   "kind": "actor-hud-element-icons",
+  "ownership": {
+    "authoritativeTree": "src/FusionRpg.Injector/Assets/actor-hud-elements/",
+    "why": "The four loader projects in THIS repository glob `..\\FusionRpg.Injector\\Assets\\actor-hud-elements\\**\\*.png` (FusionRpg.Injector.BepInEx.csproj, .MelonLoader.csproj, .MelonLoader.39.csproj, .MelonLoader.40.csproj), so this tree is the build input and the shipped bytes originate here. gk-web's web/fusion-rpg-web/public/actor-hud-elements/ is downstream of it.",
+    "noCodeReadsThisFile": "No .cs, .csproj, .py, .ts or .tsx file in the workspace names this manifest. The project files glob *.png only, so it is not shipped in a build either. It is a provenance and normalisation record; the source prompt, the alpha sampling notes and the crop rule below exist nowhere else. Treat it as a record, not as a runtime contract.",
+    "fileNamingIsTheContract": "Both consumers resolve a glyph by NAMING CONVENTION and not by this file: ActorHudElementArt.cs combines `assets/actor-hud-elements` with `hudGlyph + \".png\"`, and gk-web's actorHudElementArtUrl returns `/actor-hud-elements/${hudGlyph}.png`. So a glyph's file is `<hudGlyph>.png` at the tree root, and the `assets[].path` column below restates that convention rather than describing a mapping anything reads.",
+    "elementTableOwner": "The `assets[]` rows' elementId / hudGlyph / catalogColor restate gk-core's data/tuning/element-catalog.v2.json `entries` fields id / hudGlyph / color, value for value. That catalog is the OWNER and is authoritative; the table below is a SNAPSHOT taken at generation time. If they ever disagree, the catalog wins and this file is the stale one.",
+    "downstreamCopy": {
+      "path": "gk-web: web/fusion-rpg-web/public/actor-hud-elements/",
+      "mechanism": "MANUAL COPY. There is no mirror, sync or checksum tool for this tree in any repository, and no test compares the two copies. A change to a PNG here is NOT picked up there automatically.",
+      "stateAsOf2026_10_05": "The 64px root set and this manifest are byte-identical between the two repositories (all 7 files, SHA-256 compared). gk-web's copy holds the root 64px set ONLY and therefore does not contain the 128/ and 256/ tiers that `availableCanvasPixels` below lists — a manifest declaring files that repository does not carry.",
+      "whyTheSubsetIsNotDrift": "Neither consumer requests a tier: ActorHudElementArt.cs loads the root PNGs and gk-web's URL template names the root PNGs. The 128 and 256 tiers have no reader in either repository today; the `variants` descriptions below call them reserved for FE display. Adding them to gk-web would cost ~360 KB in a web bundle for a tier nothing asks for."
+    }
+  },
   "source": {
     "method": "built-in image generation",
     "generatedOn": "2026-09-18",
