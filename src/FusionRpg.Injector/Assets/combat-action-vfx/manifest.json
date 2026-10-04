@@ -4,6 +4,12 @@
   "created": "2026-09-26",
   "generator": "Built-in Codex image generation",
   "license": "Original generated artwork; no external source art used",
+  "generatedImageCache": {
+    "note": "A `generatedFile` value below is the image-generation tool's OWN handle for the file it wrote, expressed RELATIVE to that tool's per-machine output cache. The cache root is deliberately NOT recorded: it lives under one operator's home directory, it is per-machine and per-session, and a committed absolute path to it is a machine path, which this repository forbids in any tracked file.",
+    "resolvesElsewhere": false,
+    "authoritativeFile": "The `file` field of the asset is the committed, authoritative copy. `generatedFile` is provenance only - it identifies which generation pass produced that file, and it resolves on the authoring machine only.",
+    "repair": "2026-10-05. Ten `generatedFile` values carried the generation tool's FULL absolute output path on one operator's machine (a drive-qualified path under a per-user home directory). The two handles in each are the whole of the recoverable information and both are preserved; only the machine prefix was removed. Nothing else about these records changed, because nothing else in them was a path."
+  },
   "families": {
     "elements": {
       "fire": {
@@ -19,7 +25,7 @@
             "alpha": "Present; transparent canvas corner and visible partially transparent pixels sampled with System.Drawing",
             "anchor": "center of gathering core",
             "prompt": "Create a compact Fire charge: orange-red flame tongues and sparks curl inward to a molten gold center, visibly gathering before release. Premium hand-painted dimensional fantasy VFX. No ring, character, weapon, text, scenery or backdrop.",
-            "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-32e4c7d9-1ef7-444e-8c7b-79d8d56e0826.png"
+            "generatedFile": "01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-32e4c7d9-1ef7-444e-8c7b-79d8d56e0826.png"
           },
           "travel": {
             "file": "elements/fire/travel/source/fire-travel.generated.png",
@@ -29,7 +35,7 @@
             "alpha": "Present; transparent canvas corner and visible partially transparent pixels sampled with System.Drawing",
             "anchor": "left tail; horizontal travel axis left-to-right",
             "prompt": "Create a wide horizontal Fire travel ribbon: fast orange-red flame tongues, narrow gold core, trailing charcoal embers, sharp leading tip and tapered tail. No projectile ball, character, weapon, target, text, scenery or backdrop.",
-            "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-18946b73-29f1-46cc-be92-58f1a3988552.png"
+            "generatedFile": "01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-18946b73-29f1-46cc-be92-58f1a3988552.png"
           },
           "impact": {
             "file": "elements/fire/impact/source/fire-impact.generated.png",
@@ -39,7 +45,7 @@
             "alpha": "Present; transparent canvas corner and visible partially transparent pixels sampled with System.Drawing",
             "anchor": "center of radial impact",
             "prompt": "Create a compact radial Fire impact: flame petals and molten sparks burst outward from a bright gold-white center, with charcoal ember fragments, distinct from charge and travel. No character, weapon, target body, text, scenery or backdrop.",
-            "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-1995f1a7-7512-4bde-aa66-17b7c9d1184d.png"
+            "generatedFile": "01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-1995f1a7-7512-4bde-aa66-17b7c9d1184d.png"
           }
         }
       },
@@ -384,7 +390,7 @@
           "alpha": "Present; transparent canvas pixels and partially transparent effect pixels sampled with System.Drawing",
           "anchor": "horizontal center, content-biased toward lower-center contact point",
           "prompt": "Create one reusable shield-impact VFX: bright shallow concave shield ripple at the instant a hit is stopped, one crisp contact spark and a few readable energy facets. Isolated transparent alpha, neutral pearl-silver/warm ivory suitable for element tint, premium hand-painted dimensional fantasy-game VFX, match Earth's polished luminous finish without copying its rocks/moss/jade. No text, frame, shield emblem, character, weapon, ground, or backdrop.",
-          "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-89fa972e-0a0f-407e-be47-a3c3814e609a.png"
+          "generatedFile": "01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-89fa972e-0a0f-407e-be47-a3c3814e609a.png"
         },
         "shield-break": {
           "file": "reactions/shield-break/source/shield-break.generated.png",
@@ -394,7 +400,7 @@
           "alpha": "Present; transparent canvas corner and partially transparent effect pixels sampled with System.Drawing",
           "anchor": "horizontal center, lower-center origin for outward fragment motion",
           "prompt": "Create a reusable shield-break effect paired with shield-impact: shattered protective arc bursting outward into large translucent shield-glass facets, visible center gap and a few fading motes. Preserve the pearl-silver/warm-ivory dimensional fantasy VFX style. No intact shield, emblem, character, weapon, text, scenery, floor, or backdrop.",
-          "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-176f720b-a2f1-4e15-b486-d85a1a644ebd.png"
+          "generatedFile": "01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-176f720b-a2f1-4e15-b486-d85a1a644ebd.png"
         },
         "shield-reform": {
           "file": "reactions/shield-reform/source/shield-reform.generated.png",
@@ -428,7 +434,7 @@
           "alpha": "Present; transparent canvas corner and partially transparent effect pixels sampled with System.Drawing",
           "anchor": "contact point near lower-left third; redirected motion sweeps toward upper-right",
           "prompt": "Create a reusable parry deflection effect in the same dimensional pearl-silver/warm-ivory fantasy VFX style: one asymmetric diagonal crescent with a concentrated contact spark and redirected streaks. No broad symmetric shield arc, shield plane, weapon, character, text, emblem, scenery, floor, or backdrop.",
-          "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-3d38e0c1-8d85-42bf-b696-6927fdb54880.png"
+          "generatedFile": "01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-3d38e0c1-8d85-42bf-b696-6927fdb54880.png"
         },
         "block": {
           "file": "reactions/block/source/block.generated.png",
@@ -438,7 +444,7 @@
           "alpha": "Present; transparent canvas corner and partial-alpha sprite pixels sampled with System.Drawing",
           "anchor": "center of barrier plane",
           "prompt": "Create a reusable block effect: compact front-facing faceted energy plane catching incoming force; two or three short streaks visibly stop on its surface; pearl-silver/warm-ivory style matching the reference. No character, weapon, emblem, text, scenery, or background.",
-          "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-fca29650-2071-468a-9f92-b5fd6db08cd9.png"
+          "generatedFile": "01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-fca29650-2071-468a-9f92-b5fd6db08cd9.png"
         },
         "miss": {
           "file": "reactions/miss/source/miss.generated.png",
@@ -448,7 +454,7 @@
           "alpha": "Present; canvas-corner alpha 1/255, visible partial-alpha ribbon sampled with System.Drawing",
           "anchor": "empty center around which the strike slips",
           "prompt": "Create a reusable miss/evade effect: narrow pearl-silver/warm-ivory slash curves around an empty central gap and fades past without contact. No collision flash, target, person, weapon, text, scenery, or backdrop.",
-          "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-06b7a675-11e5-4c7b-ad6d-8b9226fb61cf.png"
+          "generatedFile": "01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-06b7a675-11e5-4c7b-ad6d-8b9226fb61cf.png"
         },
         "dodge-slip": {
           "file": "reactions/dodge-slip/source/dodge-slip-v2.generated.png",
@@ -473,7 +479,7 @@
           "alpha": "Present; transparent canvas corner and partial-alpha sprite pixels sampled with System.Drawing",
           "anchor": "small central absorption core",
           "prompt": "Create a reusable absorb effect: three or four neutral translucent luminous facets and ribbons visibly curl inward and collapse into a small bright core, with motion converging rather than exploding. No shield, character, weapon, text, scenery, or backdrop.",
-          "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-20c451ad-fd49-425e-aaae-85fb0d817c1b.png"
+          "generatedFile": "01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-20c451ad-fd49-425e-aaae-85fb0d817c1b.png"
         },
         "pierce": {
           "file": "reactions/pierce/source/pierce.generated.png",
@@ -483,7 +489,7 @@
           "alpha": "Present; transparent canvas corner and partial-alpha sprite pixels sampled with System.Drawing",
           "anchor": "entry point; output axis is horizontal left-to-right",
           "prompt": "Create a reusable pierce/penetrate effect: thin horizontal neutral crystal-light streak passes through a small opening, with a sharp entry glint and brighter exit flare, continuing beyond the target point. No visible target, weapon, character, explosion, text, scenery, or backdrop.",
-          "generatedFile": "C:/Users/NeneScarlet/.codex/generated_images/01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-8d8fb176-75e6-43cc-a5df-106c84c7c6de.png"
+          "generatedFile": "01a0ab0b-0942-78e1-be4a-3efb35e3cff3/exec-8d8fb176-75e6-43cc-a5df-106c84c7c6de.png"
         }
       }
     },
