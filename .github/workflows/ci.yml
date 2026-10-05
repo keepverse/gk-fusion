@@ -73,3 +73,28 @@ jobs:
         run: |
           dotnet test FusionRpg.slnx --no-build --verbosity minimal --blame-hang --blame-hang-timeout 10min
           if ($LASTEXITCODE -ne 0) { throw "the gk-fusion test run failed" }
+
+      # This repository's own workflow paths. gk-fusion/ci.yml checks out exactly ONE repository, so
+      # "does every path a workflow names resolve inside a checkout THAT JOB DECLARED" is a question
+      # CI can answer here — and the answer has to stay yes. The split put nine references in
+      # release.yml that resolved in neither of its two checkouts, and nothing said so until the
+      # release was attempted.
+      #
+      # Scoped to ci.yml ON PURPOSE. release.yml names paths in five sibling repositories, and
+      # whether those resolve is only decidable where all five trees exist — so it is the release
+      # job that runs the full check, with --workspace pointed at the runner's own layout. Running
+      # the unscoped check here would either fail for the absence of checkouts this job correctly
+      # does not declare, or pass vacuously, and a gate in either state is decoration.
+      - name: Workflow path resolution (scripts/guard-workflow-paths.py)
+        shell: pwsh
+        run: |
+          python scripts/guard-workflow-paths.py --workflow ci.yml
+          if ($LASTEXITCODE -ne 0) { throw "a path this repository's ci.yml names does not resolve inside a declared checkout" }
+
+      # The check's own contract suite. 32 cases, each of which fails if its rule is removed — the
+      # six-rule mutation run is recorded in the script's docstring rather than asserted here.
+      - name: Workflow path resolution contract suite
+        shell: pwsh
+        run: |
+          python -m unittest discover -s scripts -p "test_workflow_paths.py" -v
+          if ($LASTEXITCODE -ne 0) { throw "the workflow-path contract suite failed" }

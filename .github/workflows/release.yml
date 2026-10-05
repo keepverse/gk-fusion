@@ -28,17 +28,100 @@ jobs:
     # diagnostic — bound the job so a future hang fails fast instead of idling toward GitHub Actions'
     # own 6-hour default.
     timeout-minutes: 60
+    # THIS REPOSITORY IS CHECKED OUT INTO `gk-fusion/`, NOT AT THE WORKSPACE ROOT, and every
+    # sibling it needs is checked out BESIDE it. That is not a layout preference: it is the layout
+    # gk-core/ci.yml and gk-web/ci.yml already use, and it is what makes a reference resolvable at
+    # all. Nine lines of this job named a path in gk-core and gk-workflow while the job declared two
+    # checkouts, so the job died at the first of them and no release could publish. The fix is not
+    # nine repointed paths — it is the set of checkouts those paths resolve against.
+    #
+    # The set is measured, not guessed. Of the 35 guards in gk-core's enforcement registry, 31
+    # resolve in gk-core or gk-fusion, 3 live in gk-workflow (`check-decision-citations.py`,
+    # `session-boundary-check.py`, `audit-doc-citations.py`) and 1 in gk-forge
+    # (`guard-seedsmith-lf.py`). A `run_guards.py --tier ci` over three checkouts therefore refuses
+    # with GUARD-SCRIPT-MISSING before running a single guard — so gk-forge and gk-workflow are
+    # here because the guard catalog names them, not because this job reads them directly.
+    #
+    # `KEEPVERSE_WORKSPACE_ROOT` is set rather than left to be found. gk-core's `keepverse_roots`
+    # resolves the workspace root by walking up for the directory holding `docs/` and `tasks/`,
+    # and on a runner the job workspace holds five SIBLINGS and no `docs/`, so the walk raises and
+    # gk-workflow's three guards become unresolvable. The resolver takes the answer as
+    # configuration for exactly this reason, and a release must not depend on a walk succeeding.
+    env:
+      KEEPVERSE_WORKSPACE_ROOT: ${{ github.workspace }}/gk-workflow
+    defaults:
+      run:
+        working-directory: gk-fusion
     steps:
       - uses: actions/checkout@v4
         with:
+          path: gk-fusion
           # Release and the reusable CI job inspect the complete tag range, not a shallow tip.
           fetch-depth: 0
+
+      - name: Checkout gk-core (the guard catalog, the IP tool, and the pack publisher)
+        uses: actions/checkout@v4
+        with:
+          repository: keepverse/gk-core
+          path: gk-core
 
       - name: Checkout gk-web (the web gates)
         uses: actions/checkout@v4
         with:
           repository: keepverse/gk-web
           path: gk-web
+
+      - name: Checkout gk-forge (the generators' guards, named by the enforcement registry)
+        uses: actions/checkout@v4
+        with:
+          repository: keepverse/gk-forge
+          path: gk-forge
+
+      - name: Checkout gk-workflow (the fail-closed helpers three registry guards name)
+        uses: actions/checkout@v4
+        with:
+          repository: keepverse/gk-workflow
+          path: gk-workflow
+
+      # gk-data is PRIVATE and stays private. The generated-seed guard and the guard runner both
+      # read it, so an absent token is a named refusal that throws BEFORE any guard runs — the job
+      # fails closed rather than passing a subset of its declared coverage while reporting the whole
+      # list. This is gk-core/ci.yml's gate, carried unchanged rather than reworded.
+      - name: Refuse without the private-content token
+        shell: pwsh
+        env:
+          TOKEN: ${{ secrets.KEEPVERSE_DATA_TOKEN }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:TOKEN)) {
+            throw ("this release needs secrets.KEEPVERSE_DATA_TOKEN to check out the private gk-data " +
+                   "pack. The guard catalog reads gk-data/packs/fusion/data/**. This gate fails closed " +
+                   "rather than skipping it.")
+          }
+
+      - name: Checkout gk-data (private content pack)
+        uses: actions/checkout@v4
+        with:
+          repository: keepverse/gk-data
+          token: ${{ secrets.KEEPVERSE_DATA_TOKEN }}
+          path: gk-data
+
+      # The standing refusal for the class of defect the split left in this file, running INSIDE the
+      # job whose own references it proves. That placement is the whole point: a checkout this job
+      # did not declare is exactly what the check cannot see, so a job that only declares one
+      # repository can only prove one repository's worth — which is why this is NOT wired into
+      # ci.yml, whose single checkout would let it pass over exactly what it exists to catch.
+      #
+      # It runs after the checkouts because it resolves against them, and before every other step
+      # because every other step is a reference it is here to certify.
+      #
+      # `--workspace` is the runner's own layout. Locally the same check runs with no argument and
+      # resolves the same trees out of this repository's parent, so the answer is the same in both
+      # places by construction rather than by luck.
+      - name: Workflow path resolution (gk-fusion/scripts/guard-workflow-paths.py)
+        shell: pwsh
+        run: |
+          python scripts/guard-workflow-paths.py --workspace $env:GITHUB_WORKSPACE
+          if ($LASTEXITCODE -ne 0) { throw "a workflow path does not resolve inside a declared checkout; see the table above" }
 
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
@@ -116,15 +199,19 @@ jobs:
           # DRIFT (111)); those 3 are now converged and all three of its workflows exit 0.
 
       - name: Release generated-seed guard
+        # gk-core's scripts. `working-directory` is the repair: the path was `.\scripts\...` from
+        # THIS repository's root, where it has never existed. See the job header.
         shell: pwsh
+        working-directory: gk-core
         run: |
-          python .\scripts\guard-generated-seed.py --require-explicit-range --range $env:FUSIONRPG_RELEASE_RANGE
+          python scripts/guard-generated-seed.py --require-explicit-range --range $env:FUSIONRPG_RELEASE_RANGE
           if ($LASTEXITCODE -ne 0) { throw "release generated-seed guard failed" }
 
       - name: Release guard runner (full CI catalog)
         shell: pwsh
+        working-directory: gk-core
         run: |
-          python .\scripts\run_guards.py --tier ci --ci-range $env:FUSIONRPG_RELEASE_RANGE
+          python scripts/run_guards.py --tier ci --ci-range $env:FUSIONRPG_RELEASE_RANGE
           if ($LASTEXITCODE -ne 0) { throw "release run_guards.py --tier ci failed" }
 
       - name: Release web dependency lock
@@ -185,15 +272,36 @@ jobs:
       # Without it `scan` builds the LLM proposer and waits on the endpoint named by IPCENSOR_LLM_*
       # once per mark that has no authored replacement pair — minutes of block on any machine where a
       # local model endpoint is listening, for a decision the gate does not make.
-      - name: IP release gate (ip-censor, IC-3)
+      # The tool is gk-core's (`tools/ip-censor`), so the INSTALL runs from gk-core. The SCAN runs from
+      # THIS repository's root, which is a different directory on purpose — see the comment above on
+      # `report` resolving the scanned tree, and note that after the split this repository's root is
+      # `gk-fusion/` rather than the workspace root. The boundary is worth stating: this gate covers
+      # gk-fusion's authored text, and gk-core's authored text is covered by gk-core's own advisory
+      # scan on every push, which is the division owner ruling IC-3 drew.
+      - name: IP release gate install (ip-censor, IC-3)
         shell: pwsh
+        working-directory: gk-core
         run: |
           python -m pip install -r tools/ip-censor/requirements.lock
           if ($LASTEXITCODE -ne 0) { throw "ip-censor lockfile install failed" }
           python -m pip install -e tools/ip-censor --no-deps
           if ($LASTEXITCODE -ne 0) { throw "ip-censor editable install failed" }
+
+      - name: IP release gate (ip-censor, IC-3)
+        shell: pwsh
+        run: |
+          # The directory is created here because it does not exist in a fresh checkout: this
+          # repository has no `tasks/` tree at all. That made this step SILENT rather than red, and
+          # silent is the worse of the two failures — measured in gk-core/ci.yml, which carries the
+          # measurement: a pwsh redirect to a path whose parent is missing raises "Could not find a
+          # part of the path", does NOT run the command, and leaves $LASTEXITCODE at 0. So the
+          # `throw` below never fired, no artifact was written, and the release's ONLY blocking IP
+          # gate reported success having run no scan at all.
+          New-Item -ItemType Directory -Force -Path tasks/ip-censor | Out-Null
           python -m ipcensor.report scan --format json --fail-on enforced --authored-only > tasks/ip-censor/release-scan.json
           if ($LASTEXITCODE -ne 0) { throw "ip-censor release gate: an enforced IP finding blocks this release (see the findings step below)" }
+          # The exit code above does not prove the redirect wrote anything; assert the artifact.
+          if (-not (Test-Path tasks/ip-censor/release-scan.json)) { throw "ip-censor's release scan wrote no artifact - the redirect failed, and $LASTEXITCODE does not report that" }
 
       # Says WHAT the gate found, since the scan itself is redirected to a file. It runs only when
       # an earlier step failed, and only prints when the gate actually produced a plan.
@@ -211,38 +319,65 @@ jobs:
 
       - name: Prepare injector refs
         shell: pwsh
+        # gk-core's script, and gk-fusion is its pack root: the tool writes its reference tree to
+        # `<root>/artifacts/bepinex-refs` and `publish_player.py` reads the SAME path under ITS
+        # root, so `--root` has to name one directory for both or the prepare step prepares refs
+        # the publish step cannot see. That is the whole reason for naming it explicitly instead of
+        # letting the tool default to the repository it lives in.
+        working-directory: gk-core
         env:
           FUSIONRPG_GAME_DIR: ${{ vars.FUSIONRPG_GAME_DIR }}
           FUSIONRPG_INTEROP_ZIP_URL: ${{ secrets.FUSIONRPG_INTEROP_ZIP_URL }}
         run: |
-          $ciDrop = "artifacts/ci-drop-into-game/FusionRpg.Injector.dll"
-          try {
-            ./scripts/prepare-injector-refs.ps1
+          # THIRD SPELLING, NOW ONE. This line said `./scripts/prepare-injector-refs.ps1`: the
+          # PowerShell name for a script that was ported to `prepare_injector_refs.py`, run as
+          # `./` from a directory that never held it. A rename that leaves the caller naming the
+          # old file is the same defect as a forked lock file, and it is invisible to a reader
+          # because the file it names looks like a plausible path.
+          #
+          # The fallback is on the EXIT CODE, not in a `catch`. Under GitHub's `shell: pwsh` a
+          # native command that exits non-zero does NOT raise — `$LASTEXITCODE` is a side effect,
+          # not an exception — so the `try`/`catch` this replaced could never have fired for the
+          # one failure it exists to handle. On a runner with no game interop the tool refuses by
+          # design, which is exactly the case the CI-drop fallback exists for, and the step would
+          # have failed instead of falling back. Branching on `$LASTEXITCODE` is what makes the
+          # fallback reachable at all.
+          python scripts/prepare_injector_refs.py --root ../gk-fusion
+          if ($LASTEXITCODE -eq 0) {
             "FUSIONRPG_GAME_DIR=$env:FUSIONRPG_GAME_DIR" | Out-File -FilePath $env:GITHUB_ENV -Append
+            exit 0
           }
-          catch {
-            if (Test-Path $ciDrop) {
-              Write-Host "::warning::No game interop in CI — using committed artifacts/ci-drop-into-game (set secrets.FUSIONRPG_INTEROP_ZIP_URL to rebuild injector from source)."
-              "FUSIONRPG_USE_CI_DROP=1" | Out-File -FilePath $env:GITHUB_ENV -Append
-            }
-            else {
-              Write-Host "::error::Cloud release needs secrets.FUSIONRPG_INTEROP_ZIP_URL (or vars.FUSIONRPG_GAME_DIR) or committed artifacts/ci-drop-into-game. $_"
-              throw
-            }
+          $ciDrop = "../gk-fusion/artifacts/ci-drop-into-game/FusionRpg.Injector.dll"
+          if (Test-Path $ciDrop) {
+            Write-Host "::warning::No game interop in CI — using committed artifacts/ci-drop-into-game (set secrets.FUSIONRPG_INTEROP_ZIP_URL to rebuild injector from source)."
+            "FUSIONRPG_USE_CI_DROP=1" | Out-File -FilePath $env:GITHUB_ENV -Append
+          }
+          else {
+            Write-Host "::error::Cloud release needs secrets.FUSIONRPG_INTEROP_ZIP_URL (or vars.FUSIONRPG_GAME_DIR) or committed artifacts/ci-drop-into-game."
+            throw "prepare_injector_refs.py refused and there is no committed CI drop to fall back on"
           }
 
       - name: Publish player pack
         shell: pwsh
+        # gk-core's script; gk-fusion is the pack root, for the reason given in the step above.
+        working-directory: gk-core
         env:
           FUSIONRPG_VERSION: ${{ github.ref_name }}
-        run: python scripts/publish_player.py
+        run: python scripts/publish_player.py --root ../gk-fusion
 
       - name: Smoke player pack
         shell: pwsh
-        run: python scripts/smoke_player_pack.py --pack-dir dist/FusionRpg
+        working-directory: gk-core
+        run: python scripts/smoke_player_pack.py --pack-dir ../gk-fusion/dist/FusionRpg
 
+      # The Zip step below reads `dist/FusionRpg` and `artifacts/` relative to the JOB's working
+      # directory, which is `gk-fusion/` (the job default) — the same pack root the publish step
+      # wrote to. Named explicitly so that is a decision on the line rather than a coincidence of
+      # two defaults, and because the Zip step's `New-Item artifacts` is what creates the directory
+      # the publish step's `artifacts/ci-drop-into-game` fallback tested for.
       - name: Zip FusionRpg-win-x64.zip
         shell: pwsh
+        working-directory: gk-fusion
         run: |
           $src = "dist/FusionRpg"
           if (-not (Test-Path $src)) { throw "Missing $src" }
