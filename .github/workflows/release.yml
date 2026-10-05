@@ -360,10 +360,33 @@ jobs:
       - name: Publish player pack
         shell: pwsh
         # gk-core's script; gk-fusion is the pack root, for the reason given in the step above.
+        #
+        # THE FOUR ROOTS ARE NOW EXPLICIT, and three of them have to be, because a pack is built out of
+        # FOUR repositories and only two of them are reachable from the pack root. `--root ../gk-fusion`
+        # names the OUTPUT; it cannot name the sources, and the tool used to reach them by a monorepo
+        # walk (`<root>/web/fusion-rpg-web`, `<root>/src/FusionRpg.Launcher`,
+        # `<root>/docs/runbook/PLAYERS.txt`) that no longer exists. Left to its defaults the run now
+        # REFUSES by name instead -- WEB-ROOT-UNRESOLVED, FUSION-ROOT-UNRESOLVED,
+        # DOCUMENTS-ROOT-UNRESOLVED -- which is the right failure and the wrong outcome for a release.
+        #
+        # Every path below is a CHECKOUT PATH, relative to the job's working directory, so the step is
+        # portable and names no machine location. `../gk-workflow` is the workspace repository, and it is
+        # the only one of the four that carries `docs/runbook/PLAYERS.txt` and `NOTICE` -- both are
+        # tracked there and at no split repository, which is why the tool reads them from that root.
+        #
+        # `--server-root` is DELIBERATELY ABSENT: its default is `<pack root>/dist/FusionRpg/Server`, the
+        # pack's own output folder, which this run creates. A supplied server root must already EXIST
+        # (pre-flight, so a typo costs a second rather than a full publish), so naming it here would buy
+        # a `New-Item` line and the chance of the two disagreeing.
         working-directory: gk-core
         env:
           FUSIONRPG_VERSION: ${{ github.ref_name }}
-        run: python scripts/publish_player.py --root ../gk-fusion
+        run: >-
+          python scripts/publish_player.py
+          --root ../gk-fusion
+          --web-root ../gk-web/web/fusion-rpg-web
+          --fusion-root ../gk-fusion
+          --documents-root ../gk-workflow
 
       - name: Smoke player pack
         shell: pwsh
